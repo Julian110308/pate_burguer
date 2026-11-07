@@ -1,0 +1,368 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para el formulario de productos */
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    .form-control, .form-select {
+        background-color: #F9F8F6;
+        border: 1px solid #E5E1DA;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+    }
+    .form-control:focus, .form-select:focus {
+        background-color: white;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1);
+    }
+    
+    .section-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .ingredient-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 12px;
+        transition: all 0.2s;
+    }
+    .ingredient-row:hover {
+        border-color: #D1D5DB;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    /* Para que el select de Django se vea integrado */
+    .ingredient-row select {
+        border: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        padding-left: 0;
+        font-weight: 500;
+    }
+    .ingredient-row select:focus {
+        box-shadow: none !important;
+    }
+    
+    /* Interruptor (Toggle) para disponibilidad */
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+    }
+    .form-switch .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+</style>
+
+<!-- Encabezado -->
+<div class="mb-4 mt-2">
+    <a href="{% url 'lista_productos' %}" class="text-muted text-decoration-none small mb-2 d-inline-block"><i class="bi bi-arrow-left"></i> Volver a productos</a>
+    <h1 class="fw-bold mb-1" style="font-size: 2.5rem;">Crear Nuevo Plato</h1>
+    <p class="text-muted">Ajusta los detalles del plato y cómo lo podrán pedir tus clientes.</p>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-4">
+        
+        <!-- Columna Izquierda (Datos e Ingredientes) -->
+        <div class="col-lg-8">
+            
+            <!-- Datos del Producto -->
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">Datos del producto</h4>
+                    <span class="text-muted small">* Obligatorio</span>
+                </div>
+                
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Nombre del producto *</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Hamburguesa Especial" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Precio ($) *</label>
+                        <input type="number" name="precio" class="form-control" placeholder="0.00" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Categoría *</label>
+                    <select name="categoria" class="form-select" required>
+                        <option value="">Selecciona una categoría...</option>
+                        {% for c in categorias %}
+                            <option value="{{ c.id }}">{{ c.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="form-label">Descripción <span class="text-muted fw-normal" style="text-transform: none;">(Opcional)</span></label>
+                    <textarea name="descripcion" class="form-control" rows="3" placeholder="Describe el plato para tus clientes..."></textarea>
+                </div>
+            </div>
+
+            <!-- Ingredientes -->
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0">Ingredientes del plato</h4>
+                </div>
+                <p class="text-muted small mb-4">Marca los ingredientes que el cliente puede retirar al hacer su pedido.</p>
+                
+                {{ formset.management_form }}
+                {{ formset.non_form_errors }}
+                
+                <!-- Contenedor de las filas -->
+                <div id="contenedor-ingredientes">
+                    {% for form in formset %}
+                        <div class="ingredient-row" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                            
+                            <div class="flex-grow-1" style="max-width: 350px;">
+                                {{ form.ingrediente }}
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-2 ms-auto">
+                                {{ form.removible }}
+                                <label class="form-check-label fw-bold text-dark mb-0" style="font-size: 0.9rem; cursor: pointer;" for="{{ form.removible.id_for_label }}">
+                                    Cliente puede retirar
+                                </label>
+                            </div>
+                            {% if form.instance.pk %}
+                            <div class="d-flex align-items-center text-danger ms-2">
+                                {{ form.DELETE }}
+                                <label class="form-check-label fw-bold mb-0" style="font-size: 0.9rem; cursor: pointer;" for="{{ form.DELETE.id_for_label }}">
+                                    Quitar
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Plantilla de fila vacía -->
+                <template id="plantilla-fila-vacia">
+                    <div class="ingredient-row" style="border: 1px solid var(--border-color); border-radius: 8px;">
+                        {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+                        <div class="flex-grow-1" style="max-width: 350px;">
+                            {{ formset.empty_form.ingrediente }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 ms-auto">
+                            {{ formset.empty_form.removible }}
+                            <label class="form-check-label fw-bold text-dark mb-0" style="font-size: 0.9rem; cursor: pointer;" for="{{ formset.empty_form.removible.id_for_label }}">
+                                Cliente puede retirar
+                            </label>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Botones para añadir filas o ingredientes -->
+                <div class="row g-2 mt-2">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-light border w-100 rounded-3 fw-bold text-dark" id="btn-agregar-ingrediente" style="padding: 12px;">
+                            <i class="bi bi-plus-lg"></i> Añadir otra fila
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-outline-dark w-100 rounded-3 fw-bold" id="btn-nuevo-ingrediente" style="padding: 12px;">
+                            <i class="bi bi-tags"></i> Nuevo Ingrediente
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Columna Derecha (Imagen y Disponibilidad) -->
+        <div class="col-lg-4">
+            
+            <!-- Imagen -->
+            <div class="section-card mb-4">
+                <h4 class="mb-3">Imagen <span class="text-muted small fw-normal">(Opcional)</span></h4>
+                
+                <!-- Vista previa de la imagen -->
+                <div id="preview-container" class="text-center mb-3" style="display: none;">
+                    <img id="imagen-preview" src="" alt="Vista previa" class="img-fluid rounded-3" style="max-height: 200px; object-fit: cover;">
+                </div>
+
+                <div class="border rounded-3 p-4 text-center bg-light" style="border-style: dashed !important;">
+                    <i class="bi bi-image text-muted mb-2" style="font-size: 2.5rem;" id="icono-imagen"></i>
+                    <p class="text-muted small mb-3">Arrastra una foto o selecciónala desde tu equipo.</p>
+                    <!-- Input con ID para el JavaScript -->
+                    <input type="file" name="imagen" id="input-imagen" class="form-control form-control-sm" accept="image/*">
+                </div>
+                <p class="text-muted small mt-3 mb-0">Puedes guardar el producto sin foto y añadirla más adelante.</p>
+            </div>
+
+            <!-- Disponibilidad -->
+            <div class="section-card">
+                <h4 class="mb-3">Disponibilidad</h4>
+                <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0">
+                    <div>
+                        <span class="d-block fw-bold small">Producto disponible</span>
+                        <span class="text-muted small" style="font-size: 0.75rem;">Activado: el cliente puede pedir este producto.</span>
+                    </div>
+                    <input class="form-check-input" type="checkbox" name="disponible" id="disponible" checked>
+                </div>
+            </div>
+            
+            <div class="alert alert-light border mt-4 d-flex gap-3 align-items-start rounded-3">
+                <i class="bi bi-info-circle text-muted"></i>
+                <p class="text-muted small mb-0">Una descripción clara ayuda al cliente a elegir. Cuenta qué hace especial a tu plato.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botones de Acción Fijos Abajo -->
+    <div class="d-flex justify-content-end gap-3 mt-5 pt-4 border-top">
+        <a href="{% url 'lista_productos' %}" class="btn btn-light border px-4 py-3 rounded-3 fw-bold">Cancelar</a>
+        <button type="submit" class="btn btn-primary-custom px-4 py-3 rounded-3 fw-bold">
+            <i class="bi bi-check-lg me-1"></i> Guardar Plato
+        </button>
+    </div>
+</form>
+
+<!-- Modal para Crear Nuevo Ingrediente -->
+<div class="modal fade" id="modalNuevoIngrediente" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" style="font-family: 'DM Serif Display', serif;">Nuevo Ingrediente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Nombre del ingrediente</label>
+                    <input type="text" id="nuevoIngredienteNombre" class="form-control bg-light border-0" placeholder="Ej: Salchicha, Chorizo...">
+                    <div id="errorIngrediente" class="text-danger small mt-2" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-custom" id="btnGuardarIngrediente">Guardar y Seleccionar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Lógica para Añadir Fila ---
+        const btnAgregar = document.getElementById('btn-agregar-ingrediente');
+        const contenedor = document.getElementById('contenedor-ingredientes');
+        const plantilla  = document.getElementById('plantilla-fila-vacia');
+        const totalForms = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
+
+        if (btnAgregar && contenedor && plantilla && totalForms) {
+            btnAgregar.addEventListener('click', function (e) {
+                e.preventDefault();
+                const indice = parseInt(totalForms.value, 10);
+                const html = plantilla.innerHTML.replace(/__prefix__/g, indice);
+                contenedor.insertAdjacentHTML('beforeend', html);
+                totalForms.value = indice + 1;
+            });
+        }
+
+        // --- Lógica para Crear Ingrediente Rápido ---
+        const btnAbrirModal = document.getElementById('btn-nuevo-ingrediente');
+        const btnGuardarIngrediente = document.getElementById('btnGuardarIngrediente');
+        const inputNombre = document.getElementById('nuevoIngredienteNombre');
+        const errorDiv = document.getElementById('errorIngrediente');
+
+        if (btnAbrirModal) {
+            btnAbrirModal.addEventListener('click', function() {
+                inputNombre.value = '';
+                errorDiv.style.display = 'none';
+                const modal = new bootstrap.Modal(document.getElementById('modalNuevoIngrediente'));
+                modal.show();
+            });
+        }
+
+        if (btnGuardarIngrediente) {
+            btnGuardarIngrediente.addEventListener('click', function() {
+                const nombre = inputNombre.value.trim();
+                if (!nombre) {
+                    errorDiv.innerText = "Por favor, escribe un nombre.";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+
+                btnGuardarIngrediente.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
+                btnGuardarIngrediente.disabled = true;
+
+                const formData = new FormData();
+                formData.append('nombre', nombre);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                fetch("{% url 'crear_ingrediente_ajax' %}", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        const selects = document.querySelectorAll('select[name$="-ingrediente"]');
+                        selects.forEach(select => {
+                            if (!select.querySelector(`option[value="${data.id}"]`)) {
+                                const option = new Option(data.nombre, data.id);
+                                select.add(option);
+                            }
+                        });
+                        bootstrap.Modal.getInstance(document.getElementById('modalNuevoIngrediente')).hide();
+                    } else {
+                        errorDiv.innerText = data.message;
+                        errorDiv.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorDiv.innerText = "Hubo un error al guardar.";
+                    errorDiv.style.display = "block";
+                })
+                .finally(() => {
+                    btnGuardarIngrediente.innerHTML = 'Guardar y Seleccionar';
+                    btnGuardarIngrediente.disabled = false;
+                });
+            });
+        }
+
+        // --- Lógica para Vista Previa de Imagen ---
+        const inputImagen = document.getElementById('input-imagen');
+        const imagenPreview = document.getElementById('imagen-preview');
+        const previewContainer = document.getElementById('preview-container');
+        const iconoImagen = document.getElementById('icono-imagen');
+
+        if (inputImagen) {
+            inputImagen.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagenPreview.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        iconoImagen.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

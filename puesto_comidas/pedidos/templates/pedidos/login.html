@@ -1,0 +1,174 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    /* Ocultar scroll general */
+    html, body {
+        height: 100%;
+        overflow: hidden; 
+    }
+
+    /* Contenedor principal que ocupa exactamente la ventana */
+    .login-wrapper {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        background-color: #FCFCFA;
+        display: flex;
+    }
+
+    /* Lado Izquierdo: Imagen */
+    .login-image {
+        background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=2070&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 3rem;
+    }
+
+    /* Lado Derecho: Formulario */
+    .login-content {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        overflow-y: auto; /* Permite scroll solo si la pantalla es muy pequeña */
+    }
+    
+    .login-form-container {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Textos sobre la imagen */
+    .brand-logo {
+        color: white;
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+    
+    .img-text-overlay {
+        color: white;
+        max-width: 500px;
+    }
+    .img-text-overlay h1 {
+        font-size: 3.5rem;
+        color: white;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+
+    /* Inputs compactos */
+    .login-form-container .form-control,
+    .login-form-container .input-group-text {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="login-wrapper">
+    
+    <!-- Lado Izquierdo (Imagen) - Se oculta en móviles -->
+    <div class="col-lg-6 d-none d-lg-flex login-image">
+        <div class="brand-logo">
+            <i class="bi bi-fire"></i> PATE BURGUER
+        </div>
+        <div class="img-text-overlay">
+            <h1 class="mb-3">El buen sabor<br>siempre reúne.</h1>
+            <p class="fs-6 opacity-75 mb-0" style="max-width: 400px;">Recién hecho, bien servido y con ese toque que te hace volver. De la plancha a tu mesa.</p>
+        </div>
+    </div>
+
+    <!-- Lado Derecho (Formulario) -->
+    <div class="col-12 col-lg-6 login-content">
+        <div class="login-form-container">
+            
+            <div class="mb-4">
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Aquí se come bien</span>
+                <h1 class="fw-bold mt-2 mb-3" style="font-size: 2.8rem;">¡Qué bueno verte!</h1>
+                <p class="text-muted" style="font-size: 0.95rem;">Inicia sesión para pedir tus favoritos.<br>Nosotros vamos calentando la plancha.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger rounded-1 small border-0 py-2"><i class="bi bi-exclamation-circle me-2"></i>Usuario o contraseña incorrectos.</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="id_username" class="form-label small fw-bold text-muted">Correo electrónico / Usuario</label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                        <input type="text" name="username" class="form-control border-start-0" id="id_username" required placeholder="tu@ejemplo.com">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_password" class="form-label small fw-bold text-muted">Contraseña</label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                        <input type="password" name="password" class="form-control border-start-0" id="id_password" required placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="remember">
+                        <label class="form-check-label small text-muted" for="remember">Recuérdame</label>
+                    </div>
+                    <!-- Enlace al Modal de Recuperación -->
+                    <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalOlvidoPassword">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary-custom w-100 py-3 d-flex justify-content-between align-items-center">
+                    <span>Iniciar sesión</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
+<div class="modal fade" id="modalOlvidoPassword" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" style="font-family: 'DM Serif Display', serif;">Recuperar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-4 text-center">
+                <div class="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-shield-lock text-dark" style="font-size: 2.5rem;"></i>
+                </div>
+                
+                <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                    Por seguridad, las contraseñas no se pueden recuperar automáticamente.<br><br>
+                    <strong>Si eres Mesero:</strong><br>
+                    Pídele al administrador que te asigne una nueva desde su panel.<br><br>
+                    <strong>Si eres Administrador:</strong><br>
+                    Contacta al soporte técnico para restablecer tu acceso.
+                </p>
+                
+                <a href="mailto:soporte@laesquina.com" class="btn btn-outline-dark w-100 rounded-3 fw-bold py-3 mb-2">
+                    <i class="bi bi-envelope-fill me-1"></i> Contactar Soporte
+                </a>
+                <button type="button" class="btn btn-light border w-100 rounded-3 fw-bold py-3" data-bs-dismiss="modal">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

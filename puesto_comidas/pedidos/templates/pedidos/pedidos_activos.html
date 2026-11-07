@@ -1,0 +1,287 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    body { background-color: #FCFAF8; }
+
+    /* Tarjetas de resumen (KPIs) */
+    .kpi-card-mini {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+    }
+    .kpi-card-mini .title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+    .kpi-card-mini .value { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; margin-top: 5px; }
+    
+    /* Tarjeta oscura de total */
+    .kpi-card-dark {
+        background: #2D2A26;
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: white;
+        height: 100%;
+    }
+    .kpi-card-dark .title { font-size: 0.75rem; color: #A8A29E; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+    .kpi-card-dark .value { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; margin-top: 5px; }
+
+    /* Tarjetas de Pedido */
+    .order-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+    
+    /* Barra superior de color según estado */
+    .order-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
+    }
+    .order-card.pendiente::before { background-color: #D97706; } /* Naranja */
+    .order-card.pagado::before { background-color: #10B981; } /* Verde */
+    
+    .order-header { padding: 1.25rem 1.25rem 0 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; }
+    
+    /* Badge de mesa */
+    .table-badge {
+        background: #F3F4F6;
+        border-radius: 6px;
+        padding: 4px 8px;
+        text-align: center;
+        min-width: 45px;
+    }
+    .table-badge .label { font-size: 0.55rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+    .table-badge .number { font-size: 1.2rem; font-weight: 700; color: var(--text-main); line-height: 1; }
+    .order-card.pendiente .table-badge { background: #FEF3C7; }
+    .order-card.pagado .table-badge { background: #D1FAE5; }
+
+    .order-status-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-pendiente { background: #FEF3C7; color: #92400E; }
+    .status-pagado { background: #D1FAE5; color: #065F46; }
+
+    /* Barra de tiempo (simulada visualmente) */
+    .time-bar-container { padding: 0 1.25rem; margin-top: 1rem; }
+    .time-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+    .time-labels span:last-child { font-weight: 700; color: var(--text-main); }
+    .progress { height: 4px; background-color: #F3F4F6; border-radius: 2px; }
+    .progress-bar.pendiente { background-color: #D97706; width: 70%; } /* Simulando progreso */
+    .progress-bar.pagado { background-color: #10B981; width: 100%; }
+
+    /* Lista de productos */
+    .order-items { padding: 1.25rem; flex-grow: 1; }
+    .order-item-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .order-item-row .qty { font-weight: 700; color: var(--text-main); margin-right: 8px; }
+    .order-item-row .name { color: var(--text-main); font-weight: 500; }
+    .order-item-row .price { color: var(--text-muted); }
+    .order-item-row .note { font-size: 0.75rem; color: #DC2626; display: block; margin-left: 24px; margin-top: -2px;}
+
+    /* Footer de la tarjeta */
+    .order-footer { padding: 1.25rem; border-top: 1px dashed var(--border-color); margin-top: auto; }
+    .order-total { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; }
+    .order-total .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .order-total .amount { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 700; line-height: 1; }
+
+    /* Acciones */
+    .order-actions { display: flex; gap: 8px; }
+    .btn-main-action {
+        flex-grow: 1;
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        transition: all 0.2s;
+    }
+    .btn-cobrar { background-color: #A63A25; }
+    .btn-cobrar:hover { background-color: #8B2E1B; }
+    .btn-entregar { background-color: #A63A25; }
+    .btn-entregar:hover { background-color: #8B2E1B; }
+    
+    .btn-icon-action {
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--border-color);
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-muted);
+        transition: all 0.2s;
+    }
+    .btn-icon-action:hover { background: #F3F4F6; color: var(--text-main); }
+</style>
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
+    <div>
+        <span class="text-success small fw-bold text-uppercase" style="letter-spacing: 2px;"><i class="bi bi-circle-fill" style="font-size: 0.5rem; vertical-align: middle;"></i> Cocina · En vivo</span>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.8rem;">Pedidos activos</h1>
+        <p class="text-muted mb-0">Sigue cada mesa desde que se pide hasta que se cobra.</p>
+    </div>
+    <a href="{% url 'menu_mesero' %}" class="btn btn-primary-custom px-4 py-2 fw-bold">
+        <i class="bi bi-plus-lg me-1"></i> Nuevo pedido
+    </a>
+</div>
+
+<!-- Tarjetas Superiores (KPIs) -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="kpi-card-mini">
+            <div class="title">Pedidos abiertos</div>
+            <div class="value">{{ total_abiertos }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card-mini">
+            <div class="title">En cocina</div>
+            <div class="value">{{ en_cocina }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card-mini">
+            <div class="title">Listos (Pagados)</div>
+            <div class="value">{{ por_cobrar }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card-dark">
+            <div class="title">Total por cobrar</div>
+            <div class="value">${{ total_cobrar|floatformat:"0" }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Tarjetas de Pedido -->
+<div class="row g-4 mb-5">
+    {% for pedido in pedidos %}
+        <!-- La clase define el color de la barra superior -->
+        <div class="col-md-6 col-lg-4">
+            <div class="order-card {% if pedido.estado == 'pagado' %}pagado{% else %}pendiente{% endif %}">
+                
+                <div class="order-header">
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="table-badge">
+                            <div class="label">{% if pedido.tipo == 'mesa' %}Mesa{% else %}Llevar{% endif %}</div>
+                            <div class="number">{% if pedido.tipo == 'mesa' %}{{ pedido.numero_mesa }}{% else %}<i class="bi bi-bag"></i>{% endif %}</div>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; font-size: 1.3rem;">Pedido #{{ pedido.numero }}</h4>
+                            <small class="text-muted"><i class="bi bi-person"></i> {{ pedido.mesero.username }} &nbsp; <i class="bi bi-clock"></i> {{ pedido.fecha_hora|time:"H:i" }}</small>
+                        </div>
+                    </div>
+                    <div>
+                        {% if pedido.estado == 'pagado' %}
+                            <span class="order-status-badge status-pagado"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Listo</span>
+                        {% else %}
+                            <span class="order-status-badge status-pendiente"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Por cobrar</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Barra de tiempo (visual) -->
+                <div class="time-bar-container">
+                    <div class="time-labels">
+                        <span>Tiempo transcurrido</span>
+                        <span>14:20</span> <!-- En un caso real podrías calcular los minutos -->
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar {% if pedido.estado == 'pagado' %}pagado{% else %}pendiente{% endif %}"></div>
+                    </div>
+                </div>
+
+                <!-- Productos -->
+                <div class="order-items">
+                    {% for detalle in pedido.detalles.all|slice:":3" %}
+                        <div class="order-item-row">
+                            <div>
+                                <span class="qty">{{ detalle.cantidad }}x</span>
+                                <span class="name">{{ detalle.producto.nombre }}</span>
+                                {% if detalle.observacion %}
+                                    <span class="note">{{ detalle.observacion }}</span>
+                                {% endif %}
+                            </div>
+                            <span class="price">${{ detalle.subtotal }}</span>
+                        </div>
+                    {% endfor %}
+                    
+                    {% if pedido.detalles.all|length > 3 %}
+                        <div class="order-item-row mt-2">
+                            <span class="text-muted" style="font-size: 0.8rem;">+ {{ pedido.detalles.all|length|add:"-3" }} productos más</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Footer con Totales y Botones -->
+                <div class="order-footer">
+                    <div class="order-total">
+                        <span class="label">Total</span>
+                        <span class="amount">${{ pedido.total|floatformat:"0" }}</span>
+                    </div>
+                    
+                    <div class="order-actions">
+                        {% if pedido.estado == 'pendiente_pago' %}
+                            <!-- Botón principal: Cobrar -->
+                            <a href="{% url 'cambiar_estado_pedido' pedido.id 'pagado' %}" class="btn-main-action btn-cobrar">
+                                <i class="bi bi-wallet2"></i> Cobrar pedido
+                            </a>
+                        {% elif pedido.estado == 'pagado' %}
+                            <!-- Botón principal: Entregar -->
+                            <form method="post" action="{% url 'cambiar_estado_pedido' pedido.id 'entregado' %}" class="w-100 m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-main-action btn-entregar w-100">
+                                    <i class="bi bi-check-lg"></i> Entregado, pasar a cobro
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        <!-- Botones secundarios (Iconos) -->
+                        <a href="{% url 'agregar_a_pedido' pedido.id %}" class="btn-icon-action" title="Agregar productos">
+                            <i class="bi bi-plus-lg"></i>
+                        </a>
+                        
+                        <!-- BOTÓN DE IMPRESIÓN ACTUALIZADO (Abre el modal global) -->
+                        <button type="button" onclick="abrirTicketModal({{ pedido.id }})" class="btn-icon-action" title="Reimprimir ticket">
+                            <i class="bi bi-printer"></i>
+                        </button>
+                        
+                        {% if user.rol == 'admin' %}
+                        <a href="{% url 'editar_pedido' pedido.id %}" class="btn-icon-action" title="Editar pedido">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 text-center mt-5">
+            <div class="card card-custom p-5 d-inline-block">
+                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                <h3 class="fw-bold mt-3" style="font-family: 'DM Serif Display', serif;">¡Todo al día!</h3>
+                <p class="text-muted mb-0">No hay pedidos pendientes en este momento.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

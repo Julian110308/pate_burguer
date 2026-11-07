@@ -1,0 +1,221 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    body { background-color: #FCFAF8; }
+
+    .header-section {
+        margin-bottom: 2rem;
+    }
+    
+    .meta-info {
+        display: flex;
+        gap: 10px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: white;
+        border: 1px solid var(--border-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    /* Tarjetas de selección de método de pago */
+    .payment-card {
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+    }
+    
+    .payment-card:hover {
+        border-color: #D1D5DB;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+    }
+
+    /* Cuando el radio está seleccionado, pintamos la tarjeta */
+    .payment-radio:checked + .payment-card {
+        border-color: #10B981; /* Verde de éxito */
+        background-color: #F0FDF4;
+    }
+
+    .payment-icon {
+        width: 45px;
+        height: 45px;
+        background: #F3F4F6;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        transition: all 0.2s;
+    }
+    .payment-radio:checked + .payment-card .payment-icon {
+        background: #10B981;
+        color: white;
+    }
+
+    .payment-title {
+        font-family: 'DM Serif Display', serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+
+    .payment-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* Check de selección */
+    .check-circle {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #D1D5DB;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .payment-radio:checked + .payment-card .check-circle {
+        background: #10B981;
+        border-color: #10B981;
+    }
+    .check-circle i {
+        color: white;
+        font-size: 0.8rem;
+        display: none;
+    }
+    .payment-radio:checked + .payment-card .check-circle i {
+        display: block;
+    }
+
+    /* Panel de resumen */
+    .summary-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+</style>
+
+<!-- Encabezado -->
+<div class="header-section">
+    <a href="{% url 'pedidos_activos' %}" class="text-muted text-decoration-none small mb-2 d-inline-block">
+        <i class="bi bi-chevron-left"></i> Volver a pedidos activos
+    </a>
+    <span class="text-muted small fw-bold text-uppercase d-block mt-2" style="letter-spacing: 2px; color: var(--accent-color) !important;">Caja</span>
+    <h1 class="fw-bold mb-0 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 3rem;">Cobrar pedido #{{ pedido.numero }}</h1>
+    
+    <div class="meta-info">
+        <span><i class="bi bi-geo-alt"></i> {% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %}</span>
+        <span><i class="bi bi-person"></i> {{ pedido.mesero.username }}</span>
+        <span><i class="bi bi-clock"></i> Abierto {{ pedido.fecha_hora|time:"H:i" }}</span>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row g-4">
+        
+        <!-- Columna Izquierda: Resumen del pedido -->
+        <div class="col-lg-4">
+            <div class="summary-card">
+                <h5 class="text-muted small fw-bold text-uppercase mb-3">Resumen</h5>
+                
+                <!-- Lista de productos -->
+                <div class="mb-4">
+                    {% for detalle in pedido.detalles.all %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="text-muted" style="font-size: 0.9rem;">
+                                <span class="fw-bold text-dark">{{ detalle.cantidad }}x</span> {{ detalle.producto.nombre }}
+                            </div>
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">${{ detalle.subtotal }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="border-top pt-3 mb-3">
+                    <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
+                        <span>Subtotal</span>
+                        <span>${{ pedido.total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
+                        <span>Productos</span>
+                        <span>{{ pedido.detalles.all|length }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                    <h5 class="mb-0 fw-bold text-uppercase">Total</h5>
+                    <h2 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; color: var(--accent-color);">${{ pedido.total }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Métodos de Pago -->
+        <div class="col-lg-8">
+            <div class="summary-card">
+                <h5 class="text-muted small fw-bold text-uppercase mb-4">Método de pago</h5>
+                
+                <div class="row g-3 mb-5">
+                    <!-- Opción Efectivo -->
+                    <div class="col-md-6">
+                        <label class="w-100 cursor-pointer m-0">
+                            <input type="radio" name="metodo_pago" value="efectivo" class="payment-radio" checked>
+                            <div class="payment-card">
+                                <div class="check-circle"><i class="bi bi-check-lg"></i></div>
+                                <div class="payment-icon">
+                                    <i class="bi bi-cash-stack"></i>
+                                </div>
+                                <h4 class="payment-title">Efectivo</h4>
+                                <span class="payment-desc">Recibe el dinero en caja</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Opción Nequi -->
+                    <div class="col-md-6">
+                        <label class="w-100 cursor-pointer m-0">
+                            <input type="radio" name="metodo_pago" value="nequi" class="payment-radio">
+                            <div class="payment-card">
+                                <div class="check-circle"><i class="bi bi-check-lg"></i></div>
+                                <div class="payment-icon">
+                                    <i class="bi bi-phone"></i>
+                                </div>
+                                <h4 class="payment-title">Nequi</h4>
+                                <span class="payment-desc">Transferencia electrónica</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end gap-3 border-top pt-4">
+                    <a href="{% url 'pedidos_activos' %}" class="btn btn-light border px-4 py-3 rounded-3 fw-bold text-muted">Cancelar</a>
+                    <button type="submit" class="btn btn-success px-5 py-3 rounded-3 fw-bold" style="background-color: #10B981; border-color: #10B981;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Confirmar Pago
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pate Burguer</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --bg-color: #F9F8F6;
+            --card-bg: #FFFFFF;
+            --text-main: #2D2A26;
+            --text-muted: #7A7571;
+            --accent-color: #A63A25;
+            --accent-hover: #8B2E1B;
+            --border-color: #E5E1DA;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        {% if user.is_authenticated %}
+        body { padding-bottom: 80px; }
+        {% endif %}
+
+        h1, h2, h3, h4, h5, .brand-title {
+            font-family: 'DM Serif Display', serif;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main) !important;
+            letter-spacing: -0.5px;
+        }
+
+        /* Botón Principal */
+        .btn-primary-custom {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 12px 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            background-color: var(--accent-hover);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(166, 58, 37, 0.2);
+        }
+
+        /* Tarjetas */
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Inputs */
+        .form-control, .form-select {
+            border-radius: 4px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            background-color: #FFFFFF;
+            font-size: 0.95rem;
+        }
+        .form-control:focus, .form-select:focus {
+            box-shadow: none;
+            border-color: var(--accent-color);
+            background-color: white;
+        }
+
+        /* Navegación Móvil */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 0;
+        }
+
+        .mobile-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .mobile-nav a i {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .mobile-nav a.active {
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav { display: flex; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Superior -->
+    {% if user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-custom py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand brand-title d-flex align-items-center gap-2" href="{% if user.rol == 'admin' %}{% url 'dashboard_admin' %}{% else %}{% url 'menu_mesero' %}{% endif %}">
+                <i class="bi bi-fire" style="font-size: 1.2rem; color: var(--accent-color);"></i> PATE BURGUER
+            </a>
+            
+            <div class="d-flex align-items-center desktop-nav gap-4">
+                <div class="d-flex gap-4">
+                    {% if user.rol == 'admin' %}
+                        <a href="{% url 'dashboard_admin' %}" class="text-decoration-none text-dark fw-bold" style="font-size: 0.95rem;">Panel</a>
+                    {% endif %}
+                    <a href="{% url 'pedidos_activos' %}" class="text-decoration-none text-muted fw-medium" style="font-size: 0.95rem;">Pedidos</a>
+                    {% if user.rol == 'admin' %}
+                        <a href="{% url 'reporte_diario' %}" class="text-decoration-none text-muted fw-medium" style="font-size: 0.95rem;">Reportes</a>
+                    {% endif %}
+                </div>
+                
+                <div class="border-start ps-4 d-flex align-items-center gap-3">
+                    <div class="text-end">
+                        <span class="d-block text-dark fw-medium small">{{ user.username }}</span>
+                        <span class="text-muted" style="font-size: 0.7rem; text-transform: uppercase;">{{ user.get_rol_display }}</span>
+                    </div>
+                    <form method="post" action="{% url 'logout' %}" class="d-inline m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm rounded-3 px-3">Salir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Contenedor Principal -->
+    <div class="{% if user.is_authenticated %}container pb-5{% else %}container-fluid p-0{% endif %}">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Navegación Inferior Móvil -->
+    {% if user.is_authenticated %}
+    <div class="mobile-nav">
+        <a href="{% url 'menu_mesero' %}" class="{% if request.resolver_match.url_name == 'menu_mesero' %}active{% endif %}">
+            <i class="bi bi-grid"></i> Menú
+        </a>
+        <a href="{% url 'pedidos_activos' %}" class="{% if request.resolver_match.url_name == 'pedidos_activos' %}active{% endif %}">
+            <i class="bi bi-receipt"></i> Pedidos
+        </a>
+        {% if user.rol == 'admin' %}
+        <a href="{% url 'reporte_diario' %}" class="{% if request.resolver_match.url_name == 'reporte_diario' %}active{% endif %}">
+            <i class="bi bi-bar-chart"></i> Reportes
+        </a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+            {% csrf_token %}
+            <a href="#" onclick="this.parentNode.submit(); return false;" class="text-muted">
+                <i class="bi bi-box-arrow-right"></i> Salir
+            </a>
+        </form>
+    </div>
+    {% endif %}
+
+        <!-- MODAL GLOBAL PARA VER TICKETS -->
+    <div class="modal fade" id="modalTicketGlobal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+            <div class="modal-content" style="border-radius: 12px; border: none; background-color: #F3F4F6; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                <div class="modal-header border-0 pb-0" style="position: absolute; right: 0; z-index: 10; padding: 1rem;">
+                    <button type="button" class="btn-close bg-white rounded-circle p-2 shadow-sm" data-bs-dismiss="modal" aria-label="Close" style="opacity: 1;"></button>
+                </div>
+                <!-- Usamos un IFrame para aislar los estilos del ticket -->
+                <div class="modal-body p-0" id="contenedor-ticket-modal" style="height: 75vh; overflow: hidden; border-radius: 12px;">
+                    <!-- Aquí se cargará el iframe -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+        <script>
+        function abrirTicketModal(pedidoId, autoImprimir = false) {
+            const contenedor = document.getElementById('contenedor-ticket-modal');
+            
+            contenedor.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="spinner-border text-dark" role="status"></div>
+                </div>
+            `;
+
+            const modalElement = document.getElementById('modalTicketGlobal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+
+            setTimeout(() => {
+                const iframe = document.createElement('iframe');
+                
+                // ¡AQUÍ ESTÁ LA MAGIA! Usamos la etiqueta de Django para generar la URL correcta
+                // Le pasamos un 0 como ID de ejemplo y JavaScript lo reemplaza
+                iframe.src = "{% url 'ver_ticket' 0 %}".replace('0', pedidoId);
+                
+                iframe.style = "width: 100%; height: 100%; border: none;";
+                iframe.title = "Ticket";
+
+                iframe.onload = function() {
+                    if (autoImprimir) {
+                        setTimeout(() => {
+                            iframe.contentWindow.print();
+                        }, 200);
+                    }
+                };
+
+                contenedor.innerHTML = '';
+                contenedor.appendChild(iframe);
+            }, 300);
+        }
+    </script>
+</body>
+</html>

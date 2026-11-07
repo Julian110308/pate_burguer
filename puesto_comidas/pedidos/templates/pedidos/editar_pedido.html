@@ -1,0 +1,337 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    body { background-color: #FCFAF8; }
+    
+    .edit-header {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .badge-admin {
+        background-color: #2D2A26;
+        color: white;
+        font-size: 0.65rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        letter-spacing: 1px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .meta-info {
+        display: flex;
+        gap: 15px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    .meta-info span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Caja de advertencia */
+    .warning-box {
+        background-color: #FEF3C7;
+        border: 1px solid #FDE68A;
+        color: #92400E;
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 0.85rem;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Tarjetas de producto */
+    .product-edit-row {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: all 0.2s;
+    }
+    .product-edit-row:hover {
+        border-color: #D1D5DB;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    
+    .product-icon {
+        width: 45px;
+        height: 45px;
+        background: #F9F8F6;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    /* Controles de cantidad */
+    .qty-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+        width: 110px;
+    }
+    .qty-btn {
+        background: white;
+        border: none;
+        padding: 4px 10px;
+        font-size: 1rem;
+        color: var(--text-main);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .qty-btn:hover { background: #F3F4F6; }
+    .qty-input {
+        width: 40px;
+        text-align: center;
+        border: none;
+        font-weight: 600;
+        outline: none;
+        font-size: 0.9rem;
+    }
+
+    /* Panel Resumen */
+    .summary-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    .summary-row.total {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .btn-save {
+        background-color: #A63A25;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 1.5rem;
+    }
+    .btn-save:hover { background-color: #8B2E1B; }
+</style>
+
+<!-- Encabezado -->
+<div class="edit-header">
+    <a href="{% url 'pedidos_activos' %}" class="text-muted text-decoration-none small mb-2 d-inline-block">
+        <i class="bi bi-chevron-left"></i> Volver a pedidos activos
+    </a>
+    
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 1px; color: var(--accent-color) !important;">Edición de pedido</span>
+                <span class="badge-admin"><i class="bi bi-shield-lock-fill"></i> ADMIN</span>
+            </div>
+            <h1 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif; font-size: 3rem;">Pedido #{{ pedido.numero }}</h1>
+            
+            <div class="meta-info">
+                <span><i class="bi bi-geo-alt"></i> {% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %}</span>
+                <span><i class="bi bi-person"></i> {{ pedido.mesero.username }}</span>
+                <span><i class="bi bi-clock"></i> {{ pedido.fecha_hora|time:"H:i" }}</span>
+            </div>
+        </div>
+        <div>
+            <span class="badge bg-warning text-dark bg-opacity-25 text-warning px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem;">
+                <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> {{ pedido.get_estado_display|upper }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Mensajes de alerta -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Advertencia -->
+<div class="warning-box">
+    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+    <div>
+        <strong>Este pedido ya fue confirmado.</strong> Los cambios se reflejarán en el ticket. Usa el botón de basura para eliminar un producto por completo.
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row g-4">
+        
+        <!-- Columna Izquierda: Lista de Productos -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Productos</h5>
+                <span class="text-muted small">{{ pedido.detalles.all|length }} ítems</span>
+            </div>
+
+            {% for detalle in pedido.detalles.all %}
+                <div class="product-edit-row">
+                    <!-- Ícono -->
+                    <div class="product-icon">
+                        <i class="bi bi-cup-hot"></i>
+                    </div>
+                    
+                    <!-- Detalles -->
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-1" style="font-size: 1rem;">{{ detalle.producto.nombre }}</h6>
+                                <small class="text-muted">${{ detalle.precio_unitario }} c/u</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <!-- Control de cantidad (JavaScript actualiza el subtotal) -->
+                                <div class="qty-control">
+                                    <button type="button" class="qty-btn" onclick="cambiarCantidad({{ detalle.id }}, -1)">-</button>
+                                    <input type="number" name="cantidad_{{ detalle.id }}" id="input_cantidad_{{ detalle.id }}" class="qty-input" value="{{ detalle.cantidad }}" min="1" readonly>
+                                    <button type="button" class="qty-btn" onclick="cambiarCantidad({{ detalle.id }}, 1)">+</button>
+                                </div>
+                                <!-- Subtotal dinámico -->
+                                <h6 class="mb-0 fw-bold" style="min-width: 80px; text-align: right;">$<span id="subtotal_{{ detalle.id }}">{{ detalle.subtotal }}</span></h6>
+                            </div>
+                        </div>
+                        
+                        <!-- Input de Observación -->
+                        <div class="input-group input-group-sm mt-2">
+                            <span class="input-group-text bg-transparent border-0 text-muted ps-0"><i class="bi bi-pencil"></i></span>
+                            <input type="text" name="observacion_{{ detalle.id }}" class="form-control border-0 bg-light rounded-2" placeholder="Observación (ej: sin cebolla, bien fría)" value="{{ detalle.observacion|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- Botón de Eliminar (POST a la misma URL) -->
+                    <button type="submit" name="eliminar_producto" value="{{ detalle.id }}" class="btn btn-outline-danger btn-sm border-0" style="height: fit-content;" title="Eliminar producto" onclick="return confirm('¿Seguro que quieres eliminar este producto del pedido?');">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            {% endfor %}
+
+            <!-- Botón para agregar más productos -->
+            <div class="text-center mt-4">
+                <a href="{% url 'agregar_a_pedido' pedido.id %}" class="btn btn-light border w-100 py-3 fw-bold text-muted rounded-3">
+                    <i class="bi bi-plus-lg"></i> Agregar otro producto
+                </a>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen -->
+        <div class="col-lg-4">
+            <div class="summary-card">
+                <h5 class="fw-bold mb-4" style="font-family: 'DM Serif Display', serif;">Resumen</h5>
+                
+                <div class="summary-row">
+                    <span>Total original</span>
+                    <span>${{ pedido.total }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Diferencia</span>
+                    <span class="text-muted fw-bold" id="diferenciaTexto">Sin cambios</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>Nuevo total</span>
+                    <span>$<span id="nuevoTotal">{{ pedido.total }}</span></span>
+                </div>
+                
+                <div class="alert alert-light border mt-3 text-center small text-muted">
+                    Aún no has hecho cambios
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <i class="bi bi-save"></i> Guardar y ver ticket
+                </button>
+                
+                <a href="{% url 'pedidos_activos' %}" class="btn btn-light border w-100 py-3 mt-2 rounded-3 fw-bold text-muted">
+                    Descartar cambios
+                </a>
+                
+                <p class="text-muted text-center mt-3 mb-0" style="font-size: 0.75rem;">Se registrará que el admin modificó este pedido.</p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Función para incrementar/decrementar y actualizar subtotales visualmente
+    function cambiarCantidad(detalleId, delta) {
+        const input = document.getElementById('input_cantidad_' + detalleId);
+        let cantidad = parseInt(input.value) + delta;
+        
+        if (cantidad < 1) cantidad = 1; // No permitimos menos de 1
+        
+        input.value = cantidad;
+        
+        // Encontrar el precio unitario buscando en el texto
+        const precioTexto = input.closest('.product-edit-row').querySelector('small').innerText;
+        const precioUnitario = parseFloat(precioTexto.replace('$', '').replace(' c/u', ''));
+        
+        // Calcular nuevo subtotal
+        const nuevoSubtotal = cantidad * precioUnitario;
+        
+        // Actualizar el texto del subtotal de esa fila
+        document.getElementById('subtotal_' + detalleId).innerText = nuevoSubtotal.toFixed(2);
+        
+        // Actualizar los totales generales
+        actualizarTotales();
+    }
+
+    function actualizarTotales() {
+        let total = 0;
+        const subtotales = document.querySelectorAll('[id^="subtotal_"]');
+        
+        subtotales.forEach(span => {
+            total += parseFloat(span.innerText);
+        });
+        
+        document.getElementById('nuevoTotal').innerText = total.toFixed(2);
+        
+        // Lógica para mostrar la diferencia (opcional)
+        const totalOriginal = parseFloat("{{ pedido.total }}");
+        const diferencia = total - totalOriginal;
+        
+        if (diferencia !== 0) {
+            const difTexto = document.getElementById('diferenciaTexto');
+            difTexto.innerText = (diferencia > 0 ? '+$' : '-$') + Math.abs(diferencia).toFixed(2);
+            difTexto.className = diferencia > 0 ? 'text-danger fw-bold' : 'text-success fw-bold';
+        }
+    }
+</script>
+{% endblock %}

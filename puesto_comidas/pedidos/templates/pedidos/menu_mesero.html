@@ -1,0 +1,809 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+
+<style>
+    /* --- ESTILOS DEL MENÚ --- */
+    body {
+        background-color: #FCFAF8; 
+    }
+
+    /* Barra de búsqueda y filtros */
+    .search-bar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+    }
+    .search-bar input {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        margin-left: 10px;
+        font-size: 0.9rem;
+    }
+    
+    /* Botones de filtro de categorías */
+    .filter-btn {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--text-main);
+        color: white;
+        border-color: var(--text-main);
+    }
+
+    /* Tarjetas de Producto */
+    .product-card {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background: white;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    .product-card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border-color: #D1D5DB;
+    }
+
+    .img-container {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+
+    /* Etiquetas flotantes sobre la imagen */
+    .badge-top-left {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: white;
+        color: var(--text-main);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .badge-top-right {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255,255,255,0.9);
+        color: var(--text-main);
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+
+    .product-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .product-title {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+    }
+    .product-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #F3F4F6;
+        padding-top: 1rem;
+    }
+    .price-text {
+        font-family: 'DM Serif Display', serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: var(--text-main);
+    }
+    .price-text small {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    .btn-add-small {
+        background: #F3F4F6;
+        color: var(--text-main);
+        border: none;
+        border-radius: 6px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .btn-add-small:hover {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    /* Carrito Lateral */
+    .cart-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    
+    /* Pestañas del carrito */
+    .cart-tabs {
+        display: flex;
+        background: #F9F8F6;
+        border-radius: 8px;
+        padding: 4px;
+        margin-bottom: 1.5rem;
+    }
+    .cart-tab {
+        flex: 1;
+        text-align: center;
+        padding: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .cart-tab.active {
+        background: white;
+        color: var(--text-main);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .cart-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed var(--border-color);
+    }
+    .cart-item-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+    
+    /* Switch de icopor */
+    .icopor-switch-container {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 12px 15px;
+    }
+</style>
+
+<!-- Encabezado Principal -->
+<div class="row mb-4 mt-2">
+    <div class="col-12">
+        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">De la plancha a tu mesa</span>
+        <h1 class="fw-bold mt-1" style="font-size: 3.5rem; font-family: 'DM Serif Display', serif; line-height: 1.1;">Un buen combo,<br>un gran día.</h1>
+        <p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; max-width: 600px;">Elige tu antojo. La pasión, la bebida y el postre van por nuestra cuenta.</p>
+    </div>
+</div>
+
+<!-- Filtros de Categorías -->
+<div class="d-flex gap-2 overflow-auto pb-3 mb-4 border-bottom border-light" style="white-space: nowrap;">
+    <button class="filter-btn active" onclick="filtrarCategoria('all', this)">Todos los antojos</button>
+    {% for categoria in categorias %}
+        <button class="filter-btn" onclick="filtrarCategoria('{{ categoria.id }}', this)">{{ categoria.nombre }}</button>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <!-- Columna Izquierda: Menú y Tarjetas -->
+    <div class="col-lg-8">
+        
+        {% if es_adicional %}
+            <div class="alert alert-warning border-0 rounded-3 mb-4" style="background-color: #FEF3C7; color: #92400E;">
+                <i class="bi bi-info-circle-fill me-2"></i> Agregando al Pedido <strong>#{{ pedido.numero }}</strong> ({% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %})
+            </div>
+        {% endif %}
+
+        <div class="row row-cols-1 row-cols-md-2 g-4 mb-5" id="contenedor-menu">
+            {% for producto in productos %}
+                <div class="col producto-item" data-categoria="{{ producto.categoria.id }}">
+                    <div class="card product-card" onclick='abrirModal({{ producto.id }})' style="cursor: pointer;">
+                        <div class="img-container">
+                            {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" class="product-img" alt="{{ producto.nombre }}">
+                            {% else %}
+                                <div class="d-flex justify-content-center align-items-center h-100 bg-light text-muted">
+                                    <i class="bi bi-image" style="font-size: 2.5rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div class="badge-top-left">{{ producto.categoria.nombre }}</div>
+                            <div class="badge-top-right"><i class="bi bi-star-fill text-warning"></i> Popular</div>
+                        </div>
+                        
+                        <div class="product-body">
+                            <h5 class="product-title">{{ producto.nombre }}</h5>
+                            <p class="product-desc">{{ producto.descripcion|default:"Preparado al momento con ingredientes frescos de la mejor calidad." }}</p>
+                            
+                            <div class="product-footer">
+                                <div class="price-text">
+                                    ${{ producto.precio }} <small>COP</small>
+                                </div>
+                                <button class="btn-add-small">
+                                    Añadir <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Columna Derecha: Carrito Lateral -->
+    <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="cart-card sticky-top p-4" style="top: 20px; z-index: 100;" id="carritoContenedor">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0" style="font-family: 'DM Serif Display', serif; font-weight: 700;">Tu pedido</h4>
+                <span class="badge bg-danger rounded-circle p-2" id="contadorItems" style="display:none;">0</span>
+            </div>
+
+            <!-- Pestañas Principales -->
+            <div class="cart-tabs mb-3">
+                <div class="cart-tab active" id="tab-local" onclick="cambiarTipoPedido('local')">En el local</div>
+                <div class="cart-tab" id="tab-llevar" onclick="cambiarTipoPedido('llevar')">Para llevar</div>
+            </div>
+            
+            {% if not es_adicional %}
+                <div class="mb-4">
+                    <!-- Input oculto para Django -->
+                    <input type="hidden" id="tipoPedido" value="mesa">
+                    
+                    <!-- 1. Contenedor para Mesa (Local) -->
+                    <div id="container-mesa">
+                        <input type="number" id="numeroMesa" class="form-control bg-light border-0" placeholder="Número de mesa" min="1" style="font-size: 0.9rem;">
+                        <!-- Mensaje de error elegante -->
+                        <div id="error-mesa" class="text-danger small mt-1 fw-bold" style="display: none;">
+                            <i class="bi bi-exclamation-circle-fill"></i> Por favor, ingresa el número de mesa.
+                        </div>
+                    </div>
+
+                    <!-- 2. Contenedor para Para Llevar (Recoger o Domicilio) -->
+                    <div id="container-llevar" style="display: none;">
+                        <div class="d-flex gap-2 mb-3 bg-light p-1 rounded-3">
+                            <button type="button" class="btn btn-sm w-50 fw-bold border-0 text-dark" id="btn-recoger" onclick="cambiarSubtipoLlevar('recoger')" style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">Recoger en local</button>
+                            <button type="button" class="btn btn-sm w-50 fw-bold border-0 text-muted" id="btn-domicilio" onclick="cambiarSubtipoLlevar('domicilio')">Enviar a domicilio</button>
+                        </div>
+                        
+                        <div id="container-direccion" style="display: none;">
+                            <input type="text" id="direccionDomicilio" class="form-control bg-light border-0" placeholder="Escribe la dirección de entrega..." style="font-size: 0.9rem;">
+                            <!-- Mensaje de error elegante -->
+                            <div id="error-direccion" class="text-danger small mt-1 fw-bold" style="display: none;">
+                                <i class="bi bi-exclamation-circle-fill"></i> La dirección es obligatoria para domicilios.
+                            </div>
+                        </div>
+
+                        <!-- NUEVO: Interruptor de Icopor -->
+                        <div class="icopor-switch-container mt-3 form-check form-switch d-flex align-items-center">
+                            <input class="form-check-input m-0 me-2" type="checkbox" role="switch" id="switchIcopor" onchange="actualizarCarrito()">
+                            <label class="form-check-label small fw-bold text-dark mb-0" for="switchIcopor">
+                                Incluir caja de icopor <span class="text-success">(+ $1.000)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="bg-light p-3 mb-4 rounded-1 border">
+                    <span class="d-block fw-bold small text-dark">Pedido #{{ pedido.numero }}</span>
+                    <small class="text-muted">
+                        {% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %}
+                    </small>
+                </div>
+            {% endif %}
+
+            <ul id="listaCarrito" class="list-group list-group-flush mb-4">
+                <li class="list-group-item text-muted text-center py-4 border-0 bg-transparent" id="carritoVacio">
+                    <i class="bi bi-basket" style="font-size: 2rem; color: #D1D5DB;"></i>
+                    <p class="mt-2 mb-0 small">Aún no has agregado nada</p>
+                </li>
+            </ul>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Subtotal</span>
+                <span class="fw-bold small" id="subtotalTexto">$0</span>
+            </div>
+
+            <!-- NUEVO: Fila de icopor (se oculta si no se selecciona) -->
+            <div class="d-flex justify-content-between mb-2" id="filaIcopor" style="display: none !important;">
+                <span class="text-muted small">Caja de icopor</span>
+                <span class="fw-bold small text-success">$1.000</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted small">Impuestos (incluidos)</span>
+                <span class="fw-bold small">$0</span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4 pt-3 border-top">
+                <h5 class="mb-0 fw-bold">Total</h5>
+                <h3 class="mb-0 fw-bold" id="totalPedido" style="font-family: 'DM Serif Display', serif;">$0</h3>
+            </div>
+
+            <!-- Alerta para cuando el carrito está vacío -->
+            <div id="error-carrito" class="alert alert-warning border-0 rounded-3 py-2 px-3 fw-bold text-center" style="display: none; background-color: #FEF3C7; color: #92400E; font-size: 0.85rem;">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> Debes agregar al menos un producto.
+            </div>
+
+            <button class="btn btn-primary-custom w-100 py-3 d-flex justify-content-center align-items-center gap-2" onclick="enviarPedido()">
+                Confirmar pedido <i class="bi bi-arrow-right"></i>
+            </button>
+            <div class="text-center mt-3">
+                <small class="text-muted"><i class="bi bi-shield-check"></i> Pago 100% seguro</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE PERSONALIZACIÓN -->
+<div class="modal fade" id="modalPersonalizar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h4 class="modal-title fw-bold" id="modalTitulo" style="font-family: 'DM Serif Display', serif;">Personalizar</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <input type="hidden" id="modalProductoId">
+                
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Cantidad</label>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('modalCantidad').stepDown()">-</button>
+                        <input type="number" id="modalCantidad" class="form-control text-center fw-bold fs-5" value="1" min="1">
+                        <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('modalCantidad').stepUp()">+</button>
+                    </div>
+                </div>
+
+                <div id="contenedorIngredientes" class="mb-4"></div>
+
+                <div class="mb-2">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Notas (Opcional)</label>
+                    <input type="text" id="modalObservacion" class="form-control bg-light border-0" placeholder="Ej: término medio, sin salsa...">
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                <button type="button" class="btn btn-light w-50 py-2 border" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-custom w-50" onclick="agregarAlCarrito()">Añadir al pedido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variables globales para la lógica de entrega
+    let tipoEntregaReal = 'mesa'; 
+    let subtipoLlevar = 'recoger'; 
+
+    // Lógica para filtrar las categorías
+    function filtrarCategoria(categoriaId, btnElement) {
+        const botones = document.querySelectorAll('.filter-btn');
+        botones.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        const items = document.querySelectorAll('.producto-item');
+        items.forEach(item => {
+            if (categoriaId === 'all' || item.getAttribute('data-categoria') === categoriaId) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Lógica para las pestañas principales (Local / Llevar)
+    function cambiarTipoPedido(tipo) {
+        const tabLocal = document.getElementById('tab-local');
+        const tabLlevar = document.getElementById('tab-llevar');
+        const inputTipo = document.getElementById('tipoPedido');
+        const containerMesa = document.getElementById('container-mesa');
+        const containerLlevar = document.getElementById('container-llevar');
+        const inputMesa = document.getElementById('numeroMesa');
+        const inputDireccion = document.getElementById('direccionDomicilio');
+        const switchIcopor = document.getElementById('switchIcopor');
+
+        // Limpiar errores al cambiar de pestaña
+        if(document.getElementById('error-mesa')) document.getElementById('error-mesa').style.display = 'none';
+        if(document.getElementById('error-direccion')) document.getElementById('error-direccion').style.display = 'none';
+        if(inputMesa) inputMesa.classList.remove('is-invalid');
+        if(inputDireccion) inputDireccion.classList.remove('is-invalid');
+
+        if (tipo === 'local') {
+            tipoEntregaReal = 'mesa';
+            if(inputTipo) inputTipo.value = 'mesa';
+            containerMesa.style.display = 'block';
+            containerLlevar.style.display = 'none';
+            
+            tabLocal.classList.add('active');
+            tabLlevar.classList.remove('active');
+            
+            if(inputMesa) inputMesa.required = true;
+            if(inputDireccion) inputDireccion.required = false;
+            
+            // Desmarcamos el icopor si estaba marcado
+            if (switchIcopor) switchIcopor.checked = false;
+            
+        } else if (tipo === 'llevar') {
+            tipoEntregaReal = 'llevar';
+            if(inputTipo) inputTipo.value = 'llevar';
+            containerMesa.style.display = 'none';
+            containerLlevar.style.display = 'block';
+            
+            tabLlevar.classList.add('active');
+            tabLocal.classList.remove('active');
+            
+            if(inputMesa) {
+                inputMesa.required = false;
+                inputMesa.value = '';
+            }
+            
+            // Por defecto seleccionamos "Recoger"
+            cambiarSubtipoLlevar('recoger');
+        }
+        
+        // Actualizamos el carrito para reflejar el cambio de icopor
+        actualizarCarrito();
+    }
+
+    // Lógica para Recoger / Domicilio dentro de "Para llevar"
+    function cambiarSubtipoLlevar(subtipo) {
+        subtipoLlevar = subtipo;
+        const btnRecoger = document.getElementById('btn-recoger');
+        const btnDomicilio = document.getElementById('btn-domicilio');
+        const containerDireccion = document.getElementById('container-direccion');
+        const inputDireccion = document.getElementById('direccionDomicilio');
+        const errorDireccion = document.getElementById('error-direccion');
+
+        // Limpiar error al cambiar de subtipo
+        if(errorDireccion) errorDireccion.style.display = 'none';
+        if(inputDireccion) inputDireccion.classList.remove('is-invalid');
+
+        if (subtipo === 'recoger') {
+            btnRecoger.style.background = 'white';
+            btnRecoger.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+            btnRecoger.classList.add('text-dark');
+            btnRecoger.classList.remove('text-muted');
+
+            btnDomicilio.style.background = 'transparent';
+            btnDomicilio.style.boxShadow = 'none';
+            btnDomicilio.classList.add('text-muted');
+            btnDomicilio.classList.remove('text-dark');
+
+            containerDireccion.style.display = 'none';
+            if(inputDireccion) {
+                inputDireccion.required = false;
+                inputDireccion.value = '';
+            }
+        } else {
+            btnDomicilio.style.background = 'white';
+            btnDomicilio.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+            btnDomicilio.classList.add('text-dark');
+            btnDomicilio.classList.remove('text-muted');
+
+            btnRecoger.style.background = 'transparent';
+            btnRecoger.style.boxShadow = 'none';
+            btnRecoger.classList.add('text-muted');
+            btnRecoger.classList.remove('text-dark');
+
+            containerDireccion.style.display = 'block';
+            if(inputDireccion) inputDireccion.required = true;
+        }
+    }
+
+    // Variables para el carrito
+    let carrito = [];
+    let productos = {};
+
+    {% for p in productos %}
+        productos[{{ p.id }}] = {
+            nombre: "{{ p.nombre|escapejs }}",
+            precio: parseFloat({{ p.precio }}),
+            imagen: "{% if p.imagen %}{{ p.imagen.url }}{% else %}{% endif %}",
+            ingredientes: [
+                {% for pi in p.ingredientes.all %}
+                    {% if pi.removible %}
+                        { id: {{ pi.ingrediente.id }}, nombre: "{{ pi.ingrediente.nombre|escapejs }}" },
+                    {% endif %}
+                {% endfor %}
+            ]
+        };
+    {% endfor %}
+
+    function abrirModal(id) {
+        document.getElementById('modalProductoId').value = id;
+        document.getElementById('modalTitulo').innerText = productos[id].nombre;
+        document.getElementById('modalCantidad').value = 1;
+        document.getElementById('modalObservacion').value = '';
+        
+        const contenedor = document.getElementById('contenedorIngredientes');
+        contenedor.innerHTML = '';
+        const ings = productos[id].ingredientes;
+        
+        if (ings.length > 0) {
+            contenedor.innerHTML = '<label class="form-label small fw-bold text-muted text-uppercase d-block mb-2">Quitar ingredientes:</label>';
+            ings.forEach(ing => {
+                contenedor.innerHTML += `
+                    <div class="form-check custom-checkbox">
+                        <input class="form-check-input" type="checkbox" value="${ing.id}" id="ing_${ing.id}">
+                        <label class="form-check-label small fw-medium" for="ing_${ing.id}">Sin ${ing.nombre}</label>
+                    </div>
+                `;
+            });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('modalPersonalizar'));
+        modal.show();
+    }
+
+    function agregarAlCarrito() {
+        const id = document.getElementById('modalProductoId').value;
+        const cantidad = parseInt(document.getElementById('modalCantidad').value);
+        const observacion = document.getElementById('modalObservacion').value;
+        
+        const checkboxes = document.querySelectorAll('#contenedorIngredientes input:checked');
+        const ingredientesQuitados = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+        carrito.push({
+            id: id,
+            nombre: productos[id].nombre,
+            precio: productos[id].precio,
+            imagen: productos[id].imagen,
+            cantidad: cantidad,
+            observacion: observacion,
+            ingredientes_quitados: ingredientesQuitados
+        });
+
+        bootstrap.Modal.getInstance(document.getElementById('modalPersonalizar')).hide();
+        actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+        const lista = document.getElementById('listaCarrito');
+        const totalElement = document.getElementById('totalPedido');
+        const subtotalElement = document.getElementById('subtotalTexto');
+        const contador = document.getElementById('contadorItems');
+        const filaIcopor = document.getElementById('filaIcopor');
+        const switchIcopor = document.getElementById('switchIcopor');
+        
+        lista.innerHTML = '';
+        let total = 0;
+        let totalItems = 0;
+
+        if (carrito.length === 0) {
+            lista.innerHTML = `
+                <li class="list-group-item text-muted text-center py-4 border-0 bg-transparent" id="carritoVacio">
+                    <i class="bi bi-basket" style="font-size: 2rem; color: #D1D5DB;"></i>
+                    <p class="mt-2 mb-0 small">Aún no has agregado nada</p>
+                </li>`;
+            totalElement.innerText = '$0';
+            subtotalElement.innerText = '$0';
+            contador.style.display = 'none';
+            
+            if(filaIcopor) filaIcopor.style.setProperty('display', 'none', 'important');
+            return;
+        }
+
+        contador.style.display = 'inline-block';
+
+        carrito.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad;
+            total += subtotal;
+            totalItems += item.cantidad;
+            
+            let obsHtml = item.observacion ? `<br><small class="text-muted fst-italic">"${item.observacion}"</small>` : '';
+            let imgSrc = item.imagen ? item.imagen : 'https://via.placeholder.com/50?text=Img';
+
+            lista.innerHTML += `
+                <li class="list-group-item px-0 py-3 bg-transparent border-0">
+                    <div class="cart-item">
+                        <img src="${imgSrc}" class="cart-item-img" alt="${item.nombre}">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1 fw-bold" style="font-size: 0.9rem;">${item.nombre}</h6>
+                                <span class="fw-bold" style="font-size: 0.9rem;">$${subtotal}</span>
+                            </div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">${item.cantidad}x</small>
+                            ${obsHtml}
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
+                                <div class="input-group input-group-sm" style="width: 90px;">
+                                    <button class="btn btn-outline-secondary py-0 px-2" onclick="cambiarCantidad(${index}, -1)">-</button>
+                                    <span class="form-control text-center py-0 px-1 bg-transparent border-0">${item.cantidad}</span>
+                                    <button class="btn btn-outline-secondary py-0 px-2" onclick="cambiarCantidad(${index}, 1)">+</button>
+                                </div>
+                                <button class="btn btn-sm text-danger p-0" onclick="eliminarDelCarrito(${index})" title="Quitar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            `;
+        });
+
+        // Verificamos si el switch de icopor está visible y marcado
+        let costoIcopor = 0;
+        if (switchIcopor && switchIcopor.checked) {
+            costoIcopor = 1000;
+            if(filaIcopor) filaIcopor.style.setProperty('display', 'flex', 'important');
+        } else {
+            if(filaIcopor) filaIcopor.style.setProperty('display', 'none', 'important');
+        }
+
+        const totalFinal = total + costoIcopor;
+
+        contador.innerText = totalItems;
+        subtotalElement.innerText = '$' + total.toLocaleString('es-CO');
+        totalElement.innerText = '$' + totalFinal.toLocaleString('es-CO');
+    }
+
+    function cambiarCantidad(index, delta) {
+        carrito[index].cantidad += delta;
+        if (carrito[index].cantidad <= 0) {
+            carrito.splice(index, 1);
+        }
+        actualizarCarrito();
+    }
+
+    function eliminarDelCarrito(index) {
+        carrito.splice(index, 1);
+        actualizarCarrito();
+    }
+
+    function enviarPedido() {
+        const errorCarrito = document.getElementById('error-carrito');
+
+        if (carrito.length === 0) {
+            // Mostramos el mensaje elegante
+            errorCarrito.style.display = 'block';
+            
+            // Hacemos una pequeña animación de "sacudida"
+            errorCarrito.style.transform = 'translateX(5px)';
+            setTimeout(() => errorCarrito.style.transform = 'translateX(-5px)', 100);
+            setTimeout(() => errorCarrito.style.transform = 'translateX(0)', 200);
+
+            // Lo ocultamos después de 3 segundos
+            setTimeout(() => {
+                errorCarrito.style.display = 'none';
+            }, 3000);
+            
+            return;
+        }
+
+        // Si hay productos, nos aseguramos de que el mensaje esté oculto
+        errorCarrito.style.display = 'none';
+
+        let tipo = 'mesa';
+        let numeroMesa = null;
+        let direccion = '';
+        let formularioValido = true;
+
+        {% if not es_adicional %}
+            // Limpiamos errores previos visualmente de mesa y dirección
+            document.getElementById('error-mesa').style.display = 'none';
+            document.getElementById('error-direccion').style.display = 'none';
+            document.getElementById('numeroMesa').classList.remove('is-invalid');
+            document.getElementById('direccionDomicilio').classList.remove('is-invalid');
+
+            tipo = document.getElementById('tipoPedido').value;
+            numeroMesa = document.getElementById('numeroMesa').value;
+            
+            // Validaciones elegantes
+            if (tipo === 'mesa' && !numeroMesa) {
+                document.getElementById('error-mesa').style.display = 'block';
+                document.getElementById('numeroMesa').classList.add('is-invalid');
+                document.getElementById('numeroMesa').focus();
+                formularioValido = false;
+            }
+            
+            if (tipo === 'llevar' && subtipoLlevar === 'domicilio') {
+                direccion = document.getElementById('direccionDomicilio').value.trim();
+                if (!direccion) {
+                    document.getElementById('error-direccion').style.display = 'block';
+                    document.getElementById('direccionDomicilio').classList.add('is-invalid');
+                    document.getElementById('direccionDomicilio').focus();
+                    formularioValido = false;
+                }
+            }
+        {% endif %}
+
+        // Si falta algo, detenemos el envío
+        if (!formularioValido) {
+            return; 
+        }
+
+        // Verificamos el estado del switch del icopor
+        const switchIcopor = document.getElementById('switchIcopor');
+        const cobrar_icopor = (switchIcopor && switchIcopor.checked) ? true : false;
+
+        const data = {
+            tipo: tipo,
+            numero_mesa: numeroMesa,
+            direccion: direccion, 
+            observaciones: '', 
+            cobrar_icopor: cobrar_icopor, // <-- Enviamos el dato a Django
+            carrito: carrito
+        };
+
+        const urlDestino = {% if es_adicional %} '/pedido/{{ pedido.id }}/agregar/' {% else %} '' {% endif %};
+
+        const btn = document.querySelector('button[onclick="enviarPedido()"]');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
+        btn.disabled = true;
+
+        fetch(urlDestino, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                window.location.href = '/ticket/' + data.pedido_id + '/';
+            } else {
+                alert('Error: ' + data.message);
+                btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error al guardar el pedido');
+            btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
+            btn.disabled = false;
+        });
+    }
+</script>
+{% endblock %}

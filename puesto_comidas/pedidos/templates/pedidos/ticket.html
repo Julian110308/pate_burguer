@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket #{{ pedido.numero }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        /* Ajustes para que se vea perfecto dentro del iframe y al imprimir */
+        body {
+            background-color: #F3F4F6; 
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ticket-wrapper {
+            background-color: white;
+            width: 100%;
+            max-width: 380px;
+            padding: 2rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .ticket-content {
+            font-family: 'Courier New', Courier, monospace;
+            color: #111;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        .text-muted { color: #6B7280; }
+        
+        .divider-dashed {
+            border-top: 1px dashed #9CA3AF;
+            margin: 15px 0;
+        }
+        
+        .ticket-header-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #A63A25;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .ticket-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .ticket-items {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .ticket-items th {
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #6B7280;
+            border-bottom: 1px dashed #9CA3AF;
+            padding-bottom: 8px;
+        }
+        .ticket-items th.text-right, .ticket-items td.text-right {
+            text-align: right;
+        }
+        .ticket-items td {
+            padding: 8px 0;
+            vertical-align: top;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .payment-box {
+            border: 2px dashed #9CA3AF;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .barcode {
+            height: 40px;
+            background: repeating-linear-gradient(
+                to right, #111, #111 2px, transparent 2px, transparent 4px,
+                #111 4px, #111 6px, transparent 6px, transparent 10px,
+                #111 10px, #111 12px, transparent 12px, transparent 14px
+            );
+            margin: 20px 0 5px 0;
+        }
+
+        /* Estilos exclusivos para cuando se manda a la impresora */
+        @media print {
+            body { 
+                background-color: white; 
+                padding: 0; 
+                display: block;
+            }
+            .ticket-wrapper { 
+                box-shadow: none; 
+                margin: 0; 
+                padding: 0; 
+                max-width: 100%; 
+                width: 100%;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket-wrapper">
+        <div class="ticket-content">
+            
+            <!-- Cabecera -->
+            <div class="text-center">
+                <div class="ticket-header-logo">
+                    <i class="bi bi-fire"></i> {{ config.nombre|default:"Pate Burguer" }}
+                </div>
+                <div class="text-muted small">
+                    {% if config.direccion %}{{ config.direccion }}<br>{% endif %}
+                    {% if config.telefono %}Tel: {{ config.telefono }}{% endif %}
+                </div>
+                
+                <div class="divider-dashed"></div>
+                
+                <div class="text-muted small">PEDIDO</div>
+                <div class="ticket-number">#{{ pedido.numero }}</div>
+            </div>
+
+            <!-- Metadatos -->
+            <table class="w-100" style="font-size: 12px;">
+                <tr>
+                    <td class="fw-bold">FECHA</td>
+                    <td class="text-right">{{ pedido.fecha_hora|date:"d/m/Y" }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">HORA</td>
+                    <td class="text-right">{{ pedido.fecha_hora|time:"H:i" }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">SERVICIO</td>
+                    <td class="text-right">
+                        {% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %}
+                        {% if pedido.direccion_entrega %}<br>({{ pedido.direccion_entrega }}){% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">MESERO</td>
+                    <td class="text-right">{{ pedido.mesero.username }}</td>
+                </tr>
+            </table>
+
+            <div class="divider-dashed"></div>
+
+            <!-- Tabla de Productos -->
+            <table class="ticket-items">
+                <thead>
+                    <tr>
+                        <th>CANT. · PRODUCTO</th>
+                        <th class="text-right">VALOR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in detalles %}
+                        <tr>
+                            <td>
+                                <span class="fw-bold">{{ detalle.cantidad }}x</span> {{ detalle.producto.nombre }}
+                                
+                                {% if detalle.ingredientes_quitados_rel.all %}
+                                    <br><span class="text-muted" style="font-size: 11px;">SIN: 
+                                    {% for ing in detalle.ingredientes_quitados_rel.all %}
+                                        {{ ing.ingrediente.nombre }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                    </span>
+                                {% endif %}
+
+                                {% if detalle.observacion %}
+                                    <br><span class="text-muted" style="font-size: 11px;">Obs: {{ detalle.observacion }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right fw-bold">
+                                ${{ detalle.subtotal }}
+                                <br><span class="text-muted" style="font-size: 11px; font-weight: normal;">${{ detalle.precio_unitario }} c/u</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="divider-dashed"></div>
+
+            <!-- Totales -->
+            <div class="d-flex justify-content-between text-muted">
+                <span>Productos</span>
+                <span>{{ detalles|length }}</span>
+            </div>
+            
+            <!-- Subtotal de productos puros -->
+            <div class="d-flex justify-content-between text-muted">
+                <span>Subtotal productos</span>
+                <span>${{ pedido.total_productos }}</span>
+            </div>
+
+            <!-- NUEVO: Si se cobró el icopor, lo mostramos aquí -->
+            {% if pedido.cobrar_icopor %}
+            <div class="d-flex justify-content-between text-muted">
+                <span>Caja de icopor</span>
+                <span>$1.000</span>
+            </div>
+            {% endif %}
+
+            <div class="divider-dashed"></div>
+
+            <div class="total-row">
+                <span>TOTAL</span>
+                <span>${{ pedido.total }}</span>
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="payment-box">
+                <span>MÉTODO DE PAGO</span>
+                <span>
+                    {% if pedido.metodo_pago %}
+                        {{ pedido.get_metodo_pago_display|upper }}
+                    {% else %}
+                        PENDIENTE
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Footer del Ticket -->
+            <div class="text-center mt-4">
+                <p class="fw-bold mb-1">¡Gracias por su compra!</p>
+                <p class="text-muted mb-0">Vuelva pronto · {{ config.nombre|default:"Pate Burguer" }}</p>
+                
+                <div class="barcode"></div>
+                <div class="text-muted" style="letter-spacing: 2px; font-size: 11px;">{{ pedido.numero }} - {{ pedido.fecha_hora|date:"dmy" }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BARRA DE ACCIONES (Solo visible si se abre de forma independiente) -->
+    <div class="action-bar" id="action-bar" style="display: none;">
+        <button onclick="window.print()" class="btn btn-dark w-100 rounded-3 fw-bold py-3 mb-2 shadow">
+            <i class="bi bi-printer"></i> Imprimir Ticket
+        </button>
+        <a href="{% url 'pedidos_activos' %}" class="btn btn-light border w-100 rounded-3 fw-bold py-2 shadow-sm">
+            <i class="bi bi-arrow-left"></i> Volver a pedidos
+        </a>
+    </div>
+
+    <script>
+        // Verificamos si el ticket se está viendo dentro de un iframe (el modal)
+        // o si se abrió de forma independiente en una pestaña.
+        document.addEventListener('DOMContentLoaded', function() {
+            const enIframe = window.self !== window.top;
+            const actionBar = document.getElementById('action-bar');
+            
+            if (!enIframe) {
+                // Si NO estamos en un iframe, mostramos los botones
+                actionBar.style.display = 'block';
+                
+                // Estilos para que flote sobre el fondo
+                actionBar.style.position = 'fixed';
+                actionBar.style.bottom = '20px';
+                actionBar.style.left = '50%';
+                actionBar.style.transform = 'translateX(-50%)';
+                actionBar.style.width = '100%';
+                actionBar.style.maxWidth = '380px';
+                actionBar.style.zIndex = '1000';
+            }
+        });
+    </script>
+</body>
+</html>

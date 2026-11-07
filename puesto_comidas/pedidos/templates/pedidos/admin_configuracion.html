@@ -1,0 +1,48 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Ajustes</span>
+            <h2 class="fw-bold mt-1" style="font-family: 'DM Serif Display', serif;">Configuración del Negocio</h2>
+            <p class="text-muted">Estos datos aparecerán impresos en los tickets de los clientes.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="card card-custom p-4 shadow-sm">
+            {% csrf_token %}
+            
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Nombre del Negocio</label>
+                    <input type="text" name="nombre" class="form-control bg-light border-0" value="{{ config.nombre }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control bg-light border-0" value="{{ config.telefono|default:'' }}">
+                </div>
+                <div class="col-12">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Dirección</label>
+                    <input type="text" name="direccion" class="form-control bg-light border-0" value="{{ config.direccion|default:'' }}">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-muted text-uppercase">Logo (Opcional)</label>
+                {% if config.logo %}
+                    <div class="mb-2">
+                        <img src="{{ config.logo.url }}" alt="Logo actual" style="height: 60px; border-radius: 8px;">
+                    </div>
+                {% endif %}
+                <input type="file" name="logo" class="form-control bg-light border-0" accept="image/*">
+                <small class="text-muted">Sube un logo para reemplazar el actual.</small>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                <a href="{% url 'dashboard_admin' %}" class="btn btn-light border">Volver al Panel</a>
+                <button type="submit" class="btn btn-primary-custom px-4">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

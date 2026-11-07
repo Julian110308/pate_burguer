@@ -1,0 +1,610 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    body { background-color: #FCFAF8; }
+
+    /* KPIs Superiores */
+    .kpi-box {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+    }
+    .kpi-box.dark { background: #2D2A26; color: white; border: none; }
+    .kpi-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+    .kpi-box.dark .kpi-title { color: #A8A29E; }
+    .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 700; margin-top: 5px; line-height: 1; }
+
+    /* Barra de búsqueda y filtros */
+    .search-bar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        max-width: 300px;
+    }
+    .search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 10px; font-size: 0.9rem; }
+
+    .filter-pill {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .filter-pill.active { background: #2D2A26; color: white; border-color: #2D2A26; }
+    .filter-pill .badge { background: #F3F4F6; color: #1F2937; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-left: 5px; }
+    .filter-pill.active .badge { background: rgba(255,255,255,0.2); color: white; }
+
+    /* Tarjetas de Personal */
+    .staff-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.2s;
+    }
+    .staff-card:hover { border-color: #D1D5DB; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+
+    .avatar-initials {
+        width: 45px; height: 45px; border-radius: 8px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.4rem; font-weight: bold; color: white; position: relative;
+    }
+    
+    .status-indicator {
+        position: absolute; bottom: -2px; right: -2px;
+        width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;
+    }
+    .status-online { background: #10B981; }
+    .status-offline { background: #9CA3AF; }
+
+    .role-badge { font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .role-mesero { background: #F3F4F6; color: #4B5563; }
+    .role-admin { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+
+    /* Mini métricas dentro de la tarjeta */
+    .mini-stats { display: flex; background: #F9F8F6; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1rem; }
+    .mini-stat { flex: 1; padding: 8px; text-align: center; border-right: 1px solid var(--border-color); }
+    .mini-stat:last-child { border-right: none; }
+    .mini-stat .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 2px; }
+    .mini-stat .value { font-size: 0.9rem; font-weight: bold; color: var(--text-main); }
+
+    .btn-action-icon {
+        background: white; border: 1px solid var(--border-color); color: var(--text-muted);
+        width: 36px; height: 36px; border-radius: 8px;
+        display: flex; justify-content: center; align-items: center; transition: all 0.2s;
+    }
+    .btn-action-icon:hover { background: #F3F4F6; color: var(--text-main); }
+    
+    /* Empty state de agregar */
+    .add-staff-card {
+        background: #FCFAF8; border: 2px dashed var(--border-color); border-radius: 12px;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        height: 100%; min-height: 200px; cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+    }
+    .add-staff-card:hover { border-color: var(--text-main); color: var(--text-main); background: white; }
+    .add-icon-circle {
+        width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid var(--border-color);
+        display: flex; justify-content: center; align-items: center; margin-bottom: 10px; font-size: 1.2rem;
+    }
+
+    /* --- ESTILOS DEL MODAL --- */
+    .premium-modal-content { border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); background-color: #FCFBF9; }
+    .premium-input-group { position: relative; margin-bottom: 0.25rem; }
+    .premium-input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-size: 1.1rem; }
+    .premium-input-group input { padding-left: 45px; background-color: white; border: 1px solid #E5E1DA; border-radius: 10px; height: 48px; }
+    .premium-input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1); }
+
+    .role-radio { display: none; }
+    .role-payment-card {
+        background: white; border: 2px solid var(--border-color); border-radius: 12px; padding: 1.25rem;
+        cursor: pointer; transition: all 0.2s ease; position: relative; display: flex; flex-direction: column; height: 100%;
+    }
+    .role-payment-card:hover { border-color: #D1D5DB; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+    .role-radio:checked + .role-payment-card { border-color: #10B981; background-color: #F0FDF4; }
+    
+    .role-icon-box {
+        width: 40px; height: 40px; background: #F3F4F6; border-radius: 8px;
+        display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: #4B5563; transition: all 0.2s;
+    }
+    .role-radio:checked + .role-payment-card .role-icon-box { background: #10B981; color: white; }
+
+    .check-circle-role {
+        position: absolute; top: 1rem; right: 1rem; width: 24px; height: 24px;
+        border-radius: 50%; border: 2px solid #D1D5DB; display: flex; justify-content: center; align-items: center; background: white;
+    }
+    .check-circle-role i { color: white; font-size: 0.8rem; display: none; }
+    .role-radio:checked + .role-payment-card .check-circle-role { background: #10B981; border-color: #10B981; }
+    .role-radio:checked + .role-payment-card .check-circle-role i { display: block; }
+
+    /* Barras de seguridad de contraseña */
+    .password-strength { display: flex; gap: 5px; margin-top: 8px; }
+    .strength-bar { height: 4px; flex: 1; background: #E5E1DA; border-radius: 2px; transition: all 0.3s; }
+</style>
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
+    <div>
+        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Equipo</span>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.8rem;">Personal</h1>
+        <p class="text-muted mb-0">Gestiona quién tiene acceso al sistema y cómo va cada uno hoy.</p>
+    </div>
+    <button class="btn btn-primary-custom px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalNuevoMesero">
+        <i class="bi bi-person-plus"></i> Nuevo mesero
+    </button>
+</div>
+
+<!-- KPIs Superiores -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="kpi-box dark">
+            <div class="kpi-title">Integrantes</div>
+            <div class="kpi-value">{{ total_integrantes }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-box">
+            <div class="kpi-title">Meseros</div>
+            <div class="kpi-value">{{ total_meseros }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-box">
+            <div class="kpi-title">En turno ahora</div>
+            <div class="kpi-value">{{ meseros_en_turno }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-box">
+            <div class="kpi-title">Pedidos hoy</div>
+            <div class="kpi-value">{{ pedidos_totales_hoy }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Búsqueda y Filtros -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="search-bar">
+        <i class="bi bi-search text-muted"></i>
+        <input type="text" placeholder="Buscar por nombre o usuario">
+    </div>
+    
+    <div class="d-flex gap-2">
+        <div class="filter-pill active" onclick="filtrarPersonal('todos', this)">
+            Todos <span class="badge">{{ total_integrantes }}</span>
+        </div>
+        <div class="filter-pill" onclick="filtrarPersonal('mesero', this)">
+            Meseros <span class="badge">{{ total_meseros }}</span>
+        </div>
+        <div class="filter-pill" onclick="filtrarPersonal('admin', this)">
+            Admins <span class="badge">{{ total_admins }}</span>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert">
+                <i class="bi bi-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Lista de Tarjetas de Personal -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="contenedor-personal">
+    
+    {% for data in usuarios_data %}
+        {% with u=data.usuario %}
+        <div class="col staff-item" data-rol="{{ u.rol }}">
+            <div class="staff-card">
+                
+                <!-- Cabecera de la tarjeta -->
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex gap-3 align-items-center">
+                        <!-- Avatar con inicial -->
+                        <div class="avatar-initials" style="background-color: {% if u.rol == 'admin' %}#2D2A26{% else %}#A63A25{% endif %};">
+                            {{ u.first_name|default:u.username|first|upper }}
+                            <div class="status-indicator {% if data.en_turno %}status-online{% else %}status-offline{% endif %}"></div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; font-size: 1.2rem;">{{ u.first_name|default:u.username }}</h5>
+                            <small class="text-muted">@{{ u.username }} · {% if data.en_turno %}En turno{% else %}Fuera de turno{% endif %}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge del Rol -->
+                    <span class="role-badge {% if u.rol == 'admin' %}role-admin{% else %}role-mesero{% endif %}">
+                        {% if u.rol == 'admin' %}<i class="bi bi-shield-lock-fill me-1"></i>{% endif %}{{ u.get_rol_display }}
+                    </span>
+                </div>
+
+                <!-- Mini Métricas -->
+                <div class="mini-stats">
+                    <div class="mini-stat">
+                        <span class="label">Pedidos hoy</span>
+                        <span class="value">{{ data.pedidos_hoy }}</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="label">Último acceso</span>
+                        <span class="value" style="font-size: 0.8rem;">{{ data.ultimo_acceso }}</span>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex gap-2 mt-auto">
+                    {% if u.rol == 'mesero' %}
+                        <button class="btn btn-light border flex-grow-1 fw-bold" style="font-size: 0.85rem;" data-bs-toggle="modal" data-bs-target="#editUser{{ u.id }}">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        
+                        <button class="btn-action-icon" data-bs-toggle="modal" data-bs-target="#resetPass{{ u.id }}" title="Restablecer Contraseña">
+                            <i class="bi bi-key"></i>
+                        </button>
+                        
+                        <form method="post" class="m-0" onsubmit="return confirm('¿Desactivar a {{ u.username }}? Ya no podrá iniciar sesión.');">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="eliminar">
+                            <input type="hidden" name="id" value="{{ u.id }}">
+                            <button type="submit" class="btn-action-icon text-danger" title="Desactivar">
+                                <i class="bi bi-person-x"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-light border-0 text-center w-100 m-0 py-2 rounded-3" style="font-size: 0.75rem; color: #6B7280;">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Cuenta protegida
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- MODALES (Editar y Reset Password) -->
+        {% if u.rol == 'mesero' %}
+        <!-- Modal Editar -->
+        <div class="modal fade" id="editUser{{ u.id }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 16px; border: none;">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="editar">
+                        <input type="hidden" name="id" value="{{ u.id }}">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" style="font-family: 'DM Serif Display', serif;">Editar @{{ u.username }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Nombre</label>
+                                <input type="text" name="first_name" class="form-control bg-light border-0" value="{{ u.first_name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Rol</label>
+                                <select name="rol" class="form-select bg-light border-0">
+                                    <option value="mesero" {% if u.rol == 'mesero' %}selected{% endif %}>Mesero</option>
+                                    <option value="admin" {% if u.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Reset Password -->
+        <div class="modal fade" id="resetPass{{ u.id }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 16px; border: none;">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="reset_password">
+                        <input type="hidden" name="id" value="{{ u.id }}">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" style="font-family: 'DM Serif Display', serif;">Restablecer Contraseña</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <div class="text-center mb-4">
+                                <div class="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-key text-dark" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <p class="text-muted small">Asignando nueva contraseña para <strong>@{{ u.username }}</strong></p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Nueva Contraseña</label>
+                                <input type="password" name="nueva_password" class="form-control bg-light border-0" placeholder="Mínimo 8 caracteres" required minlength="8">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-custom">Guardar Contraseña</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+    {% endfor %}
+
+    <!-- Tarjeta para Agregar Nuevo Mesero -->
+    <div class="col">
+        <div class="add-staff-card" data-bs-toggle="modal" data-bs-target="#modalNuevoMesero">
+            <div class="add-icon-circle">
+                <i class="bi bi-plus-lg"></i>
+            </div>
+            <h6 class="fw-bold mb-0">Agregar mesero</h6>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL PREMIUM: NUEVO MESERO -->
+<div class="modal fade" id="modalNuevoMesero" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content premium-modal-content">
+            <form method="post" id="formNuevoMesero">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear">
+                
+                <div class="modal-header border-bottom-0 pb-0" style="padding: 2rem 2rem 1rem 2rem; display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="width: 55px; height: 55px; background-color: var(--accent-color); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(166, 58, 37, 0.3);">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 1px; color: var(--accent-color) !important;">Equipo</span>
+                        <h3 class="mb-1" style="font-family: 'DM Serif Display', serif;">Nuevo integrante</h3>
+                        <p class="text-muted small mb-0">Crea su acceso para que pueda tomar pedidos.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="padding: 1.5rem 2rem;">
+                    <!-- Sección Datos -->
+                    <div class="d-flex align-items-center text-center mb-3" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                        <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
+                        Datos personales
+                        <hr class="flex-grow-1 ms-3" style="border-color: #E5E1DA; opacity: 1;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Nombre completo *</label>
+                        <div class="premium-input-group">
+                            <i class="bi bi-person"></i>
+                            <input type="text" name="first_name" class="form-control" placeholder="Ej: Juan Pérez" required>
+                        </div>
+                    </div>
+
+                    <!-- Sección Acceso -->
+                    <div class="d-flex align-items-center text-center mb-3 mt-4" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                        <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
+                        Acceso al sistema
+                        <hr class="flex-grow-1 ms-3" style="border-color: #E5E1DA; opacity: 1;">
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark">Usuario *</label>
+                            <div class="premium-input-group">
+                                <i class="bi bi-at"></i>
+                                <input type="text" name="username" id="inputUsername" class="form-control" placeholder="@juanperez" required>
+                            </div>
+                            <div id="errorUsername" class="text-danger small mt-1 fw-bold" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark">Contraseña *</label>
+                            <div class="premium-input-group">
+                                <i class="bi bi-lock"></i>
+                                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mínimo 8 caracteres" required minlength="8">
+                            </div>
+                            <!-- Barra de fortaleza visual -->
+                            <div class="password-strength mt-1">
+                                <div class="strength-bar" id="bar1"></div>
+                                <div class="strength-bar" id="bar2"></div>
+                                <div class="strength-bar" id="bar3"></div>
+                            </div>
+                            <div id="texto-fortaleza" class="text-muted mt-1" style="font-size: 0.7rem;">Mínimo 8 caracteres, incluye letras y números.</div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Rol (Estilo selección de pago) -->
+                    <div class="d-flex align-items-center text-center mb-3 mt-4" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                        <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
+                        Rol
+                        <hr class="flex-grow-1 ms-3" style="border-color: #E5E1DA; opacity: 1;">
+                    </div>
+                    
+                    <div class="row g-3">
+                        <!-- Opción Mesero -->
+                        <div class="col-md-6">
+                            <label class="w-100 cursor-pointer m-0">
+                                <input type="radio" name="rol" value="mesero" class="role-radio" checked>
+                                <div class="role-payment-card">
+                                    <div class="check-circle-role"><i class="bi bi-check-lg"></i></div>
+                                    <div class="role-icon-box">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <h6 class="mb-1 fw-bold mt-2">Mesero</h6>
+                                    <small class="text-muted lh-sm" style="font-size: 0.75rem;">Toma y gestiona pedidos de las mesas.</small>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <!-- Opción Administrador -->
+                        <div class="col-md-6">
+                            <label class="w-100 cursor-pointer m-0">
+                                <input type="radio" name="rol" value="admin" class="role-radio">
+                                <div class="role-payment-card">
+                                    <div class="check-circle-role"><i class="bi bi-check-lg"></i></div>
+                                    <div class="role-icon-box">
+                                        <i class="bi bi-shield-check"></i>
+                                    </div>
+                                    <h6 class="mb-1 fw-bold mt-2">Administrador</h6>
+                                    <small class="text-muted lh-sm" style="font-size: 0.75rem;">Acceso total: equipo, reportes y ajustes.</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-top-0 pt-0 pb-4 px-4 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light border px-4 py-2 rounded-3 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom px-4 py-2 rounded-3 fw-bold d-flex align-items-center gap-2" id="btnGuardarMesero">
+                        <i class="bi bi-check-lg"></i> Crear integrante
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formNuevoMesero = document.getElementById('formNuevoMesero');
+        const inputUsername = document.getElementById('inputUsername');
+        const errorUsername = document.getElementById('errorUsername');
+        const btnGuardar = document.getElementById('btnGuardarMesero');
+
+        if (formNuevoMesero) {
+            formNuevoMesero.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                
+                const username = inputUsername.value.trim();
+                if (!username) return;
+
+                btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Validando...';
+                btnGuardar.disabled = true;
+                errorUsername.style.display = 'none';
+
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                fetch("{% url 'validar_usuario_ajax' %}", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'error') {
+                        errorUsername.innerText = data.message;
+                        errorUsername.className = "text-danger small mt-1 fw-bold";
+                        errorUsername.style.display = 'block';
+                        
+                        btnGuardar.innerHTML = '<i class="bi bi-check-lg"></i> Crear integrante';
+                        btnGuardar.disabled = false;
+                        setTimeout(() => { errorUsername.style.display = 'none'; }, 3000);
+                    } 
+                    else if (data.status === 'reciclar') {
+                        errorUsername.innerText = data.message;
+                        errorUsername.className = "text-success small mt-1 fw-bold";
+                        errorUsername.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            btnGuardar.innerHTML = 'Creando...';
+                            formNuevoMesero.submit();
+                        }, 1000);
+                    }
+                    else {
+                        btnGuardar.innerHTML = 'Creando...';
+                        formNuevoMesero.submit();
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    formNuevoMesero.submit();
+                });
+            });
+        }
+
+        // --- MEDIDOR DE FORTALEZA DE LA CONTRASEÑA ---
+        const inputPassword = document.getElementById('inputPassword');
+        const bar1 = document.getElementById('bar1');
+        const bar2 = document.getElementById('bar2');
+        const bar3 = document.getElementById('bar3');
+        const textoFortaleza = document.getElementById('texto-fortaleza');
+
+        if (inputPassword) {
+            inputPassword.addEventListener('input', function() {
+                const val = this.value;
+                const defaultColor = '#E5E1DA';
+                const colorDebil = '#EF4444'; // Rojo
+                const colorMedia = '#F59E0B'; // Naranja
+                const colorFuerte = '#10B981'; // Verde
+                
+                // Reseteamos las barras
+                bar1.style.background = defaultColor;
+                bar2.style.background = defaultColor;
+                bar3.style.background = defaultColor;
+
+                if (val.length === 0) {
+                    textoFortaleza.innerText = "Mínimo 8 caracteres, incluye letras y números.";
+                    textoFortaleza.style.color = "var(--text-muted)";
+                    return;
+                }
+
+                // Cálculo de fortaleza
+                let fuerza = 0;
+                if (val.length >= 6) fuerza++;
+                if (val.length >= 8) fuerza++;
+                if (/[A-Z]/.test(val) && /[0-9]/.test(val)) fuerza++; 
+
+                if (fuerza === 1) {
+                    bar1.style.background = colorDebil;
+                    textoFortaleza.innerText = "Contraseña débil";
+                    textoFortaleza.style.color = colorDebil;
+                } else if (fuerza === 2) {
+                    bar1.style.background = colorMedia;
+                    bar2.style.background = colorMedia;
+                    textoFortaleza.innerText = "Contraseña media";
+                    textoFortaleza.style.color = colorMedia;
+                } else if (fuerza === 3) {
+                    bar1.style.background = colorFuerte;
+                    bar2.style.background = colorFuerte;
+                    bar3.style.background = colorFuerte;
+                    textoFortaleza.innerText = "Contraseña fuerte";
+                    textoFortaleza.style.color = colorFuerte;
+                }
+            });
+        }
+    });
+
+    // --- FUNCIÓN PARA FILTRAR LAS TARJETAS ---
+    function filtrarPersonal(rol, btnElement) {
+        const botones = document.querySelectorAll('.filter-pill');
+        botones.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        const tarjetas = document.querySelectorAll('.staff-item');
+        tarjetas.forEach(tarjeta => {
+            if (rol === 'todos' || tarjeta.getAttribute('data-rol') === rol) {
+                tarjeta.style.display = 'block';
+            } else {
+                tarjeta.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

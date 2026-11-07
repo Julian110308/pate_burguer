@@ -1,0 +1,337 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<!-- Inyectamos los datos de Django a JavaScript de forma segura -->
+{{ pedidos_json|json_script:"pedidos-data" }}
+
+<style>
+    /* Estilos del Dashboard de Historial */
+    body { background-color: #F8FAFC; }
+
+    .kpi-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .kpi-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .kpi-value {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1E293B;
+        line-height: 1.1;
+    }
+    
+    .kpi-sub {
+        font-size: 0.75rem;
+        color: #94A3B8;
+        margin-top: auto;
+    }
+
+    .filter-pill {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        color: #64748B;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .filter-pill.active {
+        background: #1E293B;
+        color: white;
+        border-color: #1E293B;
+    }
+
+    /* Estilos de la lista de pedidos */
+    .order-list-item {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        cursor: pointer;
+    }
+    .order-list-item:hover { border-color: #CBD5E1; background: #F8FAFC; }
+
+    .order-number { font-family: 'DM Serif Display', serif; font-size: 1.2rem; font-weight: 700; }
+    
+    .status-dot { font-size: 0.6rem; margin-right: 4px; }
+    .text-success-dot { color: #10B981; }
+    .text-warning-dot { color: #F59E0B; }
+    .text-danger-dot { color: #EF4444; }
+
+    /* Panel lateral derecho */
+    .detail-panel {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: sticky;
+        top: 20px;
+        height: calc(100vh - 100px);
+        overflow-y: auto;
+    }
+</style>
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
+    <div>
+        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Registros</span>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.5rem;">Historial de Pedidos</h1>
+        <p class="text-muted mb-0">Revisa cada pedido, qué se vendió, quién lo atendió y cuándo se pagó.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="#" class="btn btn-light border rounded-3 fw-bold"><i class="bi bi-calendar-event me-1"></i> Rango de fecha</a>
+        <a href="#" class="btn btn-dark rounded-3 fw-bold"><i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar</a>
+    </div>
+</div>
+
+<!-- Tarjetas de Métricas (KPIs) -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Ventas</div>
+            <div class="kpi-value">${{ total_ventas|floatformat:"0" }}</div>
+            <div class="kpi-sub text-success"><i class="bi bi-graph-up-arrow"></i> Registro histórico</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Pedidos</div>
+            <div class="kpi-value">{{ total_pedidos }}</div>
+            <div class="kpi-sub">Registrados en este periodo</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Más vendido</div>
+            <div class="kpi-value" style="font-size: 1.2rem; margin-top: 5px;">{{ mas_vendido }}</div>
+            <div class="kpi-sub text-warning"><i class="bi bi-star-fill"></i> {{ mas_vendido_cant }} vendidos</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros por Fecha -->
+<div class="d-flex gap-2 mb-4 overflow-auto pb-2" style="white-space: nowrap;">
+    <a href="?rango=hoy" class="filter-pill {% if rango_actual == 'hoy' %}active{% endif %}">Hoy</a>
+    <a href="?rango=7dias" class="filter-pill {% if rango_actual == '7dias' %}active{% endif %}">7 días</a>
+    <a href="?rango=mes" class="filter-pill {% if rango_actual == 'mes' %}active{% endif %}">Este mes</a>
+    <a href="?rango=todos" class="filter-pill {% if rango_actual == 'todos' %}active{% endif %}">Todos los pedidos</a>
+    
+    <div class="ms-auto d-flex gap-2">
+        <form method="get" class="d-flex">
+            <input type="hidden" name="rango" value="{{ rango_actual }}">
+            <input type="text" name="buscar" class="form-control rounded-pill px-4" placeholder="Buscar #, mesa o mesero..." value="{{ busqueda|default:'' }}" style="min-width: 250px;">
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Lista de Pedidos (Izquierda) -->
+    <div class="col-lg-7">
+        {% for p in pedidos %}
+            <a class="order-list-item" onclick="cargarDetalle(event, {{ p.id }})">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="order-number">#{{ p.numero }}</span>
+                        <span class="text-muted small"><i class="bi bi-clock"></i> {{ p.fecha_hora|date:"H:i" }}</span>
+                        {% if p.tipo == 'mesa' %}
+                            <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt"></i> Mesa {{ p.numero_mesa }}</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark border"><i class="bi bi-bag"></i> Para Llevar</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if p.estado == 'pagado' %}
+                            <span class="small fw-bold text-success"><i class="bi bi-circle-fill status-dot text-success-dot"></i> Pagado</span>
+                        {% elif p.estado == 'entregado' %}
+                            <span class="small fw-bold text-success"><i class="bi bi-check-circle-fill status-dot text-success-dot"></i> Entregado</span>
+                        {% elif p.estado == 'anulado' %}
+                            <span class="small fw-bold text-danger"><i class="bi bi-x-circle-fill status-dot text-danger-dot"></i> Anulado</span>
+                        {% else %}
+                            <span class="small fw-bold text-warning text-dark"><i class="bi bi-circle-fill status-dot text-warning-dot"></i> Pendiente</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        <i class="bi bi-person"></i> {{ p.mesero.username }} <span class="mx-2">·</span> 
+                        <span class="text-truncate" style="max-width: 250px; display: inline-block; vertical-align: bottom;">
+                            {% for d in p.detalles.all|slice:":2" %}
+                                {{ d.cantidad }}x {{ d.producto.nombre }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                            {% if p.detalles.all|length > 2 %}...{% endif %}
+                        </span>
+                    </div>
+                    <h5 class="mb-0 fw-bold text-dark">${{ p.total }}</h5>
+                </div>
+            </a>
+        {% empty %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 text-muted">No se encontraron pedidos</h5>
+            </div>
+        {% endfor %}
+
+        <!-- ===================================== -->
+        <!-- CONTROLES DE PAGINACIÓN               -->
+        <!-- ===================================== -->
+        {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <!-- Botón Anterior -->
+            <div>
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}" class="btn btn-light border fw-bold rounded-3">
+                        <i class="bi bi-chevron-left"></i> Anterior
+                    </a>
+                {% else %}
+                    <button class="btn btn-light border fw-bold rounded-3" disabled style="opacity: 0.5;">
+                        <i class="bi bi-chevron-left"></i> Anterior
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- Indicador de Página -->
+            <span class="text-muted small fw-bold">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            <!-- Botón Siguiente -->
+            <div>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}" class="btn btn-dark fw-bold rounded-3">
+                        Siguiente <i class="bi bi-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <button class="btn btn-dark fw-bold rounded-3" disabled style="opacity: 0.5;">
+                        Siguiente <i class="bi bi-chevron-right"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Panel de Detalle (Derecha) -->
+    <div class="col-lg-5">
+        <div class="detail-panel" id="detalle-pedido">
+            <!-- Estado vacío por defecto -->
+            <div class="text-center py-5 text-muted h-100 d-flex flex-column justify-content-center align-items-center">
+                <i class="bi bi-receipt" style="font-size: 3rem; opacity: 0.3;"></i>
+                <h5 class="mt-3">Selecciona un pedido</h5>
+                <p class="small">Haz clic en un pedido de la izquierda para ver todos los detalles, los productos y la línea de tiempo.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para cargar dinámicamente el detalle del pedido -->
+<script>
+    const pedidosData = JSON.parse(document.getElementById('pedidos-data').textContent);
+    
+    function cargarDetalle(event, pedidoId) {
+        event.preventDefault();
+        
+        const panel = document.getElementById('detalle-pedido');
+        
+        panel.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-dark" role="status"></div>
+                <p class="mt-3 text-muted">Cargando detalle...</p>
+            </div>
+        `;
+
+        setTimeout(() => {
+            const pedido = pedidosData.find(p => p.id === pedidoId);
+            if (!pedido) return;
+
+            let productosHtml = '';
+            pedido.detalles.forEach(d => {
+                productosHtml += `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">${d.cantidad}x ${d.producto}</span>
+                        <span class="fw-bold">$${d.subtotal}</span>
+                    </div>
+                `;
+            });
+
+            let observacionesHtml = '';
+            pedido.detalles.forEach(d => {
+                if (d.observacion) {
+                    observacionesHtml += `<div class="text-danger small ms-2">- ${d.observacion}</div>`;
+                }
+            });
+
+            let badgeClass = 'bg-warning text-dark';
+            if (pedido.estado === 'pagado' || pedido.estado === 'entregado') badgeClass = 'bg-success';
+            if (pedido.estado === 'anulado') badgeClass = 'bg-danger';
+
+            panel.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <h4 class="mb-0" style="font-family: 'DM Serif Display', serif;">#${pedido.numero}</h4>
+                    <span class="badge ${badgeClass}">${pedido.get_estado_display}</span>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                        <i class="bi bi-geo-alt text-muted"></i><br>
+                        <span class="small fw-bold">${pedido.tipo === 'mesa' ? 'Mesa ' + pedido.numero_mesa : 'Para Llevar'}</span>
+                    </div>
+                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                        <i class="bi bi-person text-muted"></i><br>
+                        <span class="small fw-bold">${pedido.mesero}</span>
+                    </div>
+                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                        <i class="bi bi-clock text-muted"></i><br>
+                        <span class="small fw-bold">${pedido.fecha_hora}</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted small text-uppercase mb-3">Productos</h6>
+                    ${productosHtml}
+                    ${observacionesHtml ? '<div class="alert alert-warning py-2 mt-3 small border-0" style="background: #FEF3C7; color: #92400E;"><i class="bi bi-info-circle"></i> Observaciones: <br>' + observacionesHtml + '</div>' : ''}
+                </div>
+
+                <div class="border-top pt-3 mb-4">
+                    <div class="d-flex justify-content-between mt-3">
+                        <h5 class="fw-bold mb-0">Total</h5>
+                        <h5 class="fw-bold mb-0">$${pedido.total}</h5>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button onclick="abrirTicketModal(${pedido.id}, true)" class="btn btn-dark w-50 rounded-3 fw-bold py-2">
+                        Reimprimir
+                    </button>
+                    <button onclick="abrirTicketModal(${pedido.id}, false)" class="btn btn-light border w-50 rounded-3 fw-bold py-2">
+                        Ver comprobante
+                    </button>
+                </div>
+            `;
+        }, 300);
+    }
+</script>
+{% endblock %}
