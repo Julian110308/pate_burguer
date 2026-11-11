@@ -1,79 +1,30 @@
 {% extends 'pedidos/base.html' %}
 
 {% block content %}
-<!-- Inyectamos los datos de Django a JavaScript de forma segura -->
-{{ pedidos_json|json_script:"pedidos-data" }}
-
 <style>
-    /* Estilos del Dashboard de Historial */
-    body { background-color: #F8FAFC; }
+    body { background-color: var(--bg-color); }
 
     .kpi-card {
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 1.25rem;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
+        background: white; border: 1px solid #E2D9CD; border-radius: 12px;
+        padding: 1.25rem; height: 100%; display: flex; flex-direction: column;
     }
-    
-    .kpi-title {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #64748B;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-    }
-    
-    .kpi-value {
-        font-family: 'DM Serif Display', serif;
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #1E293B;
-        line-height: 1.1;
-    }
-    
-    .kpi-sub {
-        font-size: 0.75rem;
-        color: #94A3B8;
-        margin-top: auto;
-    }
+    .kpi-title { font-size: 0.75rem; font-weight: 600; color: #75685D; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .kpi-value { font-family: 'DM Serif Display', serif; font-size: clamp(1.5rem, 5vw, 1.8rem); font-weight: 700; color: #33271F; line-height: 1.1; }
+    .kpi-sub { font-size: 0.75rem; color: #9A8D80; margin-top: auto; }
 
     .filter-pill {
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 20px;
-        padding: 6px 16px;
-        font-size: 0.85rem;
-        color: #64748B;
-        font-weight: 500;
-        transition: all 0.2s;
-        text-decoration: none;
+        background: white; border: 1px solid #E2D9CD; border-radius: 20px; padding: 6px 16px;
+        font-size: 0.85rem; color: #75685D; font-weight: 500; transition: all 0.2s; text-decoration: none; white-space: nowrap;
     }
-    .filter-pill.active {
-        background: #1E293B;
-        color: white;
-        border-color: #1E293B;
-    }
+    .filter-pill.active { background: #33271F; color: white; border-color: #33271F; }
 
-    /* Estilos de la lista de pedidos */
     .order-list-item {
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        cursor: pointer;
+        background: white; border: 1px solid #E2D9CD; border-radius: 8px; padding: 1rem;
+        margin-bottom: 0.5rem; transition: all 0.2s; text-decoration: none; color: inherit; display: block;
     }
-    .order-list-item:hover { border-color: #CBD5E1; background: #F8FAFC; }
-
+    .order-list-item:hover { border-color: #D6CBBB; background: #FBF8F3; }
+    .order-list-item.active { border-color: #33271F; border-left: 4px solid #33271F; background: #F3ECE2; }
+    
     .order-number { font-family: 'DM Serif Display', serif; font-size: 1.2rem; font-weight: 700; }
     
     .status-dot { font-size: 0.6rem; margin-right: 4px; }
@@ -81,78 +32,71 @@
     .text-warning-dot { color: #F59E0B; }
     .text-danger-dot { color: #EF4444; }
 
-    /* Panel lateral derecho */
     .detail-panel {
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 1.5rem;
-        position: sticky;
-        top: 20px;
-        height: calc(100vh - 100px);
-        overflow-y: auto;
+        background: white; border: 1px solid #E2D9CD; border-radius: 12px; padding: 1.5rem;
+        position: sticky; top: 20px; height: calc(100vh - 100px); overflow-y: auto;
     }
 </style>
 
 <!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
-    <div>
+<div class="row align-items-md-end mb-4 mt-2 g-3">
+    <div class="col-12 col-md-7">
         <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Registros</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.5rem;">Historial de Pedidos</h1>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.5rem);">Historial de Pedidos</h1>
         <p class="text-muted mb-0">Revisa cada pedido, qué se vendió, quién lo atendió y cuándo se pagó.</p>
     </div>
-    <div class="d-flex gap-2">
-        <a href="#" class="btn btn-light border rounded-3 fw-bold"><i class="bi bi-calendar-event me-1"></i> Rango de fecha</a>
-        <a href="#" class="btn btn-dark rounded-3 fw-bold"><i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar</a>
+    <div class="col-12 col-md-5 d-flex justify-content-md-end">
+        <form method="get" class="d-flex w-100" style="max-width: 350px;">
+            <input type="hidden" name="rango" value="{{ rango_actual }}">
+            <input type="text" name="buscar" class="form-control rounded-pill px-4" placeholder="Buscar #, mesa o mesero..." value="{{ busqueda|default:'' }}">
+        </form>
     </div>
 </div>
 
-<!-- Tarjetas de Métricas (KPIs) -->
+<!-- KPIs -->
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-12 col-md-4">
         <div class="kpi-card">
             <div class="kpi-title">Ventas</div>
-            <div class="kpi-value">${{ total_ventas|floatformat:"0" }}</div>
+            <div class="kpi-value">${{ total_ventas|floatformat:"0g" }}</div>
             <div class="kpi-sub text-success"><i class="bi bi-graph-up-arrow"></i> Registro histórico</div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-6 col-md-4">
         <div class="kpi-card">
             <div class="kpi-title">Pedidos</div>
             <div class="kpi-value">{{ total_pedidos }}</div>
             <div class="kpi-sub">Registrados en este periodo</div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-6 col-md-4">
         <div class="kpi-card">
             <div class="kpi-title">Más vendido</div>
-            <div class="kpi-value" style="font-size: 1.2rem; margin-top: 5px;">{{ mas_vendido }}</div>
+            <div class="kpi-value" style="font-size: 1.1rem; margin-top: 5px;">{{ mas_vendido }}</div>
             <div class="kpi-sub text-warning"><i class="bi bi-star-fill"></i> {{ mas_vendido_cant }} vendidos</div>
         </div>
     </div>
 </div>
 
-<!-- Filtros por Fecha -->
-<div class="d-flex gap-2 mb-4 overflow-auto pb-2" style="white-space: nowrap;">
-    <a href="?rango=hoy" class="filter-pill {% if rango_actual == 'hoy' %}active{% endif %}">Hoy</a>
-    <a href="?rango=7dias" class="filter-pill {% if rango_actual == '7dias' %}active{% endif %}">7 días</a>
-    <a href="?rango=mes" class="filter-pill {% if rango_actual == 'mes' %}active{% endif %}">Este mes</a>
-    <a href="?rango=todos" class="filter-pill {% if rango_actual == 'todos' %}active{% endif %}">Todos los pedidos</a>
-    
-    <div class="ms-auto d-flex gap-2">
-        <form method="get" class="d-flex">
-            <input type="hidden" name="rango" value="{{ rango_actual }}">
-            <input type="text" name="buscar" class="form-control rounded-pill px-4" placeholder="Buscar #, mesa o mesero..." value="{{ busqueda|default:'' }}" style="min-width: 250px;">
-        </form>
+<!-- Filtros -->
+<div class="row g-3 mb-4 align-items-center">
+    <div class="col-12">
+        <div class="d-flex gap-2 overflow-auto pb-2 pb-md-0" style="white-space: nowrap;">
+            <a href="?rango=hoy" class="filter-pill {% if rango_actual == 'hoy' %}active{% endif %}">Hoy</a>
+            <a href="?rango=7dias" class="filter-pill {% if rango_actual == '7dias' %}active{% endif %}">7 días</a>
+            <a href="?rango=mes" class="filter-pill {% if rango_actual == 'mes' %}active{% endif %}">Este mes</a>
+            <a href="?rango=todos" class="filter-pill {% if rango_actual == 'todos' %}active{% endif %}">Todos los pedidos</a>
+        </div>
     </div>
 </div>
 
 <div class="row g-4">
     <!-- Lista de Pedidos (Izquierda) -->
-    <div class="col-lg-7">
+    <div class="col-12 col-lg-7">
         {% for p in pedidos %}
-            <a class="order-list-item" onclick="cargarDetalle(event, {{ p.id }})">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+            <!-- Si el pedido es el seleccionado, le ponemos la clase 'active' para resaltarlo -->
+            <a href="?page={{ page_obj.number }}&rango={{ rango_actual }}&ver={{ p.id }}{% if busqueda %}&buscar={{ busqueda|urlencode }}{% endif %}" class="order-list-item text-decoration-none {% if pedido_seleccionado.id == p.id %}active{% endif %}">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-2 gap-2">
                     <div class="d-flex align-items-center gap-3">
                         <span class="order-number">#{{ p.numero }}</span>
                         <span class="text-muted small"><i class="bi bi-clock"></i> {{ p.fecha_hora|date:"H:i" }}</span>
@@ -160,6 +104,7 @@
                             <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt"></i> Mesa {{ p.numero_mesa }}</span>
                         {% else %}
                             <span class="badge bg-light text-dark border"><i class="bi bi-bag"></i> Para Llevar</span>
+                            {% if p.cajas_icopor %}<span class="badge bg-light text-dark border" title="Lleva caja de icopor"><i class="bi bi-box-seam"></i> Icopor{% if p.cajas_icopor > 1 %} ×{{ p.cajas_icopor }}{% endif %}</span>{% endif %}
                         {% endif %}
                     </div>
                     <div>
@@ -175,163 +120,193 @@
                     </div>
                 </div>
                 
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                    <div class="text-muted small w-100">
                         <i class="bi bi-person"></i> {{ p.mesero.username }} <span class="mx-2">·</span> 
-                        <span class="text-truncate" style="max-width: 250px; display: inline-block; vertical-align: bottom;">
+                        <span class="text-truncate d-inline-block" style="max-width: 250px; vertical-align: bottom;">
                             {% for d in p.detalles.all|slice:":2" %}
                                 {{ d.cantidad }}x {{ d.producto.nombre }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                             {% if p.detalles.all|length > 2 %}...{% endif %}
                         </span>
                     </div>
-                    <h5 class="mb-0 fw-bold text-dark">${{ p.total }}</h5>
+                    <h5 class="mb-0 fw-bold text-dark">${{ p.total|floatformat:"0g" }}</h5>
                 </div>
             </a>
         {% empty %}
             <div class="text-center py-5">
                 <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
                 <h5 class="mt-3 text-muted">No se encontraron pedidos</h5>
+                <p class="text-muted small">Intenta cambiar el filtro de fecha a "Todos los pedidos".</p>
             </div>
         {% endfor %}
 
-        <!-- ===================================== -->
-        <!-- CONTROLES DE PAGINACIÓN               -->
-        <!-- ===================================== -->
+        <!-- Paginación -->
+        <div id="paginacion">
         {% if page_obj.has_other_pages %}
         <div class="d-flex justify-content-between align-items-center mt-4">
-            <!-- Botón Anterior -->
             <div>
                 {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}" class="btn btn-light border fw-bold rounded-3">
-                        <i class="bi bi-chevron-left"></i> Anterior
-                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda|urlencode }}{% endif %}{% if pedido_seleccionado %}&ver={{ pedido_seleccionado.id }}{% endif %}" class="btn btn-light border fw-bold rounded-3">Anterior</a>
                 {% else %}
-                    <button class="btn btn-light border fw-bold rounded-3" disabled style="opacity: 0.5;">
-                        <i class="bi bi-chevron-left"></i> Anterior
-                    </button>
+                    <button class="btn btn-light border fw-bold rounded-3" disabled style="opacity: 0.5;">Anterior</button>
                 {% endif %}
             </div>
-
-            <!-- Indicador de Página -->
-            <span class="text-muted small fw-bold">
-                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-            </span>
-
-            <!-- Botón Siguiente -->
+            <span class="text-muted small fw-bold d-none d-sm-block">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
             <div>
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}" class="btn btn-dark fw-bold rounded-3">
-                        Siguiente <i class="bi bi-chevron-right"></i>
-                    </a>
+                    <a href="?page={{ page_obj.next_page_number }}&rango={{ rango_actual }}{% if busqueda %}&buscar={{ busqueda|urlencode }}{% endif %}{% if pedido_seleccionado %}&ver={{ pedido_seleccionado.id }}{% endif %}" class="btn btn-dark fw-bold rounded-3">Siguiente</a>
                 {% else %}
-                    <button class="btn btn-dark fw-bold rounded-3" disabled style="opacity: 0.5;">
-                        Siguiente <i class="bi bi-chevron-right"></i>
-                    </button>
+                    <button class="btn btn-dark fw-bold rounded-3" disabled style="opacity: 0.5;">Siguiente</button>
                 {% endif %}
             </div>
         </div>
         {% endif %}
+        </div>
     </div>
 
     <!-- Panel de Detalle (Derecha) -->
-    <div class="col-lg-5">
-        <div class="detail-panel" id="detalle-pedido">
-            <!-- Estado vacío por defecto -->
-            <div class="text-center py-5 text-muted h-100 d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-receipt" style="font-size: 3rem; opacity: 0.3;"></i>
-                <h5 class="mt-3">Selecciona un pedido</h5>
-                <p class="small">Haz clic en un pedido de la izquierda para ver todos los detalles, los productos y la línea de tiempo.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Script para cargar dinámicamente el detalle del pedido -->
-<script>
-    const pedidosData = JSON.parse(document.getElementById('pedidos-data').textContent);
-    
-    function cargarDetalle(event, pedidoId) {
-        event.preventDefault();
-        
-        const panel = document.getElementById('detalle-pedido');
-        
-        panel.innerHTML = `
-            <div class="text-center py-5">
-                <div class="spinner-border text-dark" role="status"></div>
-                <p class="mt-3 text-muted">Cargando detalle...</p>
-            </div>
-        `;
-
-        setTimeout(() => {
-            const pedido = pedidosData.find(p => p.id === pedidoId);
-            if (!pedido) return;
-
-            let productosHtml = '';
-            pedido.detalles.forEach(d => {
-                productosHtml += `
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">${d.cantidad}x ${d.producto}</span>
-                        <span class="fw-bold">$${d.subtotal}</span>
-                    </div>
-                `;
-            });
-
-            let observacionesHtml = '';
-            pedido.detalles.forEach(d => {
-                if (d.observacion) {
-                    observacionesHtml += `<div class="text-danger small ms-2">- ${d.observacion}</div>`;
-                }
-            });
-
-            let badgeClass = 'bg-warning text-dark';
-            if (pedido.estado === 'pagado' || pedido.estado === 'entregado') badgeClass = 'bg-success';
-            if (pedido.estado === 'anulado') badgeClass = 'bg-danger';
-
-            panel.innerHTML = `
+    <div class="col-12 col-lg-5">
+        <div class="detail-panel">
+            
+            {% if pedido_seleccionado %}
+                <!-- Si hay un pedido seleccionado, mostramos sus detalles -->
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                    <h4 class="mb-0" style="font-family: 'DM Serif Display', serif;">#${pedido.numero}</h4>
-                    <span class="badge ${badgeClass}">${pedido.get_estado_display}</span>
+                    <h4 class="mb-0" style="font-family: 'DM Serif Display', serif;">#{{ pedido_seleccionado.numero }}</h4>
+                    <span class="badge {% if pedido_seleccionado.estado == 'pagado' or pedido_seleccionado.estado == 'entregado' %}bg-success{% elif pedido_seleccionado.estado == 'anulado' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                        {{ pedido_seleccionado.get_estado_display }}
+                    </span>
                 </div>
 
-                <div class="d-flex gap-3 mb-4">
-                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <div class="bg-light p-2 rounded text-center flex-grow-1" style="min-width: 80px;">
                         <i class="bi bi-geo-alt text-muted"></i><br>
-                        <span class="small fw-bold">${pedido.tipo === 'mesa' ? 'Mesa ' + pedido.numero_mesa : 'Para Llevar'}</span>
+                        <span class="small fw-bold">{% if pedido_seleccionado.tipo == 'mesa' %}Mesa {{ pedido_seleccionado.numero_mesa }}{% else %}Para Llevar{% endif %}</span>
                     </div>
-                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                    <div class="bg-light p-2 rounded text-center flex-grow-1" style="min-width: 80px;">
                         <i class="bi bi-person text-muted"></i><br>
-                        <span class="small fw-bold">${pedido.mesero}</span>
+                        <span class="small fw-bold">{{ pedido_seleccionado.mesero.username }}</span>
                     </div>
-                    <div class="bg-light p-2 rounded text-center flex-grow-1">
+                    <div class="bg-light p-2 rounded text-center flex-grow-1" style="min-width: 100px;">
                         <i class="bi bi-clock text-muted"></i><br>
-                        <span class="small fw-bold">${pedido.fecha_hora}</span>
+                        <span class="small fw-bold" style="font-size: 0.75rem;">{{ pedido_seleccionado.fecha_hora|date:"d/m/Y H:i" }}</span>
                     </div>
                 </div>
+
+                {% if pedido_seleccionado.direccion_entrega %}
+                <div class="small text-muted mb-3"><i class="bi bi-geo-alt-fill"></i> Domicilio: <strong class="text-dark">{{ pedido_seleccionado.direccion_entrega }}</strong></div>
+                {% endif %}
+                {% if pedido_seleccionado.observaciones %}
+                <div class="small text-muted mb-3"><i class="bi bi-chat-left-text"></i> {{ pedido_seleccionado.observaciones }}</div>
+                {% endif %}
 
                 <div class="mb-4">
                     <h6 class="fw-bold text-muted small text-uppercase mb-3">Productos</h6>
-                    ${productosHtml}
-                    ${observacionesHtml ? '<div class="alert alert-warning py-2 mt-3 small border-0" style="background: #FEF3C7; color: #92400E;"><i class="bi bi-info-circle"></i> Observaciones: <br>' + observacionesHtml + '</div>' : ''}
+                    {% for d in pedido_seleccionado.detalles.all %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">{{ d.cantidad }}x {{ d.producto.nombre }}</span>
+                            <span class="fw-bold">${{ d.subtotal|floatformat:"0g" }}</span>
+                        </div>
+                        {% if d.observacion %}
+                            <div class="text-danger small ms-2 mb-2">- {{ d.observacion }}</div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if pedido_seleccionado.cajas_icopor %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted"><i class="bi bi-box-seam"></i> Caja de icopor{% if pedido_seleccionado.cajas_icopor > 1 %} ×{{ pedido_seleccionado.cajas_icopor }}{% endif %}</span>
+                            <span class="fw-bold">${{ pedido_seleccionado.valor_icopor|floatformat:"0g" }}</span>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="border-top pt-3 mb-4">
                     <div class="d-flex justify-content-between mt-3">
                         <h5 class="fw-bold mb-0">Total</h5>
-                        <h5 class="fw-bold mb-0">$${pedido.total}</h5>
+                        <h5 class="fw-bold mb-0">${{ pedido_seleccionado.total|floatformat:"0g" }}</h5>
                     </div>
                 </div>
 
-                <div class="mt-4 d-flex gap-2">
-                    <button onclick="abrirTicketModal(${pedido.id}, true)" class="btn btn-dark w-50 rounded-3 fw-bold py-2">
-                        Reimprimir
-                    </button>
-                    <button onclick="abrirTicketModal(${pedido.id}, false)" class="btn btn-light border w-50 rounded-3 fw-bold py-2">
-                        Ver comprobante
-                    </button>
+                {% with pagos=pedido_seleccionado.pagos.all %}
+                {% if pagos %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted small text-uppercase mb-3">Pagos</h6>
+                    {% for pg in pagos %}
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">{{ pg.get_metodo_display }} · {{ pg.fecha|date:"d/m H:i" }}</span>
+                            <span class="fw-bold">${{ pg.monto|floatformat:"0g" }}</span>
+                        </div>
+                    {% endfor %}
+                    {% if pedido_seleccionado.saldo_pendiente > 0 %}
+                        <div class="d-flex justify-content-between small text-danger fw-bold border-top pt-2 mt-2">
+                            <span>Saldo pendiente</span>
+                            <span>${{ pedido_seleccionado.saldo_pendiente|floatformat:"0g" }}</span>
+                        </div>
+                    {% endif %}
                 </div>
-            `;
-        }, 300);
-    }
+                {% endif %}
+                {% endwith %}
+
+                <div class="mt-4 d-flex gap-2">
+                    <button onclick="abrirTicketModal({{ pedido_seleccionado.id }}, true)" class="btn btn-dark w-50 rounded-3 fw-bold py-2">Reimprimir</button>
+                    <button onclick="abrirTicketModal({{ pedido_seleccionado.id }}, false)" class="btn btn-light border w-50 rounded-3 fw-bold py-2">Ver comprobante</button>
+                </div>
+
+            {% else %}
+                <!-- Mensaje por defecto SOLO si no hay pedido seleccionado -->
+                <div class="text-center py-5 text-muted h-100 d-flex flex-column justify-content-center align-items-center">
+                    <i class="bi bi-receipt" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <h5 class="mt-3">Selecciona un pedido</h5>
+                    <p class="small">Haz clic en un pedido de la izquierda para ver los detalles.</p>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+<script>
+    // Seleccionar un pedido SIN recargar la página: el scroll se queda donde está
+    document.addEventListener('DOMContentLoaded', function () {
+        const panel = document.querySelector('.detail-panel');
+        if (!panel) return;
+
+        document.querySelectorAll('.order-list-item').forEach(function (enlace) {
+            enlace.addEventListener('click', async function (e) {
+                // Ctrl/Cmd/Shift + clic: que el navegador lo abra normal (nueva pestaña)
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+
+                const url = enlace.href;
+                panel.style.opacity = '0.5';
+                try {
+                    const resp = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!resp.ok) throw new Error('Respuesta ' + resp.status);
+                    const doc = new DOMParser().parseFromString(await resp.text(), 'text/html');
+
+                    const nuevoPanel = doc.querySelector('.detail-panel');
+                    if (!nuevoPanel) throw new Error('No llegó el panel');
+                    panel.innerHTML = nuevoPanel.innerHTML;
+                    panel.scrollTop = 0;
+
+                    // Los enlaces de paginación llevan el pedido abierto: actualizarlos
+                    const pagActual = document.getElementById('paginacion');
+                    const pagNueva = doc.getElementById('paginacion');
+                    if (pagActual && pagNueva) pagActual.innerHTML = pagNueva.innerHTML;
+
+                    document.querySelectorAll('.order-list-item.active').forEach(function (el) {
+                        el.classList.remove('active');
+                    });
+                    enlace.classList.add('active');
+
+                    // La URL queda con ?ver=ID (al recargar o copiar el enlace sigue abierto)
+                    history.replaceState(null, '', url);
+                } catch (err) {
+                    console.error(err);
+                    window.location.href = url;   // si algo falla, navegación normal
+                } finally {
+                    panel.style.opacity = '';
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}

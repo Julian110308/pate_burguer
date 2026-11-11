@@ -1,12 +1,11 @@
 {% extends 'pedidos/base.html' %}
+{% load l10n %}
 
 {% block content %}
 
 <style>
     /* --- ESTILOS DEL MENÚ --- */
-    body {
-        background-color: #FCFAF8; 
-    }
+    body { background-color: var(--bg-color); }
 
     /* Barra de búsqueda y filtros */
     .search-bar {
@@ -174,7 +173,7 @@
     /* Pestañas del carrito */
     .cart-tabs {
         display: flex;
-        background: #F9F8F6;
+        background: #F7F3EC;
         border-radius: 8px;
         padding: 4px;
         margin-bottom: 1.5rem;
@@ -211,9 +210,18 @@
     }
     
     /* Switch de icopor */
+    /* Contador de cajas de icopor */
+    .icopor-stepper { display: flex; align-items: center; gap: 6px; }
+    .icopor-btn {
+        width: 30px; height: 30px; border-radius: 8px; padding: 0;
+        border: 1px solid #E2D9CD; background: white; font-weight: 700; line-height: 1; color: #33271F;
+    }
+    .icopor-btn:hover { background: #F3F4F6; }
+    .icopor-count { min-width: 24px; text-align: center; font-weight: 700; }
+
     .icopor-switch-container {
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
+        background: #FBF8F3;
+        border: 1px solid #E2D9CD;
         border-radius: 10px;
         padding: 12px 15px;
     }
@@ -268,7 +276,7 @@
                             
                             <div class="product-footer">
                                 <div class="price-text">
-                                    ${{ producto.precio }} <small>COP</small>
+                                    ${{ producto.precio|floatformat:"0g" }} <small>COP</small>
                                 </div>
                                 <button class="btn-add-small">
                                     Añadir <i class="bi bi-plus-lg"></i>
@@ -289,13 +297,13 @@
                 <span class="badge bg-danger rounded-circle p-2" id="contadorItems" style="display:none;">0</span>
             </div>
 
-            <!-- Pestañas Principales -->
-            <div class="cart-tabs mb-3">
-                <div class="cart-tab active" id="tab-local" onclick="cambiarTipoPedido('local')">En el local</div>
-                <div class="cart-tab" id="tab-llevar" onclick="cambiarTipoPedido('llevar')">Para llevar</div>
-            </div>
-            
             {% if not es_adicional %}
+                <!-- Pestañas principales: solo al crear un pedido nuevo (un pedido existente ya tiene su tipo) -->
+                <div class="cart-tabs mb-3">
+                    <div class="cart-tab active" id="tab-local" onclick="cambiarTipoPedido('local')">En el local</div>
+                    <div class="cart-tab" id="tab-llevar" onclick="cambiarTipoPedido('llevar')">Para llevar</div>
+                </div>
+
                 <div class="mb-4">
                     <!-- Input oculto para Django -->
                     <input type="hidden" id="tipoPedido" value="mesa">
@@ -324,12 +332,14 @@
                             </div>
                         </div>
 
-                        <!-- NUEVO: Interruptor de Icopor -->
-                        <div class="icopor-switch-container mt-3 form-check form-switch d-flex align-items-center">
-                            <input class="form-check-input m-0 me-2" type="checkbox" role="switch" id="switchIcopor" onchange="actualizarCarrito()">
-                            <label class="form-check-label small fw-bold text-dark mb-0" for="switchIcopor">
-                                Incluir caja de icopor <span class="text-success">(+ $1.000)</span>
-                            </label>
+                        <!-- Cajas de icopor: cada una suma su valor al pedido -->
+                        <div class="icopor-switch-container mt-3 d-flex align-items-center justify-content-between">
+                            <div class="small fw-bold text-dark">Cajas de icopor <span class="text-success text-nowrap">(+ ${{ valor_icopor|floatformat:"0g" }} c/u)</span></div>
+                            <div class="icopor-stepper">
+                                <button type="button" class="icopor-btn" onclick="cambiarIcopor(-1)" aria-label="Quitar una caja">&minus;</button>
+                                <span id="cantidadIcopor" class="icopor-count">0</span>
+                                <button type="button" class="icopor-btn" onclick="cambiarIcopor(1)" aria-label="Agregar una caja">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -339,7 +349,21 @@
                     <small class="text-muted">
                         {% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %}
                     </small>
+                    {% if pedido.cajas_icopor %}
+                    <small class="d-block text-muted mt-1"><i class="bi bi-box-seam"></i> Ya lleva {{ pedido.cajas_icopor }} caja{{ pedido.cajas_icopor|pluralize }} de icopor</small>
+                    {% endif %}
                 </div>
+                {% if pedido.tipo == 'llevar' %}
+                <!-- Si el plato nuevo necesita otra caja, se agrega aquí (se suma a las que ya tenía) -->
+                <div class="icopor-switch-container mb-4 d-flex align-items-center justify-content-between">
+                    <div class="small fw-bold text-dark">Cajas de icopor adicionales <span class="text-success text-nowrap">(+ ${{ valor_icopor|floatformat:"0g" }} c/u)</span></div>
+                    <div class="icopor-stepper">
+                        <button type="button" class="icopor-btn" onclick="cambiarIcopor(-1)" aria-label="Quitar una caja">&minus;</button>
+                        <span id="cantidadIcopor" class="icopor-count">0</span>
+                        <button type="button" class="icopor-btn" onclick="cambiarIcopor(1)" aria-label="Agregar una caja">+</button>
+                    </div>
+                </div>
+                {% endif %}
             {% endif %}
 
             <ul id="listaCarrito" class="list-group list-group-flush mb-4">
@@ -354,10 +378,10 @@
                 <span class="fw-bold small" id="subtotalTexto">$0</span>
             </div>
 
-            <!-- NUEVO: Fila de icopor (se oculta si no se selecciona) -->
+            <!-- Fila de icopor (se oculta si no hay cajas) -->
             <div class="d-flex justify-content-between mb-2" id="filaIcopor" style="display: none !important;">
-                <span class="text-muted small">Caja de icopor</span>
-                <span class="fw-bold small text-success">$1.000</span>
+                <span class="text-muted small" id="textoIcopor">Caja de icopor</span>
+                <span class="fw-bold small text-success" id="valorIcopor">$0</span>
             </div>
 
             <div class="d-flex justify-content-between mb-3">
@@ -422,6 +446,17 @@
 
 <script>
     // Variables globales para la lógica de entrega
+    const VALOR_ICOPOR = {{ valor_icopor|unlocalize }};
+    const MAX_CAJAS_ICOPOR = 20;
+    let cajasIcopor = 0;   // cajas de icopor elegidas (en un pedido existente: las que se SUMAN)
+
+    function cambiarIcopor(delta) {
+        cajasIcopor = Math.min(Math.max(cajasIcopor + delta, 0), MAX_CAJAS_ICOPOR);
+        const marcador = document.getElementById('cantidadIcopor');
+        if (marcador) marcador.textContent = cajasIcopor;
+        actualizarCarrito();
+    }
+
     let tipoEntregaReal = 'mesa'; 
     let subtipoLlevar = 'recoger'; 
 
@@ -450,7 +485,6 @@
         const containerLlevar = document.getElementById('container-llevar');
         const inputMesa = document.getElementById('numeroMesa');
         const inputDireccion = document.getElementById('direccionDomicilio');
-        const switchIcopor = document.getElementById('switchIcopor');
 
         // Limpiar errores al cambiar de pestaña
         if(document.getElementById('error-mesa')) document.getElementById('error-mesa').style.display = 'none';
@@ -470,8 +504,10 @@
             if(inputMesa) inputMesa.required = true;
             if(inputDireccion) inputDireccion.required = false;
             
-            // Desmarcamos el icopor si estaba marcado
-            if (switchIcopor) switchIcopor.checked = false;
+            // En el local no se usan cajas de icopor: se reinicia el contador
+            cajasIcopor = 0;
+            const marcadorIcopor = document.getElementById('cantidadIcopor');
+            if (marcadorIcopor) marcadorIcopor.textContent = '0';
             
         } else if (tipo === 'llevar') {
             tipoEntregaReal = 'llevar';
@@ -547,7 +583,7 @@
     {% for p in productos %}
         productos[{{ p.id }}] = {
             nombre: "{{ p.nombre|escapejs }}",
-            precio: parseFloat({{ p.precio }}),
+            precio: parseFloat("{{ p.precio|unlocalize }}"),
             imagen: "{% if p.imagen %}{{ p.imagen.url }}{% else %}{% endif %}",
             ingredientes: [
                 {% for pi in p.ingredientes.all %}
@@ -613,7 +649,6 @@
         const subtotalElement = document.getElementById('subtotalTexto');
         const contador = document.getElementById('contadorItems');
         const filaIcopor = document.getElementById('filaIcopor');
-        const switchIcopor = document.getElementById('switchIcopor');
         
         lista.innerHTML = '';
         let total = 0;
@@ -670,13 +705,16 @@
             `;
         });
 
-        // Verificamos si el switch de icopor está visible y marcado
-        let costoIcopor = 0;
-        if (switchIcopor && switchIcopor.checked) {
-            costoIcopor = 1000;
-            if(filaIcopor) filaIcopor.style.setProperty('display', 'flex', 'important');
-        } else {
-            if(filaIcopor) filaIcopor.style.setProperty('display', 'none', 'important');
+        // Cajas de icopor: cantidad x valor de cada una
+        const costoIcopor = cajasIcopor * VALOR_ICOPOR;
+        if (filaIcopor) {
+            if (cajasIcopor > 0) {
+                filaIcopor.style.setProperty('display', 'flex', 'important');
+                document.getElementById('textoIcopor').textContent = 'Caja de icopor' + (cajasIcopor > 1 ? ' ×' + cajasIcopor : '');
+                document.getElementById('valorIcopor').textContent = '$' + costoIcopor.toLocaleString('es-CO');
+            } else {
+                filaIcopor.style.setProperty('display', 'none', 'important');
+            }
         }
 
         const totalFinal = total + costoIcopor;
@@ -761,16 +799,16 @@
             return; 
         }
 
-        // Verificamos el estado del switch del icopor
-        const switchIcopor = document.getElementById('switchIcopor');
-        const cobrar_icopor = (switchIcopor && switchIcopor.checked) ? true : false;
+        // Cajas de icopor elegidas
+        const cobrar_icopor = cajasIcopor > 0;
 
         const data = {
             tipo: tipo,
             numero_mesa: numeroMesa,
             direccion: direccion, 
             observaciones: '', 
-            cobrar_icopor: cobrar_icopor, // <-- Enviamos el dato a Django
+            cobrar_icopor: cobrar_icopor,      // dato antiguo (sí/no), por compatibilidad
+            cantidad_icopor: cajasIcopor,      // cajas: nuevas, o las que se suman si el pedido ya existe
             carrito: carrito
         };
 
@@ -793,14 +831,14 @@
             if (data.status === 'ok') {
                 window.location.href = '/ticket/' + data.pedido_id + '/';
             } else {
-                alert('Error: ' + data.message);
+                mostrarAviso('Error: ' + data.message, 'error');
                 btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
                 btn.disabled = false;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Hubo un error al guardar el pedido');
+            mostrarAviso('Hubo un error al guardar el pedido. Revisa tu conexión e intenta de nuevo.', 'error');
             btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
             btn.disabled = false;
         });

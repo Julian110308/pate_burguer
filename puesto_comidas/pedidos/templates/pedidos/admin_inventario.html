@@ -2,135 +2,202 @@
 
 {% block content %}
 <style>
-    body { background-color: #FCFAF8; }
+    /* Variables locales y utilidades para la vista */
+    .inventario-wrapper {
+        animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-    /* KPIs Superiores */
-    .kpi-card-ref {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.25rem;
+    /* Tarjetas KPI */
+    .kpi-card {
+        background-color: var(--card-bg, #FFFCF7);
+        border: 1px solid var(--border-color, #E2D9CD);
+        border-radius: 16px;
+        padding: 1.5rem;
         height: 100%;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        transition: transform 0.2s ease;
     }
-    .kpi-card-ref.dark { background: #2D2A26; color: white; border: none; }
-    .kpi-title-ref { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.5rem; }
-    .kpi-card-ref.dark .kpi-title-ref { color: #A8A29E; }
-    .kpi-value-ref { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
-    
-    .trend-badge { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; margin-top: auto; display: inline-block; align-self: flex-start; }
-    .trend-up { background: #F0FDF4; color: #10B981; }
-
-    /* Contenedor de la Tabla */
-    .inventory-container {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 1.5rem;
+    .kpi-card:hover {
+        transform: translateY(-2px);
     }
-    
-    /* Barra de búsqueda y filtros superiores */
-    .search-bar {
-        border-radius: 10px;
-        height: 40px;
-        padding: 0 16px;
-        border: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        background: white;
-    }
-    .search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 10px; font-size: 0.9rem; }
-    
-    .filter-pill {
-        border-radius: 8px;
-        background: transparent;
+    .kpi-card.dark {
+        background-color: #33271F;
         border: none;
-        color: var(--text-muted);
+        color: white;
+        box-shadow: 0 4px 15px rgba(51, 39, 31, 0.2);
+    }
+    .kpi-title {
+        font-size: 0.8rem;
         font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-    .filter-pill:hover { color: var(--text-main); }
-    .filter-pill.active {
-        background: #FEF2F2; /* Color pastel rojo suave */
-        color: #B91C1C;
-    }
-
-    /* Cabecera de la tabla */
-    .table-header-row {
-        display: flex;
-        align-items: center;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #F3F4F6;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        color: var(--text-muted, #75685D);
+        margin-bottom: 0.5rem;
     }
-
-    /* Filas de la tabla */
-    .rank-item {
-        display: flex;
-        align-items: center;
-        padding: 1.25rem 0;
-        border-bottom: 1px solid #F3F4F6;
-        transition: background-color 0.2s;
+    .kpi-card.dark .kpi-title {
+        color: #A8A29E;
     }
-    .rank-item:hover { background-color: #FCFAF8; }
-    .rank-item:last-child { border-bottom: none; }
-
-    /* Íconos de producto */
-    .product-icon-wrapper {
-        margin-right: 1rem;
+    .kpi-value {
+        font-family: var(--font-display, 'DM Serif Display', serif);
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1.1;
+        color: var(--text-main, #33271F);
     }
-    .product-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.2rem;
+    .kpi-card.dark .kpi-value {
+        color: white;
     }
-
-    /* Números de ventas */
-    .stock-number {
-        font-family: 'DM Serif Display', serif;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--text-main);
-    }
-    .stock-number .small {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.7rem;
-        color: var(--text-muted);
+    .kpi-badge {
+        font-size: 0.75rem;
         font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        display: inline-block;
+        margin-top: 10px;
+        align-self: flex-start;
     }
-    .text-muted.stock-number {
-        color: #9CA3AF !important;
+    .kpi-card.dark .kpi-badge {
+        background: rgba(255, 255, 255, 0.1);
+        color: #E5E5E5;
     }
 
-    /* Columna Mes (Destacada) */
-    .month-total {
-        font-family: 'DM Serif Display', serif;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--accent-color);
-    }
-
-    /* Panel Lateral */
-    .side-card {
-        background: white;
-        border: 1px solid var(--border-color);
+    /* Contenedor de la Tabla */
+    .table-container {
+        background-color: var(--card-bg, #FFFCF7);
+        border: 1px solid var(--border-color, #E2D9CD);
         border-radius: 16px;
         padding: 1.5rem;
-        margin-bottom: 1rem;
     }
-    .side-card.dark {
-        background: #2D2A26;
+    
+    /* Estilos personalizados de la tabla */
+    .custom-table {
+        margin-bottom: 0;
+    }
+    .custom-table th {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted, #75685D);
+        border-bottom: 2px solid #F3F4F6;
+        padding: 1rem 0.5rem;
+    }
+    .custom-table td {
+        padding: 1.2rem 0.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #F3F4F6;
+        color: var(--text-main, #33271F);
+    }
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+    .custom-table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    .custom-table tbody tr:hover {
+        background-color: #FBF8F3;
+    }
+
+    /* Iconos de productos */
+    .prod-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Números y Tipografía */
+    .num-venta {
+        font-family: var(--font-display, 'DM Serif Display', serif);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .num-mes {
+        font-size: 1.25rem;
+        color: var(--accent-color, #AE452D);
+    }
+    .num-muted {
+        color: #9CA3AF;
+    }
+
+    /* Filtros y Buscador */
+    .search-input-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 350px;
+    }
+    .search-input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+    .search-input {
+        padding-left: 40px;
+        border-radius: 10px;
+        height: 42px;
+        border: 1px solid var(--border-color);
+        background-color: #FFFFFF;
+        font-size: 0.9rem;
+    }
+    .search-input:focus {
+        box-shadow: 0 0 0 3px rgba(174, 69, 45, 0.1);
+        border-color: var(--accent-color);
+    }
+
+    .filter-pills {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+    
+    .filter-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border-radius: 20px;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+    .filter-btn:hover {
+        background: #F3F4F6;
+        color: var(--text-main);
+    }
+    .filter-btn.active {
+        background: #FEF2F2;
+        color: #B91C1C;
+        border-color: #FECACA;
+    }
+
+    /* Sidebar (Top 3 y Alertas) */
+    .side-widget {
+        background-color: var(--card-bg, #FFFCF7);
+        border: 1px solid var(--border-color, #E2D9CD);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .side-widget.dark {
+        background-color: #33271F;
         color: white;
         border: none;
     }
@@ -138,214 +205,227 @@
     .top-item {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 1rem;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #F3F4F6;
     }
-    .top-item:last-child { margin-bottom: 0; }
-    
+    .top-item:last-child { border-bottom: none; padding-bottom: 0; }
     .top-medal {
-        width: 32px; height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
-        display: flex; justify-content: center; align-items: center;
-        font-weight: bold; font-size: 0.9rem;
-        font-family: 'DM Serif Display', serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
     }
+    .medal-1 { background: #FEF3C7; color: #B45309; }
+    .medal-2 { background: #F3ECE2; color: #475569; }
+    .medal-3 { background: #FFEDD5; color: #9A3412; }
 
-    /* ESTILOS PARA LA TARJETA DE REVISIÓN */
-    .review-box {
-        background-color: #FFFBEB; /* Fondo ámbar muy suave */
+    .alert-box {
+        background-color: #FFFBEB;
         border: 1px solid #FDE68A;
         border-radius: 12px;
         padding: 1.25rem;
     }
 </style>
 
-<!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
-    <div>
-        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Análisis</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.8rem;">Inventario de Ventas</h1>
-        <p class="text-muted mb-0">Qué se vende, cuánto deja y qué se está quedando quieto.</p>
+<div class="inventario-wrapper mt-3">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+        <div>
+            <span class="text-uppercase fw-bold" style="color: var(--accent-color); letter-spacing: 2px; font-size: 0.75rem;">Análisis</span>
+            <h1 class="mb-1 mt-1 fw-bold" style="font-size: clamp(2rem, 5vw, 2.5rem);">Inventario de Ventas</h1>
+            <p class="text-muted mb-0">Qué se vende, cuánto deja y qué se está quedando quieto.</p>
+        </div>
+        <a href="{% url 'dashboard_admin' %}" class="btn btn-light border fw-bold rounded-3 px-4 py-2 shadow-sm text-dark">
+            <i class="bi bi-arrow-left me-1"></i> Volver al panel
+        </a>
     </div>
-    <a href="{% url 'dashboard_admin' %}" class="btn btn-light border fw-bold rounded-3 px-4 py-2">
-        <i class="bi bi-arrow-left"></i> Volver al panel
-    </a>
-</div>
 
-<!-- KPIs Superiores -->
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="kpi-card-ref dark">
-            <div class="kpi-title-ref">Dinero generado (Hoy)</div>
-            <div class="kpi-value-ref">${{ total_dinero_hoy|floatformat:"0" }}</div>
-            <div class="trend-badge trend-up" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">
-                <i class="bi bi-arrow-down"></i> Calculado en tiempo real
+    <!-- KPIs Superiores -->
+    <div class="row g-3 mb-4">
+        <!-- Dinero -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="kpi-card dark">
+                <div class="kpi-title">Dinero generado hoy</div>
+                <div class="kpi-value">${{ total_dinero_hoy|floatformat:"0g" }}</div>
+                <div class="kpi-badge">
+                    <i class="bi bi-graph-up-arrow me-1"></i> Tiempo real
+                </div>
+            </div>
+        </div>
+        <!-- Unidades -->
+        <div class="col-6 col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-title">Unidades vendidas hoy</div>
+                <div class="kpi-value">{{ total_unidades_hoy }}</div>
+            </div>
+        </div>
+        <!-- Pedidos -->
+        <div class="col-6 col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-title">Pedidos cobrados hoy</div>
+                <div class="kpi-value">{{ total_pedidos_hoy }}</div>
+            </div>
+        </div>
+        <!-- Estrella -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="kpi-card" style="background: var(--accent-soft, #F3E5DC); border-color: #EACFC3;">
+                <div class="kpi-title" style="color: #923A26;">Producto Estrella (Mes)</div>
+                {% if producto_estrella %}
+                    <div class="kpi-value" style="font-size: 1.5rem; color: #923A26; line-height: 1.2;">{{ producto_estrella.nombre }}</div>
+                    <div class="mt-1 small fw-semibold" style="color: #923A26;">{{ producto_estrella.cant_mes }} vendidos</div>
+                {% else %}
+                    <div class="kpi-value" style="font-size: 1.5rem;">Sin ventas</div>
+                {% endif %}
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="kpi-card-ref">
-            <div class="kpi-title-ref">Unidades vendidas (Hoy)</div>
-            <div class="kpi-value-ref">{{ total_unidades_hoy }}</div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="kpi-card-ref">
-            <div class="kpi-title-ref">Pedidos cobrados (Hoy)</div>
-            <div class="kpi-value-ref">{{ total_pedidos_hoy }}</div>
-        </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <!-- Columna Izquierda: Rendimiento del Menú -->
-    <div class="col-lg-8">
-        <div class="inventory-container">
+    <div class="row g-4">
+        <!-- Columna Izquierda: Tabla -->
+        <div class="col-12 col-lg-8 col-xl-9">
+            <div class="table-container">
+                
+                <!-- Buscador y Filtros -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div class="search-input-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="buscadorInventario" class="form-control search-input" placeholder="Buscar producto..." onkeyup="filtrarInventario()">
+                    </div>
+                    <div class="filter-pills">
+                        <button class="filter-btn active" onclick="cambiarCategoria('todos', this)">Todos</button>
+                        {% for cat in categorias %}
+                            <button class="filter-btn" onclick="cambiarCategoria('{{ cat.nombre|lower }}', this)">{{ cat.nombre }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="table-responsive">
+                    <table class="table custom-table w-100">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Producto</th>
+                                <th class="text-center" style="width: 15%;">Hoy</th>
+                                <th class="text-center" style="width: 20%;">Semana</th>
+                                <th class="text-end" style="width: 20%;">Mes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-inventario-body">
+                            {% for item in inventario %}
+                            <tr class="product-row" data-nombre="{{ item.producto.nombre|lower }}" data-categoria="{{ item.producto.categoria.nombre|lower }}">
+                                <!-- Producto -->
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if 'hamburguesa' in item.producto.categoria.nombre|lower %}
+                                            <div class="prod-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-circle-square"></i></div>
+                                        {% elif 'bebida' in item.producto.categoria.nombre|lower or 'gaseosa' in item.producto.categoria.nombre|lower %}
+                                            <div class="prod-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-cup-straw"></i></div>
+                                        {% elif 'postre' in item.producto.categoria.nombre|lower %}
+                                            <div class="prod-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-cake2"></i></div>
+                                        {% else %}
+                                            <div class="prod-icon bg-success bg-opacity-10 text-success"><i class="bi bi-box-seam"></i></div>
+                                        {% endif %}
+                                        
+                                        <div>
+                                            <div class="fw-bold mb-0 text-truncate" style="font-size: 0.95rem; max-width: 200px;" title="{{ item.producto.nombre }}">
+                                                {{ item.producto.nombre }}
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mt-1">
+                                                <span class="text-muted" style="font-size: 0.75rem;">{{ item.producto.categoria.nombre }}</span>
+                                                {% if not item.producto.disponible %}
+                                                    <span class="badge text-bg-light border" style="font-size: 0.65rem;">Oculto</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <!-- Hoy -->
+                                <td class="text-center">
+                                    <span class="num-venta {% if item.cant_hoy == 0 %}num-muted{% endif %}">{{ item.cant_hoy }}</span>
+                                </td>
+                                
+                                <!-- Semana -->
+                                <td class="text-center">
+                                    <span class="num-venta {% if item.cant_semana == 0 %}num-muted{% endif %}">{{ item.cant_semana }}</span>
+                                </td>
+                                
+                                <!-- Mes -->
+                                <td class="text-end">
+                                    <span class="num-venta num-mes">{{ item.cant_mes }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Sidebar -->
+        <div class="col-12 col-lg-4 col-xl-3">
             
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h5 class="fw-bold mb-1" style="font-family: 'DM Serif Display', serif; font-size: 1.6rem;">Productos</h5>
-                    <p class="text-muted small mb-0">Revisa el estado de tu inventario</p>
-                </div>
-            </div>
-
-            <!-- Barra de búsqueda y filtros dinámicos -->
-            <div class="d-flex gap-2 mb-4 overflow-auto pb-2" style="white-space: nowrap;">
-                <div class="search-bar" style="min-width: 200px;">
-                    <i class="bi bi-search text-muted"></i>
-                    <input type="text" id="buscadorInventario" placeholder="Buscar producto..." onkeyup="filtrarInventario()">
-                </div>
-                
-                <button class="filter-pill active px-3 py-2" onclick="cambiarCategoria('todos', this)">Todos</button>
-                
-                {% for cat in categorias %}
-                    <button class="filter-pill px-3 py-2" onclick="cambiarCategoria('{{ cat.nombre|lower }}', this)">{{ cat.nombre }}</button>
+            <!-- Top 3 Ventas -->
+            <div class="side-widget">
+                <h5 class="fw-bold mb-3">Top 3 Ventas (Mes)</h5>
+                {% for prod in ranking_productos %}
+                    <div class="top-item">
+                        <div class="top-medal medal-{{ prod.posicion }}">{{ prod.posicion }}</div>
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <div class="fw-bold text-truncate" style="font-size: 0.85rem;" title="{{ prod.nombre }}">{{ prod.nombre }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">{{ prod.cant_mes }} vendidos</div>
+                        </div>
+                        <div class="fw-bold" style="font-size: 0.85rem; color: var(--accent-color);">
+                            ${{ prod.dinero_mes|floatformat:"0g" }}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small mb-0">No hay ventas registradas este mes.</p>
                 {% endfor %}
             </div>
 
-            <!-- Cabecera de la Tabla -->
-            <div class="table-header-row">
-                <div class="flex-grow-1">PRODUCTO</div>
-                <div class="text-center" style="width: 80px;">HOY</div>
-                <div class="text-center" style="width: 90px;">SEMANA</div>
-                <div class="text-end" style="width: 90px;">MES</div>
-            </div>
-
-            <!-- Lista de Productos -->
-            <div id="contenedor-lista-inventario">
-                {% for item in inventario %}
-                    <div class="rank-item product-row" data-nombre="{{ item.producto.nombre|lower }}" data-categoria="{{ item.producto.categoria.nombre|lower }}">
-                        
-                        <div class="product-icon-wrapper">
-                            {% if 'hamburguesa' in item.producto.categoria.nombre|lower %}
-                                <div class="product-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-circle-square"></i></div>
-                            {% elif 'bebida' in item.producto.categoria.nombre|lower or 'gaseosa' in item.producto.categoria.nombre|lower %}
-                                <div class="product-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-cup-straw"></i></div>
-                            {% elif 'postre' in item.producto.categoria.nombre|lower %}
-                                <div class="product-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-cake2"></i></div>
-                            {% else %}
-                                <div class="product-icon bg-success bg-opacity-10 text-success"><i class="bi bi-box-seam"></i></div>
-                            {% endif %}
-                        </div>
-
-                        <div class="flex-grow-1">
-                            <div class="fw-bold" style="font-size: 1rem; color: var(--text-main);">{{ item.producto.nombre }}</div>
-                            <div class="text-muted" style="font-size: 0.8rem;">{{ item.producto.categoria.nombre }}</div>
-                        </div>
-
-                        <div class="text-center" style="width: 80px;">
-                            <span class="stock-number {% if item.cant_hoy == 0 %}text-muted{% endif %}">
-                                {{ item.cant_hoy }} <span class="small">un.</span>
-                            </span>
-                        </div>
-
-                        <div class="text-center" style="width: 90px;">
-                            <span class="stock-number {% if item.cant_semana == 0 %}text-muted{% endif %}">
-                                {{ item.cant_semana }} <span class="small">un.</span>
-                            </span>
-                        </div>
-
-                        <div class="text-end" style="width: 90px;">
-                            <span class="month-total" style="font-size: 1.2rem;">{{ item.cant_mes }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Columna Derecha: Resumen y Alertas -->
-    <div class="col-lg-4">
-        
-        {% if producto_estrella %}
-        <div class="side-card dark mb-3" style="position: relative; overflow: hidden;">
-            <i class="bi bi-star-fill position-absolute" style="font-size: 8rem; right: -20px; bottom: -20px; opacity: 0.05; color: white;"></i>
-            <div class="kpi-title-ref mb-1">Producto Estrella del Mes</div>
-            <h3 class="mb-1" style="font-family: 'DM Serif Display', serif; font-size: 1.8rem; position: relative; z-index: 1;">{{ producto_estrella.nombre }}</h3>
-            <p class="small mb-0" style="color: #D6D3D1; position: relative; z-index: 1;">
-                {{ producto_estrella.cant_mes }} unidades · ${{ producto_estrella.dinero_mes|floatformat:"0" }} recaudados
-            </p>
-        </div>
-        {% endif %}
-
-        <div class="side-card">
-            <h5 class="fw-bold mb-4" style="font-family: 'DM Serif Display', serif; font-size: 1.2rem;">Top 3 Ventas (Mes)</h5>
-            
-            {% for prod in ranking_productos %}
-                <div class="top-item">
-                    <div class="top-medal {% if prod.posicion == 1 %}rank-1{% elif prod.posicion == 2 %}rank-2{% elif prod.posicion == 3 %}rank-3{% endif %}">
-                        {{ prod.posicion }}
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-bold" style="font-size: 0.9rem;">{{ prod.nombre }}</div>
-                        <div class="text-muted" style="font-size: 0.75rem;">{{ prod.cant_mes }} vendidos</div>
-                    </div>
-                    <div class="fw-bold" style="font-size: 0.9rem; color: var(--accent-color);">
-                        ${{ prod.dinero_mes|floatformat:"0" }}
-                    </div>
-                </div>
-            {% empty %}
-                <p class="text-muted small mb-0">No hay ventas registradas este mes.</p>
-            {% endfor %}
-        </div>
-
-        <!-- Tarjeta "Para Revisar" (Rediseñada) -->
-        <div class="side-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif; font-size: 1.2rem;">Para Revisar</h5>
-                <span class="badge bg-warning bg-opacity-25 text-warning px-2 py-1 rounded-pill" style="font-size: 0.7rem;">
-                    Atención
-                </span>
-            </div>
-            
-            <div class="review-box">
-                <div class="d-flex gap-3 mb-3">
-                    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 1.2rem; margin-top: 2px;"></i>
-                    <div>
-                        <h6 class="fw-bold mb-1" style="color: #92400E;">Productos sin ventas este mes</h6>
-                        <p class="small mb-0" style="color: #B45309;">Estos platos no han generado ingresos en los últimos 30 días.</p>
-                    </div>
+            <!-- Para Revisar (Alertas) -->
+            <div class="side-widget">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Para Revisar</h5>
+                    {% if sin_ventas_mes %}
+                    <span class="badge bg-warning bg-opacity-25 text-warning px-2 py-1 rounded-pill" style="font-size: 0.7rem;">Atención</span>
+                    {% endif %}
                 </div>
 
-                <!-- Lista elegante de productos sin ventas -->
-                <div class="d-flex flex-column gap-2 mt-3">
-                    {% for item in inventario %}
-                        {% if item.cant_mes == 0 %}
-                            <div class="d-flex align-items-center bg-white px-3 py-2 rounded border border-warning border-opacity-25" style="box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                                <i class="bi bi-box text-warning me-2" style="font-size: 0.9rem;"></i>
-                                <span class="small fw-bold text-dark">{{ item.producto.nombre }}</span>
+                {% if sin_ventas_mes %}
+                <div class="alert-box">
+                    <div class="d-flex gap-2 mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-warning mt-1"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size: 0.85rem; color: #92400E;">Sin ventas este mes</h6>
+                            <p class="small mb-0" style="font-size: 0.75rem; color: #B45309;">Estos platos no han vendido nada.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for producto in sin_ventas_mes %}
+                            <div class="d-flex align-items-center bg-white px-3 py-2 rounded border border-warning border-opacity-25 shadow-sm">
+                                <i class="bi bi-box text-warning me-2"></i>
+                                <span class="small fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{{ producto.nombre }}</span>
                             </div>
-                        {% endif %}
-                    {% empty %}
-                        <div class="text-center py-3">
-                            <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
-                            <p class="small text-muted mb-0">¡Todo en orden! Todos los productos han tenido ventas este mes.</p>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
+                    <p class="small text-muted mb-0" style="font-size: 0.8rem;">¡Todo en orden! Todos los platos han vendido algo este mes.</p>
+                </div>
+                {% endif %}
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 
@@ -356,7 +436,8 @@
     function cambiarCategoria(categoria, btnElement) {
         categoriaActiva = categoria;
         
-        const botones = document.querySelectorAll('.filter-pill');
+        // Actualizar UI de los botones
+        const botones = document.querySelectorAll('.filter-btn');
         botones.forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
 
@@ -376,11 +457,8 @@
             if (!nombre.includes(textoBusqueda)) mostrar = false;
             if (categoriaActiva !== 'todos' && categoria !== categoriaActiva) mostrar = false;
 
-            if (mostrar) {
-                fila.style.display = 'flex';
-            } else {
-                fila.style.display = 'none';
-            }
+            // Mostrar u ocultar la fila (tr)
+            fila.style.display = mostrar ? '' : 'none';
         });
     }
 

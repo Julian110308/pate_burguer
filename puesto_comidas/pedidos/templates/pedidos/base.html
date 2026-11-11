@@ -4,22 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pate Burguer</title>
+    <meta name="theme-color" content="#F7F3EC">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
     <style>
+        /* Tipografía de los títulos: Fraunces (la del diseño de Figma).
+           Los templates piden la fuente por el nombre antiguo 'DM Serif Display'; aquí ese nombre
+           se reasigna a Fraunces para que TODA la app cambie sin tocar cada pantalla.
+           El rango 400-600 hace que cualquier negrita (700) se vea en SemiBold, como en el diseño. */
+        @font-face {
+            font-family: 'DM Serif Display';
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource-variable/fraunces@5.3.0/files/fraunces-latin-opsz-normal.woff2') format('woff2-variations');
+            font-weight: 400 600;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
-            --bg-color: #F9F8F6;
-            --card-bg: #FFFFFF;
-            --text-main: #2D2A26;
-            --text-muted: #7A7571;
-            --accent-color: #A63A25;
-            --accent-hover: #8B2E1B;
-            --border-color: #E5E1DA;
+            /* Colores y medidas del diseño de Figma */
+            --bg-color: #F7F3EC;
+            --card-bg: #FFFCF7;
+            --text-main: #33271F;
+            --text-muted: #75685D;
+            --accent-color: #AE452D;
+            --accent-hover: #923A26;
+            --accent-soft: #F3E5DC;
+            --border-color: #E2D9CD;
+            --radius-card: 14px;
+            --radius-input: 8px;
+            --font-display: 'DM Serif Display', Georgia, serif;   /* = Fraunces (ver arriba) */
+        }
+
+        /* === BLINDAJE ANTI-DESBORDAMIENTO (Corregido) === */
+        html, body {
+            width: 100%;
         }
 
         body {
@@ -27,16 +50,22 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;      /* Evita scroll horizontal (solo en body, así position: sticky sigue funcionando) */
+            font-synthesis: none;    /* Sin negrita falsa: DM Serif Display solo tiene peso normal */
         }
 
         {% if user.is_authenticated %}
-        body { padding-bottom: 80px; }
+        body { padding-bottom: 90px; }
         {% endif %}
 
-        h1, h2, h3, h4, h5, .brand-title {
-            font-family: 'DM Serif Display', serif;
+        /* Tipografía fluida */
+        h1, h2, h3, h4, h5, h6, .brand-title {
+            font-family: var(--font-display);
             color: var(--text-main);
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         /* Navbar */
@@ -46,10 +75,10 @@
         }
 
         .brand-title {
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.55rem;
+            font-weight: 600;
             color: var(--text-main) !important;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
         }
 
         /* Botón Principal */
@@ -57,7 +86,7 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-input);
             font-weight: 500;
             padding: 12px 24px;
             transition: all 0.3s ease;
@@ -70,26 +99,74 @@
             box-shadow: 0 4px 12px rgba(166, 58, 37, 0.2);
         }
 
-        /* Tarjetas */
+        /* Tarjetas genéricas */
         .card-custom {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--radius-card);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         }
 
         /* Inputs */
         .form-control, .form-select {
-            border-radius: 4px;
+            border-radius: var(--radius-input);
             padding: 12px 16px;
             border: 1px solid var(--border-color);
             background-color: #FFFFFF;
             font-size: 0.95rem;
         }
         .form-control:focus, .form-select:focus {
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(174, 69, 45, 0.12);
             border-color: var(--accent-color);
             background-color: white;
+        }
+
+        /* === AVISOS (mensajes de Django) === */
+        .toast-stack {
+            position: fixed;
+            top: calc(16px + env(safe-area-inset-top, 0px));
+            right: 16px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: min(380px, calc(100vw - 32px));
+            pointer-events: none;
+        }
+        .toast-msg {
+            --toast-color: #10B981;
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--toast-color);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            animation: toast-in 0.25s ease;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .toast-msg .toast-icon { color: var(--toast-color); font-size: 1.1rem; line-height: 1.3; }
+        .toast-msg.error, .toast-msg.danger { --toast-color: #DC2626; }
+        .toast-msg.warning { --toast-color: #D97706; }
+        .toast-msg.info, .toast-msg.debug { --toast-color: #2563EB; }
+        .toast-msg .toast-close {
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 0 2px;
+            cursor: pointer;
+        }
+        .toast-msg.saliendo { opacity: 0; transform: translateY(-8px); }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: none; }
         }
 
         /* Navegación Móvil */
@@ -97,11 +174,13 @@
             display: none;
             position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
             background: white;
             border-top: 1px solid var(--border-color);
             z-index: 1000;
             padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
 
         .mobile-nav a {
@@ -131,22 +210,35 @@
     </style>
 </head>
 <body>
+    <!-- Avisos globales (mensajes de Django): se muestran en cualquier pantalla y se cierran solos -->
+    {% if messages %}
+    <div class="toast-stack" id="toast-stack" role="status" aria-live="polite">
+        {% for message in messages %}
+        <div class="toast-msg {{ message.level_tag }}" data-ms="{% if message.level_tag == 'error' or message.level_tag == 'warning' %}6000{% else %}3500{% endif %}">
+            <i class="bi toast-icon {% if message.level_tag == 'success' %}bi-check-circle-fill{% elif message.level_tag == 'error' %}bi-x-circle-fill{% elif message.level_tag == 'warning' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+            <div class="flex-grow-1 toast-text">{{ message }}</div>
+            <button type="button" class="toast-close" aria-label="Cerrar">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Navbar Superior -->
     {% if user.is_authenticated %}
     <nav class="navbar navbar-expand-lg navbar-custom py-3 mb-4">
         <div class="container">
             <a class="navbar-brand brand-title d-flex align-items-center gap-2" href="{% if user.rol == 'admin' %}{% url 'dashboard_admin' %}{% else %}{% url 'menu_mesero' %}{% endif %}">
-                <i class="bi bi-fire" style="font-size: 1.2rem; color: var(--accent-color);"></i> PATE BURGUER
+                <i class="bi bi-fire" style="font-size: 1.2rem; color: var(--accent-color);"></i> Pate Burguer
             </a>
             
             <div class="d-flex align-items-center desktop-nav gap-4">
                 <div class="d-flex gap-4">
                     {% if user.rol == 'admin' %}
-                        <a href="{% url 'dashboard_admin' %}" class="text-decoration-none text-dark fw-bold" style="font-size: 0.95rem;">Panel</a>
+                        <a href="{% url 'dashboard_admin' %}" class="text-decoration-none {% if request.resolver_match.url_name == 'dashboard_admin' %}text-dark fw-bold{% else %}text-muted fw-medium{% endif %}" style="font-size: 0.95rem;">Panel</a>
                     {% endif %}
-                    <a href="{% url 'pedidos_activos' %}" class="text-decoration-none text-muted fw-medium" style="font-size: 0.95rem;">Pedidos</a>
+                    <a href="{% url 'pedidos_activos' %}" class="text-decoration-none {% if request.resolver_match.url_name == 'pedidos_activos' %}text-dark fw-bold{% else %}text-muted fw-medium{% endif %}" style="font-size: 0.95rem;">Pedidos</a>
                     {% if user.rol == 'admin' %}
-                        <a href="{% url 'reporte_diario' %}" class="text-decoration-none text-muted fw-medium" style="font-size: 0.95rem;">Reportes</a>
+                        <a href="{% url 'reporte_diario' %}" class="text-decoration-none {% if request.resolver_match.url_name == 'reporte_diario' %}text-dark fw-bold{% else %}text-muted fw-medium{% endif %}" style="font-size: 0.95rem;">Reportes</a>
                     {% endif %}
                 </div>
                 
@@ -166,6 +258,7 @@
     {% endif %}
 
     <!-- Contenedor Principal -->
+    <!-- Quitamos el estilo en línea y dejamos que Bootstrap maneje los márgenes -->
     <div class="{% if user.is_authenticated %}container pb-5{% else %}container-fluid p-0{% endif %}">
         {% block content %}
         {% endblock %}
@@ -174,6 +267,11 @@
     <!-- Navegación Inferior Móvil -->
     {% if user.is_authenticated %}
     <div class="mobile-nav">
+        {% if user.rol == 'admin' %}
+        <a href="{% url 'dashboard_admin' %}" class="{% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
+            <i class="bi bi-speedometer2"></i> Panel
+        </a>
+        {% endif %}
         <a href="{% url 'menu_mesero' %}" class="{% if request.resolver_match.url_name == 'menu_mesero' %}active{% endif %}">
             <i class="bi bi-grid"></i> Menú
         </a>
@@ -194,14 +292,13 @@
     </div>
     {% endif %}
 
-        <!-- MODAL GLOBAL PARA VER TICKETS -->
+    <!-- MODAL GLOBAL PARA VER TICKETS -->
     <div class="modal fade" id="modalTicketGlobal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
             <div class="modal-content" style="border-radius: 12px; border: none; background-color: #F3F4F6; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
                 <div class="modal-header border-0 pb-0" style="position: absolute; right: 0; z-index: 10; padding: 1rem;">
                     <button type="button" class="btn-close bg-white rounded-circle p-2 shadow-sm" data-bs-dismiss="modal" aria-label="Close" style="opacity: 1;"></button>
                 </div>
-                <!-- Usamos un IFrame para aislar los estilos del ticket -->
                 <div class="modal-body p-0" id="contenedor-ticket-modal" style="height: 75vh; overflow: hidden; border-radius: 12px;">
                     <!-- Aquí se cargará el iframe -->
                 </div>
@@ -211,7 +308,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-        <script>
+    <script>
         function abrirTicketModal(pedidoId, autoImprimir = false) {
             const contenedor = document.getElementById('contenedor-ticket-modal');
             
@@ -222,16 +319,11 @@
             `;
 
             const modalElement = document.getElementById('modalTicketGlobal');
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
+            bootstrap.Modal.getOrCreateInstance(modalElement).show();
 
             setTimeout(() => {
                 const iframe = document.createElement('iframe');
-                
-                // ¡AQUÍ ESTÁ LA MAGIA! Usamos la etiqueta de Django para generar la URL correcta
-                // Le pasamos un 0 como ID de ejemplo y JavaScript lo reemplaza
                 iframe.src = "{% url 'ver_ticket' 0 %}".replace('0', pedidoId);
-                
                 iframe.style = "width: 100%; height: 100%; border: none;";
                 iframe.title = "Ticket";
 
@@ -247,6 +339,111 @@
                 contenedor.appendChild(iframe);
             }, 300);
         }
+    
+        // Al cerrar el ticket se vacía el iframe (no queda cargado en segundo plano)
+        document.getElementById('modalTicketGlobal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('contenedor-ticket-modal').innerHTML = '';
+        });
+    </script>
+
+    <script>
+        // Avisos: se cierran solos (3,5 s; los errores 6 s) o con la X
+        (function () {
+            const pila = document.getElementById('toast-stack');
+            if (!pila) return;
+            const normalizar = function (s) { return s.replace(/\s+/g, ' ').trim(); };
+            const textos = [];
+
+            pila.querySelectorAll('.toast-msg').forEach(function (aviso) {
+                textos.push(normalizar(aviso.querySelector('.toast-text').textContent));
+                const cerrar = function () {
+                    aviso.classList.add('saliendo');
+                    setTimeout(function () { aviso.remove(); }, 250);
+                };
+                aviso.querySelector('.toast-close').addEventListener('click', cerrar);
+                setTimeout(cerrar, parseInt(aviso.dataset.ms, 10) || 3500);
+            });
+
+            // Parche temporal: algunas pantallas ya pintan estos mismos mensajes dentro de la página.
+            // Si el texto coincide con un aviso, se quita esa copia para que no salgan dos veces.
+            document.querySelectorAll('.alert').forEach(function (caja) {
+                if (pila.contains(caja)) return;
+                const texto = normalizar(caja.textContent);
+                if (textos.some(function (m) { return m && texto.includes(m); })) caja.remove();
+            });
+        })();
+    </script>
+    <script>
+        // Anti doble clic: al enviar cualquier formulario POST se desactivan sus botones de envío,
+        // así "Guardar", "Cobrar", etc. no se pueden mandar dos veces seguidas.
+        // (Para excluir un formulario concreto: <form data-no-lock>)
+        (function () {
+            const SELECTOR = 'button[type="submit"], button:not([type]), input[type="submit"]';
+
+            function restaurar(form) {
+                form.querySelectorAll(SELECTOR).forEach(function (b) {
+                    if (b.dataset.bloqueado === '1') {
+                        b.disabled = false;
+                        delete b.dataset.bloqueado;
+                    }
+                });
+            }
+
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (!(form instanceof HTMLFormElement)) return;
+                if ((form.method || '').toLowerCase() !== 'post') return;
+                if (form.hasAttribute('data-no-lock')) return;
+
+                // Se espera a que terminen los demás manejadores: si alguno canceló el envío
+                // (confirm(), validaciones o formularios que usan fetch), no se bloquea nada.
+                setTimeout(function () {
+                    if (e.defaultPrevented) return;
+                    form.querySelectorAll(SELECTOR).forEach(function (b) {
+                        if (!b.disabled) {
+                            b.disabled = true;
+                            b.dataset.bloqueado = '1';
+                        }
+                    });
+                    // Respaldo: si el envío no llega a salir, se vuelven a habilitar
+                    setTimeout(function () { restaurar(form); }, 10000);
+                }, 0);
+            });
+
+            // Al volver con el botón "atrás" del navegador, los botones quedan habilitados
+            window.addEventListener('pageshow', function (ev) {
+                if (ev.persisted) document.querySelectorAll('form').forEach(restaurar);
+            });
+        })();
+    </script>
+    <script>
+        // Avisos desde JavaScript: mostrarAviso('Texto', 'success' | 'error' | 'warning' | 'info')
+        window.mostrarAviso = function (texto, tipo) {
+            tipo = tipo || 'success';
+            let pila = document.getElementById('toast-stack');
+            if (!pila) {
+                pila = document.createElement('div');
+                pila.id = 'toast-stack';
+                pila.className = 'toast-stack';
+                pila.setAttribute('role', 'status');
+                pila.setAttribute('aria-live', 'polite');
+                document.body.appendChild(pila);
+            }
+            const iconos = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', warning: 'bi-exclamation-triangle-fill', info: 'bi-info-circle-fill' };
+            const aviso = document.createElement('div');
+            aviso.className = 'toast-msg ' + tipo;
+            aviso.innerHTML = '<i class="bi toast-icon ' + (iconos[tipo] || iconos.info) + '"></i>' +
+                              '<div class="flex-grow-1 toast-text"></div>' +
+                              '<button type="button" class="toast-close" aria-label="Cerrar">&times;</button>';
+            aviso.querySelector('.toast-text').textContent = texto;   // textContent: sin inyección de HTML
+            pila.appendChild(aviso);
+            const cerrar = function () {
+                aviso.classList.add('saliendo');
+                setTimeout(function () { aviso.remove(); }, 250);
+            };
+            aviso.querySelector('.toast-close').addEventListener('click', cerrar);
+            setTimeout(cerrar, (tipo === 'error' || tipo === 'warning') ? 6000 : 3500);
+        };
     </script>
 </body>
 </html>

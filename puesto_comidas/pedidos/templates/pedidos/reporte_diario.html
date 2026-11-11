@@ -2,64 +2,108 @@
 
 {% block content %}
 <style>
+    /* Estilos específicos para el reporte */
     .stat-card {
         border: 1px solid var(--border-color);
-        border-radius: 8px;
+        border-radius: 12px;
         background: white;
         padding: 1.5rem;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .stat-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-family: 'DM Serif Display', serif;
+        /* Tipografía fluida para los números */
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-sub {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: auto;
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-end mb-5 mt-2">
-    <div>
+<!-- Encabezado del Reporte (Grid Responsivo Perfecto) -->
+<div class="row align-items-md-end mb-4 mt-2 g-3">
+    <!-- Columna Izquierda: Títulos -->
+    <div class="col-12 col-md-7">
         <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Administración</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-size: 2.5rem;">Reporte de Caja</h1>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Reporte de Caja</h1>
+        <p class="text-muted mb-0">Resumen financiero del día seleccionado.</p>
     </div>
     
-    <form method="get" class="d-flex align-items-center bg-white p-2 rounded-1 border">
-        <label class="me-2 ms-2 fw-bold text-muted small text-uppercase">Fecha:</label>
-        <input type="date" name="fecha" class="form-control border-0 bg-light rounded-1 me-2" value="{{ fecha_filtro|date:'Y-m-d' }}" style="width: 140px;">
-        <button type="submit" class="btn btn-dark rounded-1 px-3"><i class="bi bi-search"></i></button>
-    </form>
+    <!-- Columna Derecha: Formulario de Fecha -->
+    <div class="col-12 col-md-5">
+        <!-- ms-md-auto empuja el form a la derecha en PC. max-width evita que se estire -->
+        <form method="get" class="d-flex align-items-center bg-white p-2 rounded-3 border ms-md-auto" style="max-width: 350px;">
+            <label class="me-2 ms-2 fw-bold text-muted small text-uppercase d-none d-sm-block mb-0">Fecha:</label>
+            <input type="date" name="fecha" class="form-control border-0 bg-light rounded-2 me-2 flex-grow-1" value="{{ fecha_filtro|date:'Y-m-d' }}" style="min-width: 120px;">
+            <button type="submit" class="btn btn-dark rounded-2 px-3">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
 </div>
 
-<div class="row mb-4 g-3">
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card" style="border-top: 3px solid var(--accent-color);">
-            <h6 class="text-muted small text-uppercase fw-bold mb-2">Recaudado Total</h6>
-            <h2 class="mb-0 fw-bold" style="font-family: 'Playfair Display', serif;">${{ total_general|floatformat:"0" }}</h2>
-            <span class="text-muted small mt-2 d-block">{{ cantidad_pedidos }} pedidos cobrados</span>
+<!-- Tarjetas de Resumen (KPIs) -->
+<div class="row g-3 mb-4">
+    <!-- Recaudado Total -->
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card" style="border-top: 4px solid var(--accent-color);">
+            <div class="stat-title">Recaudado Total</div>
+            <div class="stat-value text-success">${{ total_general|floatformat:"0g" }}</div>
+            <div class="stat-sub">{{ cantidad_pedidos }} pedidos cobrados</div>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3">
+    <!-- Efectivo -->
+    <div class="col-6 col-sm-6 col-lg-3">
         <div class="stat-card">
-            <h6 class="text-muted small text-uppercase fw-bold mb-2"><i class="bi bi-cash"></i> Efectivo</h6>
-            <h2 class="mb-0 fw-bold" style="font-family: 'Playfair Display', serif;">${{ total_efectivo|floatformat:"0" }}</h2>
+            <div class="stat-title"><i class="bi bi-cash"></i> Efectivo</div>
+            <div class="stat-value">${{ total_efectivo|floatformat:"0g" }}</div>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3">
+    <!-- Nequi -->
+    <div class="col-6 col-sm-6 col-lg-3">
         <div class="stat-card">
-            <h6 class="text-muted small text-uppercase fw-bold mb-2"><i class="bi bi-phone"></i> Nequi</h6>
-            <h2 class="mb-0 fw-bold" style="font-family: 'Playfair Display', serif;">${{ total_nequi|floatformat:"0" }}</h2>
+            <div class="stat-title"><i class="bi bi-phone"></i> Nequi</div>
+            <div class="stat-value">${{ total_nequi|floatformat:"0g" }}</div>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card" style="border-top: 3px solid #D97706;">
-            <h6 class="text-muted small text-uppercase fw-bold mb-2"><i class="bi bi-exclamation-triangle"></i> Por Cobrar</h6>
-            <h2 class="mb-0 fw-bold" style="font-family: 'Playfair Display', serif;">${{ total_pendientes|floatformat:"0" }}</h2>
+    <!-- Por Cobrar -->
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card" style="border-top: 4px solid #D97706;">
+            <div class="stat-title"><i class="bi bi-exclamation-triangle"></i> Por Cobrar</div>
+            <div class="stat-value">${{ total_pendientes|floatformat:"0g" }}</div>
+            <div class="stat-sub">Saldo de pedidos del día sin pagar</div>
         </div>
     </div>
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-7">
+    <!-- Productos más vendidos -->
+    <div class="col-12 col-lg-7">
         <div class="card card-custom h-100">
             <div class="card-header bg-white border-0 p-4 pb-0">
-                <h5 class="fw-bold mb-0" style="font-family: 'Playfair Display', serif;">Productos Estrella</h5>
+                <h5 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Productos Estrella</h5>
             </div>
             <div class="card-body p-4">
                 <ul class="list-group list-group-flush">
@@ -69,19 +113,21 @@
                             <span class="badge bg-dark rounded-1 px-2 py-1">{{ prod.total_cantidad }} vendidos</span>
                         </li>
                     {% empty %}
-                        <li class="list-group-item text-muted text-center py-4 bg-transparent border-0">No hay ventas registradas hoy.</li>
+                        <li class="list-group-item text-muted text-center py-4 bg-transparent border-0">No hay ventas registradas en esta fecha.</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
     
-    <div class="col-lg-5">
+    <!-- Información de Cierre -->
+    <div class="col-12 col-lg-5">
         <div class="card card-custom h-100 bg-light">
             <div class="card-body p-4 d-flex flex-column justify-content-center text-center">
                 <i class="bi bi-info-circle text-muted mb-3" style="font-size: 2.5rem;"></i>
-                <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">Información de Cierre</h5>
-                <p class="text-muted small mb-0">El reporte se calcula basándose en los pedidos <strong>Pagados</strong> y <strong>Entregados</strong>. Los pedidos pendientes no se suman hasta que se registre el pago.</p>
+                <h5 class="fw-bold" style="font-family: 'DM Serif Display', serif;">Información de Cierre</h5>
+                <p class="text-muted small mb-2">El dinero se cuenta por el día en que se recibió cada pago, separado en <strong>efectivo</strong> y <strong>Nequi</strong>. Si a un pedido ya pagado se le agregan productos, solo se cobra lo nuevo y ese pago cuenta el día en que se reciba.</p>
+                <p class="text-muted small mb-0">Los productos más vendidos salen de los pedidos creados ese día que ya están <strong>pagados</strong> o <strong>entregados</strong>.</p>
             </div>
         </div>
     </div>

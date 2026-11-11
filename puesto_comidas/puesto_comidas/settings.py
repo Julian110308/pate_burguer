@@ -11,7 +11,23 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config, Csv 
+from decouple import config, Csv
+from datetime import timedelta
+import cloudinary
+
+# Credenciales de Cloudinary
+cloudinary.config(
+    cloud_name = config('CLOUDINARY_CLOUD_NAME'),
+    api_key = config('CLOUDINARY_API_KEY'),
+    api_secret = config('CLOUDINARY_API_SECRET'),
+    secure = True
+)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +44,10 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://small-stingily-refract.ngrok-free.dev',
+]
+
 
 # Application definition
 
@@ -37,18 +57,30 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.staticfiles',
     'pedidos',
+    'axes',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    # Axes debe ir PRIMERO para interceptar los intentos fallidos
+    'axes.backends.AxesStandaloneBackend',
+    # El backend por defecto de Django va después
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'puesto_comidas.urls'
@@ -76,8 +108,15 @@ WSGI_APPLICATION = 'puesto_comidas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config('DB_NAME', default='pate_burguer_db'),
+        'USER': config('DB_USER', default='root'),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default='127.0.0.1'),
+        'PORT': config('DB_PORT', default='3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
     }
 }
 
@@ -104,7 +143,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'es-co'
+USE_THOUSAND_SEPARATOR = True
 
 TIME_ZONE = 'America/Bogota'
 
@@ -117,6 +157,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Donde Whitenoise guardará el CSS/JS
 
 
 # Email
@@ -131,7 +172,19 @@ MAILERS = {
 AUTH_USER_MODEL = 'pedidos.Usuario'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuración de almacenamiento para Django 4.2+ (Django 5.x)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# Configuración de Cloudinary para archivos subidos por usuarios
 
 LOGIN_URL = '/login/'
 # Después de hacer login, ir a la vista de enrutamiento
@@ -139,3 +192,34 @@ LOGIN_REDIRECT_URL = 'redireccion_por_rol'
 
 # Después de hacer logout, volver al login
 LOGOUT_REDIRECT_URL = 'login'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ==========================================
+# CONFIGURACIÓN DE SEGURIDAD PARA PRODUCCIÓN
+# ==========================================
+
+# 1. Corrección del Backend de Correo
+# (Tenías "MAILERS", lo correcto es EMAIL_BACKEND)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 2. Cookies Seguras (Evita robo de sesión en redes WiFi públicas)
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_HTTPONLY = False
+
+# 3. Redirección a HTTPS y HSTS
+SECURE_SSL_REDIRECT = False
+#SECURE_HSTS_SECONDS = 31536000  # 1 año
+#SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+#SECURE_HSTS_PRELOAD = True
+
+# 4. Proxy Header para ngrok (Muy importante)
+# Le dice a Django que confíe en el header de ngrok para saber que la conexión es HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Número de intentos fallidos antes de bloquear (por defecto son 3)
+AXES_FAILURE_LIMIT = 5
+
+# Tiempo de bloqueo después de superar el límite (ej. 15 minutos)
+AXES_COOLOFF_TIME = timedelta(minutes=15)

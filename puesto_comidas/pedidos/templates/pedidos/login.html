@@ -14,7 +14,7 @@
         width: 100vw;
         margin: 0;
         padding: 0;
-        background-color: #FCFCFA;
+        background-color: #FBF8F3;
         display: flex;
     }
 
@@ -104,10 +104,14 @@
                 {% endif %}
 
                 <div class="mb-3">
-                    <label for="id_username" class="form-label small fw-bold text-muted">Correo electrónico / Usuario</label>
+                    <label for="id_username" class="form-label small fw-bold text-muted">Usuario</label>
                     <div class="input-group shadow-sm">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                        <input type="text" name="username" class="form-control border-start-0" id="id_username" required placeholder="tu@ejemplo.com">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-muted"></i></span>
+                        <!-- autocapitalize/autocorrect apagados: en el celular no deben cambiar las mayúsculas del usuario -->
+                        <input type="text" name="username" class="form-control border-start-0" id="id_username" required
+                               placeholder="Tu nombre de usuario" autocomplete="username" autocapitalize="none"
+                               autocorrect="off" spellcheck="false" autofocus
+                               value="{{ form.username.value|default_if_none:'' }}">
                     </div>
                 </div>
                 
@@ -115,14 +119,14 @@
                     <label for="id_password" class="form-label small fw-bold text-muted">Contraseña</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
-                        <input type="password" name="password" class="form-control border-start-0" id="id_password" required placeholder="••••••••">
+                        <input type="password" name="password" class="form-control border-start-0" id="id_password" required placeholder="••••••••" autocomplete="current-password">
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember">
-                        <label class="form-check-label small text-muted" for="remember">Recuérdame</label>
+                        <input class="form-check-input" type="checkbox" id="remember" name="recordarme" value="1" {% if request.POST.recordarme %}checked{% endif %}>
+                        <label class="form-check-label small text-muted" for="remember" title="Mantiene la sesión iniciada 30 días en este dispositivo">Recuérdame</label>
                     </div>
                     <!-- Enlace al Modal de Recuperación -->
                     <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalOlvidoPassword">
@@ -160,9 +164,22 @@
                     Contacta al soporte técnico para restablecer tu acceso.
                 </p>
                 
-                <a href="mailto:soporte@laesquina.com" class="btn btn-outline-dark w-100 rounded-3 fw-bold py-3 mb-2">
-                    <i class="bi bi-envelope-fill me-1"></i> Contactar Soporte
+                {# Datos de contacto de soporte: completa UNA o las DOS líneas. WhatsApp con código de país y sin signos (ej. 573001234567). #}
+                {% with soporte_whatsapp="" soporte_correo="soporte.tecnico.pateburguer@gmail.com" %}
+                {% if soporte_whatsapp %}
+                <a href="https://wa.me/{{ soporte_whatsapp }}?text=Hola%2C%20necesito%20ayuda%20para%20entrar%20al%20sistema%20de%20Pate%20Burguer" target="_blank" rel="noopener" class="btn btn-outline-dark w-100 rounded-3 fw-bold py-3 mb-2">
+                    <i class="bi bi-whatsapp me-1"></i> Escribir por WhatsApp
                 </a>
+                {% endif %}
+                {% if soporte_correo %}
+                <a href="mailto:{{ soporte_correo }}?subject=Soporte%20Pate%20Burguer" class="btn btn-outline-dark w-100 rounded-3 fw-bold py-3 mb-2">
+                    <i class="bi bi-envelope-fill me-1"></i> Escribir por correo
+                </a>
+                {% endif %}
+                {% if not soporte_whatsapp and not soporte_correo %}
+                <p class="small fw-bold text-dark mb-3">Comunícate con quien administra el sistema para restablecer tu acceso.</p>
+                {% endif %}
+                {% endwith %}
                 <button type="button" class="btn btn-light border w-100 rounded-3 fw-bold py-3" data-bs-dismiss="modal">
                     Entendido
                 </button>

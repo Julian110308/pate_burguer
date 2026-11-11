@@ -22,14 +22,30 @@ from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 
+class LoginRecordarme(auth_views.LoginView):
+    """
+    Login con el casillero "Recuérdame":
+    - Marcado: la sesión dura 30 días en ese dispositivo.
+    - Sin marcar: la sesión termina al cerrar el navegador.
+    """
+    template_name = 'pedidos/login.html'
+
+    def form_valid(self, form):
+        respuesta = super().form_valid(form)   # inicia la sesión y prepara la redirección
+        if self.request.POST.get('recordarme'):
+            self.request.session.set_expiry(60 * 60 * 24 * 30)   # 30 días
+        else:
+            self.request.session.set_expiry(0)                    # hasta cerrar el navegador
+        return respuesta
+
 # Vista personalizada para el login que fuerza el cierre de sesión previo
 def login_limpio(request):
     if request.user.is_authenticated:
         logout(request) # Si ya estaba logueado, lo desloguea automáticamente
-    return auth_views.LoginView.as_view(template_name='pedidos/login.html')(request)
+    return LoginRecordarme.as_view()(request)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('gestion-interna-pate-2024/', admin.site.urls),
     
     # 1. Nuestra ruta personalizada
     path('login/', login_limpio, name='login'),

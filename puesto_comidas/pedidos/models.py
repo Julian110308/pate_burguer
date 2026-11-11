@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
+from django.utils import timezone
+from django.db import transaction
 from decimal import Decimal
 
 
@@ -13,6 +15,12 @@ class Usuario(AbstractUser):
         ('mesero', 'Mesero'),
     ]
     rol = models.CharField(max_length=10, choices=ROL_CHOICES, default='mesero')
+
+    def save(self, *args, **kwargs):
+        # Si el usuario es superusuario, su rol siempre debe ser 'admin'
+        if self.is_superuser and self.rol != 'admin':
+            self.rol = 'admin'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.username} ({self.get_rol_display()})"
@@ -100,6 +108,9 @@ class Pedido(models.Model):
         ('nequi', 'Nequi'),
     ]
 
+    VALOR_ICOPOR = Decimal('1000.00')   # costo de cada caja de icopor (un solo lugar para cambiarlo)
+    MAX_CAJAS_ICOPOR = 20               # tope por pedido (evita errores de digitación)
+
     numero = models.PositiveIntegerField(unique=True, editable=False)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
     numero_mesa = models.PositiveIntegerField(null=True, blank=True)
@@ -115,6 +126,7 @@ class Pedido(models.Model):
     reabierto_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_reabiertos')
     fecha_reapertura = models.DateTimeField(null=True, blank=True)
     cobrar_icopor = models.BooleanField(default=False, help_text="Indica si se añadió el costo del empaque de icopor")
+    cantidad_icopor = models.PositiveIntegerField(default=0, help_text="Cajas de icopor del pedido (cada una se cobra aparte)")
 
     class Meta:
         verbose_name = 'Pedido'
@@ -132,18 +144,123 @@ class Pedido(models.Model):
         # Sumamos el subtotal de los productos
         total_productos = sum((d.subtotal for d in self.detalles.all()), Decimal('0.00'))
         
-        # Si se cobró el icopor, sumamos 1000
-        if self.cobrar_icopor:
-            total_productos += Decimal('1000.00')
-            
+        # Si se cobró el icopor, sumamos su valor
+        total_productos += self.valor_icopor
+
         return total_productos
+
+    @property
+    def cajas_icopor(self):
+        """Cajas de icopor del pedido. Los pedidos antiguos solo guardaban sí/no, y eso equivale a 1 caja."""
+        return self.cantidad_icopor or (1 if self.cobrar_icopor else 0)
+
+    @property
+    def valor_icopor(self):
+        """Lo que se cobra por todas las cajas de icopor del pedido (0 si no lleva)."""
+        return self.VALOR_ICOPOR * self.cajas_icopor
+
+    @staticmethod
+    def normalizar_cajas(valor):
+        """Convierte lo que llegue (texto, vacío, negativo...) en un número de cajas válido."""
+        try:
+            cantidad = int(valor)
+        except (TypeError, ValueError):
+            cantidad = 0
+        return min(max(cantidad, 0), Pedido.MAX_CAJAS_ICOPOR)
+
+    def poner_cajas_icopor(self, cantidad):
+        """Fija el número de cajas y mantiene sincronizado el campo antiguo (cobrar_icopor)."""
+        cantidad = self.normalizar_cajas(cantidad)
+        self.cantidad_icopor = cantidad
+        self.cobrar_icopor = cantidad > 0
 
     @property
     def total_productos(self):
         return sum((d.subtotal for d in self.detalles.all()), Decimal('0.00'))
-    
+
+    # ---------- Pagos ----------
+    @property
+    def total_pagado(self):
+        """Suma de todos los pagos registrados para este pedido."""
+        return sum((p.monto for p in self.pagos.all()), Decimal('0.00'))
+
+    @property
+    def saldo_pendiente(self):
+        """Lo que todavía falta por cobrar (nunca negativo): total - pagado."""
+        return max(self.total - self.total_pagado, Decimal('0.00'))
+
+    @property
+    def metodos_pago_texto(self):
+        """Ej.: 'Efectivo' o 'Efectivo + Nequi' si se pagó en varias partes."""
+        metodos = []
+        for p in self.pagos.all():
+            nombre = p.get_metodo_display()
+            if nombre not in metodos:
+                metodos.append(nombre)
+        return ' + '.join(metodos)
+
+    def sincronizar_estado_pago(self):
+        """
+        Ajusta el estado cuando cambia el total del pedido (se agregan o editan productos):
+        - Si estaba pagado/entregado y ahora falta plata -> vuelve a 'pendiente_pago'.
+        - Si estaba pendiente, ya tiene pagos y no falta nada -> pasa a 'pagado'.
+        Devuelve True si cambió el estado (quien llama debe hacer save()).
+        """
+        if self.estado in ('pagado', 'entregado') and self.saldo_pendiente > 0:
+            self.estado = 'pendiente_pago'
+            return True
+        if self.estado == 'pendiente_pago' and self.pagos.exists() and self.saldo_pendiente <= 0:
+            self.estado = 'pagado'
+            return True
+        return False
+
     def __str__(self):
         return f"Pedido #{self.numero} - {self.get_tipo_display()}"
+
+
+class Pago(models.Model):
+    """Cada cobro real que se le hace a un pedido (un pedido puede tener varios)."""
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='pagos')
+    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    metodo = models.CharField(max_length=10, choices=Pedido.METODO_PAGO_CHOICES)
+    fecha = models.DateTimeField(default=timezone.now)
+    registrado_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pagos_registrados')
+
+    class Meta:
+        verbose_name = 'Pago'
+        verbose_name_plural = 'Pagos'
+        ordering = ['fecha', 'id']
+
+    def __str__(self):
+        return f"Pago ${self.monto} ({self.get_metodo_display()}) - Pedido #{self.pedido.numero}"
+
+    @classmethod
+    def migrar_pedidos_antiguos(cls):
+        """
+        Pedidos que se cobraron ANTES de existir este modelo no tienen ningún Pago.
+        Aquí se les crea su Pago a partir de metodo_pago / fecha_pago. Es automático,
+        seguro de repetir (solo toca pedidos sin pagos) y barato cuando no queda nada por migrar.
+        """
+        antiguos = Pedido.objects.filter(
+            estado__in=['pagado', 'entregado'],
+            metodo_pago__in=['efectivo', 'nequi'],
+            pagos__isnull=True,
+        ).prefetch_related('detalles')
+
+        ids_migrados = []
+        for p in antiguos:
+            with transaction.atomic():
+                if p.pagos.exists():
+                    continue
+                total = p.total
+                if total > 0:
+                    cls.objects.create(pedido=p, monto=total, metodo=p.metodo_pago,
+                                       fecha=p.fecha_pago or p.fecha_hora)
+                    ids_migrados.append(p.id)
+
+        if ids_migrados:
+            # Lo adicional de esos pedidos ya estaba cobrado: se quita la marca de "nuevo"
+            DetallePedido.objects.filter(pedido_id__in=ids_migrados, es_adicional=True).update(es_adicional=False)
 
 
 class DetallePedido(models.Model):
@@ -181,7 +298,7 @@ class DetalleIngredienteQuitado(models.Model):
         return f"Sin {self.ingrediente.nombre}"
 
 class ConfiguracionNegocio(models.Model):
-    nombre = models.CharField(max_length=100, default="La Esquina")
+    nombre = models.CharField(max_length=100, default="Pate Burguer")
     direccion = models.CharField(max_length=200, blank=True, null=True)
     telefono = models.CharField(max_length=50, blank=True, null=True)
     logo = models.ImageField(upload_to='configuracion/', blank=True, null=True)

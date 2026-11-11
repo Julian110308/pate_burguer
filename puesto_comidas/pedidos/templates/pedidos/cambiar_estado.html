@@ -2,11 +2,9 @@
 
 {% block content %}
 <style>
-    body { background-color: #FCFAF8; }
+    body { background-color: var(--bg-color); }
 
-    .header-section {
-        margin-bottom: 2rem;
-    }
+    .header-section { margin-bottom: 2rem; }
     
     .meta-info {
         display: flex;
@@ -45,9 +43,21 @@
         box-shadow: 0 10px 20px rgba(0,0,0,0.03);
     }
 
-    /* Cuando el radio está seleccionado, pintamos la tarjeta */
+    /* El círculo nativo del radio no se muestra: la tarjeta ya indica cuál está elegido */
+    .payment-option { position: relative; }
+    .payment-radio {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    /* Navegación con teclado: la tarjeta muestra el foco */
+    .payment-radio:focus-visible + .payment-card {
+        outline: 3px solid rgba(16, 185, 129, 0.45);
+        outline-offset: 2px;
+    }
+
     .payment-radio:checked + .payment-card {
-        border-color: #10B981; /* Verde de éxito */
+        border-color: #10B981;
         background-color: #F0FDF4;
     }
 
@@ -81,7 +91,6 @@
         color: var(--text-muted);
     }
 
-    /* Check de selección */
     .check-circle {
         position: absolute;
         top: 1.5rem;
@@ -107,7 +116,6 @@
         display: block;
     }
 
-    /* Panel de resumen */
     .summary-card {
         background: white;
         border: 1px solid var(--border-color);
@@ -146,26 +154,35 @@
                         <div class="d-flex justify-content-between mb-2">
                             <div class="text-muted" style="font-size: 0.9rem;">
                                 <span class="fw-bold text-dark">{{ detalle.cantidad }}x</span> {{ detalle.producto.nombre }}
+                                {% if detalle.es_adicional %}<span class="badge bg-warning text-dark ms-1">Nuevo</span>{% endif %}
                             </div>
-                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">${{ detalle.subtotal }}</div>
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">${{ detalle.subtotal|floatformat:"0g" }}</div>
                         </div>
                     {% endfor %}
+                    {% if pedido.cajas_icopor %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="text-muted" style="font-size: 0.9rem;"><i class="bi bi-box-seam me-1"></i> Caja de icopor{% if pedido.cajas_icopor > 1 %} ×{{ pedido.cajas_icopor }}{% endif %}</div>
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">${{ pedido.valor_icopor|floatformat:"0g" }}</div>
+                        </div>
+                    {% endif %}
                 </div>
                 
                 <div class="border-top pt-3 mb-3">
                     <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
-                        <span>Subtotal</span>
-                        <span>${{ pedido.total }}</span>
+                        <span>Total del pedido</span>
+                        <span>${{ pedido.total|floatformat:"0g" }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
-                        <span>Productos</span>
-                        <span>{{ pedido.detalles.all|length }}</span>
+                    {% if es_adicional %}
+                    <div class="d-flex justify-content-between mb-2 text-success" style="font-size: 0.9rem;">
+                        <span>Ya pagado</span>
+                        <span>- ${{ total_pagado|floatformat:"0g" }}</span>
                     </div>
+                    {% endif %}
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                    <h5 class="mb-0 fw-bold text-uppercase">Total</h5>
-                    <h2 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; color: var(--accent-color);">${{ pedido.total }}</h2>
+                    <h5 class="mb-0 fw-bold text-uppercase">Total a Cobrar</h5>
+                    <h2 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; color: var(--accent-color);">${{ saldo_a_cobrar|floatformat:"0g" }}</h2>
                 </div>
             </div>
         </div>
@@ -178,7 +195,7 @@
                 <div class="row g-3 mb-5">
                     <!-- Opción Efectivo -->
                     <div class="col-md-6">
-                        <label class="w-100 cursor-pointer m-0">
+                        <label class="w-100 m-0 payment-option">
                             <input type="radio" name="metodo_pago" value="efectivo" class="payment-radio" checked>
                             <div class="payment-card">
                                 <div class="check-circle"><i class="bi bi-check-lg"></i></div>
@@ -193,7 +210,7 @@
 
                     <!-- Opción Nequi -->
                     <div class="col-md-6">
-                        <label class="w-100 cursor-pointer m-0">
+                        <label class="w-100 m-0 payment-option">
                             <input type="radio" name="metodo_pago" value="nequi" class="payment-radio">
                             <div class="payment-card">
                                 <div class="check-circle"><i class="bi bi-check-lg"></i></div>
@@ -207,10 +224,17 @@
                     </div>
                 </div>
 
+                {% if saldo_a_cobrar <= 0 %}
+                <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Este pedido no tiene saldo pendiente.</span>
+                </div>
+                {% endif %}
+
                 <!-- Botones de Acción -->
                 <div class="d-flex justify-content-end gap-3 border-top pt-4">
                     <a href="{% url 'pedidos_activos' %}" class="btn btn-light border px-4 py-3 rounded-3 fw-bold text-muted">Cancelar</a>
-                    <button type="submit" class="btn btn-success px-5 py-3 rounded-3 fw-bold" style="background-color: #10B981; border-color: #10B981;">
+                    <button type="submit" class="btn btn-success px-5 py-3 rounded-3 fw-bold" style="background-color: #10B981; border-color: #10B981;"{% if saldo_a_cobrar <= 0 %} disabled{% endif %}>
                         <i class="bi bi-check-circle-fill me-1"></i> Confirmar Pago
                     </button>
                 </div>

@@ -1,5 +1,11 @@
-Django>=5.0
+Django>=5.0,<6.0
 Pillow
 django-filter
 reportlab
-python-decouple 
+python-decouple
+gunicorn
+whitenoise
+mysqlclient
+dj-database-url
+cloudinary
+django-cloudinary-storage

@@ -12,8 +12,8 @@
         margin-bottom: 0.5rem;
     }
     .form-control, .form-select {
-        background-color: #F9F8F6;
-        border: 1px solid #E5E1DA;
+        background-color: #F7F3EC;
+        border: 1px solid #E2D9CD;
         padding: 12px 16px;
         font-size: 0.95rem;
         border-radius: 8px;
@@ -21,7 +21,7 @@
     .form-control:focus, .form-select:focus {
         background-color: white;
         border-color: var(--accent-color);
-        box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1);
+        box-shadow: 0 0 0 3px rgba(174, 69, 45, 0.1);
     }
     
     .section-card {
@@ -256,7 +256,7 @@
             </div>
             <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
                 <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary-custom" id="btnGuardarIngrediente">Guardar y Seleccionar</button>
+                <button type="button" class="btn btn-primary-custom" id="btnGuardarIngrediente">Guardar ingrediente</button>
             </div>
         </div>
     </div>
@@ -290,8 +290,8 @@
             btnAbrirModal.addEventListener('click', function() {
                 inputNombre.value = '';
                 errorDiv.style.display = 'none';
-                const modal = new bootstrap.Modal(document.getElementById('modalNuevoIngrediente'));
-                modal.show();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoIngrediente')).show();
+                setTimeout(function () { inputNombre.focus(); }, 300);
             });
         }
 
@@ -318,14 +318,19 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'ok') {
-                        const selects = document.querySelectorAll('select[name$="-ingrediente"]');
+                        // Se agrega a las filas actuales Y a la plantilla de filas nuevas
+                        const selects = [
+                            ...document.querySelectorAll('select[name$="-ingrediente"]'),
+                            ...(plantilla ? plantilla.content.querySelectorAll('select') : [])
+                        ];
                         selects.forEach(select => {
                             if (!select.querySelector(`option[value="${data.id}"]`)) {
                                 const option = new Option(data.nombre, data.id);
                                 select.add(option);
                             }
                         });
-                        bootstrap.Modal.getInstance(document.getElementById('modalNuevoIngrediente')).hide();
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoIngrediente')).hide();
+                        if (window.mostrarAviso) mostrarAviso('Ingrediente «' + data.nombre + '» guardado. Ya lo puedes elegir en la lista.');
                     } else {
                         errorDiv.innerText = data.message;
                         errorDiv.style.display = "block";
@@ -337,9 +342,19 @@
                     errorDiv.style.display = "block";
                 })
                 .finally(() => {
-                    btnGuardarIngrediente.innerHTML = 'Guardar y Seleccionar';
+                    btnGuardarIngrediente.innerHTML = 'Guardar ingrediente';
                     btnGuardarIngrediente.disabled = false;
                 });
+            });
+        }
+
+        // Enter dentro del campo guarda el ingrediente (el modal no es parte del formulario del plato)
+        if (inputNombre && btnGuardarIngrediente) {
+            inputNombre.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    btnGuardarIngrediente.click();
+                }
             });
         }
 

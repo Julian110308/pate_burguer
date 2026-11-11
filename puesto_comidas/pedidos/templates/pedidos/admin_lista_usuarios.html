@@ -25,7 +25,7 @@
         padding: 8px 16px;
         display: flex;
         align-items: center;
-        max-width: 300px;
+        width: 100%;
     }
     .search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 10px; font-size: 0.9rem; }
 
@@ -39,6 +39,7 @@
         font-weight: 500;
         transition: all 0.2s;
         cursor: pointer;
+        white-space: nowrap;
     }
     .filter-pill.active { background: #2D2A26; color: white; border-color: #2D2A26; }
     .filter-pill .badge { background: #F3F4F6; color: #1F2937; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-left: 5px; }
@@ -61,6 +62,7 @@
         width: 45px; height: 45px; border-radius: 8px;
         display: flex; justify-content: center; align-items: center;
         font-size: 1.4rem; font-weight: bold; color: white; position: relative;
+        flex-shrink: 0;
     }
     
     .status-indicator {
@@ -85,6 +87,7 @@
         background: white; border: 1px solid var(--border-color); color: var(--text-muted);
         width: 36px; height: 36px; border-radius: 8px;
         display: flex; justify-content: center; align-items: center; transition: all 0.2s;
+        flex-shrink: 0;
     }
     .btn-action-icon:hover { background: #F3F4F6; color: var(--text-main); }
     
@@ -100,12 +103,84 @@
         display: flex; justify-content: center; align-items: center; margin-bottom: 10px; font-size: 1.2rem;
     }
 
-    /* --- ESTILOS DEL MODAL --- */
+    /* --- ESTILOS DEL MODAL Y EL INPUT CORREGIDOS --- */
     .premium-modal-content { border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); background-color: #FCFBF9; }
-    .premium-input-group { position: relative; margin-bottom: 0.25rem; }
-    .premium-input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-size: 1.1rem; }
-    .premium-input-group input { padding-left: 45px; background-color: white; border: 1px solid #E5E1DA; border-radius: 10px; height: 48px; }
-    .premium-input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1); }
+    
+    .premium-input-group { 
+        position: relative; 
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Solo afecta al ícono de la izquierda (candado/usuario) */
+    .premium-input-group > i { 
+        position: absolute; 
+        left: 16px; 
+        color: #9CA3AF; 
+        font-size: 1.1rem; 
+        pointer-events: none; 
+        z-index: 10;
+    }
+
+    .premium-input-group input { 
+        padding-left: 45px !important; 
+        padding-right: 45px !important;
+        height: 48px;
+        width: 100%;
+        background-color: white; 
+        border: 1px solid #E5E1DA; 
+        border-radius: 10px; 
+        color: #212529;
+        transition: all 0.2s;
+    }
+    
+    /* Elimina el fondo azul de Chrome */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+        -webkit-text-fill-color: #212529 !important;
+    }
+    
+    .premium-input-group input:focus { 
+        background-color: white;
+        border-color: var(--accent-color); 
+        box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1); 
+        outline: none;
+    }
+
+    /* Botón del ojo */
+    .btn-ojo {
+        position: absolute;
+        right: 12px;
+        background: transparent;
+        border: none;
+        color: #9CA3AF;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .btn-ojo:hover { color: var(--text-main); background-color: #F3F4F6; }
+
+    /* El icono dentro del botón debe ser estático, NO absoluto */
+    .btn-ojo i {
+        position: static !important;
+        font-size: 1.2rem;
+        margin: 0;
+        pointer-events: auto;
+    }
+
+    .password-strength { display: flex; gap: 6px; margin-top: 6px; }
+    .strength-bar { height: 6px; flex: 1; background: #E5E1DA; border-radius: 3px; transition: all 0.3s; }
 
     .role-radio { display: none; }
     .role-payment-card {
@@ -129,21 +204,20 @@
     .role-radio:checked + .role-payment-card .check-circle-role { background: #10B981; border-color: #10B981; }
     .role-radio:checked + .role-payment-card .check-circle-role i { display: block; }
 
-    /* Barras de seguridad de contraseña */
-    .password-strength { display: flex; gap: 5px; margin-top: 8px; }
-    .strength-bar { height: 4px; flex: 1; background: #E5E1DA; border-radius: 2px; transition: all 0.3s; }
 </style>
 
-<!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
-    <div>
+<!-- Encabezado (Grid Responsivo) -->
+<div class="row align-items-end mb-4 mt-2 g-3">
+    <div class="col-12 col-md-8">
         <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Equipo</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.8rem;">Personal</h1>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Personal</h1>
         <p class="text-muted mb-0">Gestiona quién tiene acceso al sistema y cómo va cada uno hoy.</p>
     </div>
-    <button class="btn btn-primary-custom px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalNuevoMesero">
-        <i class="bi bi-person-plus"></i> Nuevo mesero
-    </button>
+    <div class="col-12 col-md-4 text-md-end">
+        <button class="btn btn-primary-custom w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#modalNuevoMesero">
+            <i class="bi bi-person-plus"></i> Nuevo integrante
+        </button>
+    </div>
 </div>
 
 <!-- KPIs Superiores -->
@@ -175,21 +249,25 @@
 </div>
 
 <!-- Búsqueda y Filtros -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="search-bar">
-        <i class="bi bi-search text-muted"></i>
-        <input type="text" placeholder="Buscar por nombre o usuario">
+<div class="row g-3 mb-4 align-items-center">
+    <div class="col-12 col-md-5">
+        <div class="search-bar">
+            <i class="bi bi-search text-muted"></i>
+            <input type="text" placeholder="Buscar por nombre o usuario">
+        </div>
     </div>
     
-    <div class="d-flex gap-2">
-        <div class="filter-pill active" onclick="filtrarPersonal('todos', this)">
-            Todos <span class="badge">{{ total_integrantes }}</span>
-        </div>
-        <div class="filter-pill" onclick="filtrarPersonal('mesero', this)">
-            Meseros <span class="badge">{{ total_meseros }}</span>
-        </div>
-        <div class="filter-pill" onclick="filtrarPersonal('admin', this)">
-            Admins <span class="badge">{{ total_admins }}</span>
+    <div class="col-12 col-md-7 d-flex justify-content-md-end">
+        <div class="d-flex gap-2 overflow-auto pb-2 pb-md-0 w-100 justify-content-md-end">
+            <div class="filter-pill active" onclick="filtrarPersonal('todos', this)">
+                Todos <span class="badge">{{ total_integrantes }}</span>
+            </div>
+            <div class="filter-pill" onclick="filtrarPersonal('mesero', this)">
+                Meseros <span class="badge">{{ total_meseros }}</span>
+            </div>
+            <div class="filter-pill" onclick="filtrarPersonal('admin', this)">
+                Admins <span class="badge">{{ total_admins }}</span>
+            </div>
         </div>
     </div>
 </div>
@@ -213,11 +291,8 @@
         {% with u=data.usuario %}
         <div class="col staff-item" data-rol="{{ u.rol }}">
             <div class="staff-card">
-                
-                <!-- Cabecera de la tarjeta -->
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div class="d-flex gap-3 align-items-center">
-                        <!-- Avatar con inicial -->
                         <div class="avatar-initials" style="background-color: {% if u.rol == 'admin' %}#2D2A26{% else %}#A63A25{% endif %};">
                             {{ u.first_name|default:u.username|first|upper }}
                             <div class="status-indicator {% if data.en_turno %}status-online{% else %}status-offline{% endif %}"></div>
@@ -227,14 +302,11 @@
                             <small class="text-muted">@{{ u.username }} · {% if data.en_turno %}En turno{% else %}Fuera de turno{% endif %}</small>
                         </div>
                     </div>
-                    
-                    <!-- Badge del Rol -->
                     <span class="role-badge {% if u.rol == 'admin' %}role-admin{% else %}role-mesero{% endif %}">
                         {% if u.rol == 'admin' %}<i class="bi bi-shield-lock-fill me-1"></i>{% endif %}{{ u.get_rol_display }}
                     </span>
                 </div>
 
-                <!-- Mini Métricas -->
                 <div class="mini-stats">
                     <div class="mini-stat">
                         <span class="label">Pedidos hoy</span>
@@ -246,17 +318,14 @@
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
                 <div class="d-flex gap-2 mt-auto">
                     {% if u.rol == 'mesero' %}
                         <button class="btn btn-light border flex-grow-1 fw-bold" style="font-size: 0.85rem;" data-bs-toggle="modal" data-bs-target="#editUser{{ u.id }}">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
-                        
                         <button class="btn-action-icon" data-bs-toggle="modal" data-bs-target="#resetPass{{ u.id }}" title="Restablecer Contraseña">
                             <i class="bi bi-key"></i>
                         </button>
-                        
                         <form method="post" class="m-0" onsubmit="return confirm('¿Desactivar a {{ u.username }}? Ya no podrá iniciar sesión.');">
                             {% csrf_token %}
                             <input type="hidden" name="accion" value="eliminar">
@@ -276,7 +345,6 @@
 
         <!-- MODALES (Editar y Reset Password) -->
         {% if u.rol == 'mesero' %}
-        <!-- Modal Editar -->
         <div class="modal fade" id="editUser{{ u.id }}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content" style="border-radius: 16px; border: none;">
@@ -310,7 +378,6 @@
             </div>
         </div>
 
-        <!-- Modal Reset Password -->
         <div class="modal fade" id="resetPass{{ u.id }}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content" style="border-radius: 16px; border: none;">
@@ -332,7 +399,13 @@
                             
                             <div class="mb-3">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Nueva Contraseña</label>
-                                <input type="password" name="nueva_password" class="form-control bg-light border-0" placeholder="Mínimo 8 caracteres" required minlength="8">
+                                <div class="premium-input-group">
+                                    <i class="bi bi-lock"></i>
+                                    <input type="password" name="nueva_password" id="resetPassInput{{ u.id }}" class="form-control bg-light border-0" placeholder="Mínimo 8 caracteres" required minlength="8">
+                                    <button type="button" class="btn-ojo" onclick="togglePassword('resetPassInput{{ u.id }}', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
@@ -347,19 +420,18 @@
         {% endwith %}
     {% endfor %}
 
-    <!-- Tarjeta para Agregar Nuevo Mesero -->
     <div class="col">
         <div class="add-staff-card" data-bs-toggle="modal" data-bs-target="#modalNuevoMesero">
             <div class="add-icon-circle">
                 <i class="bi bi-plus-lg"></i>
             </div>
-            <h6 class="fw-bold mb-0">Agregar mesero</h6>
+            <h6 class="fw-bold mb-0">Agregar integrante</h6>
         </div>
     </div>
 
 </div>
 
-<!-- MODAL PREMIUM: NUEVO MESERO -->
+<!-- MODAL PREMIUM: NUEVO INTEGRANTE -->
 <div class="modal fade" id="modalNuevoMesero" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content premium-modal-content">
@@ -380,7 +452,6 @@
                 </div>
 
                 <div class="modal-body" style="padding: 1.5rem 2rem;">
-                    <!-- Sección Datos -->
                     <div class="d-flex align-items-center text-center mb-3" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                         <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
                         Datos personales
@@ -395,7 +466,6 @@
                         </div>
                     </div>
 
-                    <!-- Sección Acceso -->
                     <div class="d-flex align-items-center text-center mb-3 mt-4" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                         <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
                         Acceso al sistema
@@ -417,9 +487,11 @@
                             <div class="premium-input-group">
                                 <i class="bi bi-lock"></i>
                                 <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mínimo 8 caracteres" required minlength="8">
+                                <button type="button" class="btn-ojo" onclick="togglePassword('inputPassword', this)" title="Mostrar/Ocultar">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                             </div>
-                            <!-- Barra de fortaleza visual -->
-                            <div class="password-strength mt-1">
+                            <div class="password-strength">
                                 <div class="strength-bar" id="bar1"></div>
                                 <div class="strength-bar" id="bar2"></div>
                                 <div class="strength-bar" id="bar3"></div>
@@ -428,7 +500,6 @@
                         </div>
                     </div>
 
-                    <!-- Sección Rol (Estilo selección de pago) -->
                     <div class="d-flex align-items-center text-center mb-3 mt-4" style="color: #6B7280; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                         <hr class="flex-grow-1 me-3" style="border-color: #E5E1DA; opacity: 1;">
                         Rol
@@ -436,7 +507,6 @@
                     </div>
                     
                     <div class="row g-3">
-                        <!-- Opción Mesero -->
                         <div class="col-md-6">
                             <label class="w-100 cursor-pointer m-0">
                                 <input type="radio" name="rol" value="mesero" class="role-radio" checked>
@@ -451,7 +521,6 @@
                             </label>
                         </div>
                         
-                        <!-- Opción Administrador -->
                         <div class="col-md-6">
                             <label class="w-100 cursor-pointer m-0">
                                 <input type="radio" name="rol" value="admin" class="role-radio">
@@ -481,6 +550,22 @@
 </div>
 
 <script>
+    // --- FUNCIÓN DEL OJITO ---
+    function togglePassword(inputId, btnElement) {
+        const input = document.getElementById(inputId);
+        const icon = btnElement.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const formNuevoMesero = document.getElementById('formNuevoMesero');
         const inputUsername = document.getElementById('inputUsername');
@@ -539,7 +624,7 @@
             });
         }
 
-        // --- MEDIDOR DE FORTALEZA DE LA CONTRASEÑA ---
+        // --- MEDIDOR DE FORTALEZA ---
         const inputPassword = document.getElementById('inputPassword');
         const bar1 = document.getElementById('bar1');
         const bar2 = document.getElementById('bar2');
@@ -550,11 +635,10 @@
             inputPassword.addEventListener('input', function() {
                 const val = this.value;
                 const defaultColor = '#E5E1DA';
-                const colorDebil = '#EF4444'; // Rojo
-                const colorMedia = '#F59E0B'; // Naranja
-                const colorFuerte = '#10B981'; // Verde
+                const colorDebil = '#EF4444';
+                const colorMedia = '#F59E0B';
+                const colorFuerte = '#10B981';
                 
-                // Reseteamos las barras
                 bar1.style.background = defaultColor;
                 bar2.style.background = defaultColor;
                 bar3.style.background = defaultColor;
@@ -565,7 +649,6 @@
                     return;
                 }
 
-                // Cálculo de fortaleza
                 let fuerza = 0;
                 if (val.length >= 6) fuerza++;
                 if (val.length >= 8) fuerza++;
@@ -591,7 +674,6 @@
         }
     });
 
-    // --- FUNCIÓN PARA FILTRAR LAS TARJETAS ---
     function filtrarPersonal(rol, btnElement) {
         const botones = document.querySelectorAll('.filter-pill');
         botones.forEach(btn => btn.classList.remove('active'));

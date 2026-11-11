@@ -53,7 +53,7 @@
             font-family: 'DM Serif Display', serif;
             font-size: 24px;
             font-weight: 700;
-            color: #A63A25;
+            color: #AE452D;
             margin-bottom: 5px;
             display: flex;
             align-items: center;
@@ -197,7 +197,7 @@
                     {% for detalle in detalles %}
                         <tr>
                             <td>
-                                <span class="fw-bold">{{ detalle.cantidad }}x</span> {{ detalle.producto.nombre }}
+                                <span class="fw-bold">{{ detalle.cantidad }}x</span> {{ detalle.producto.nombre }}{% if detalle.es_nuevo %} <span class="fw-bold">*</span>{% endif %}
                                 
                                 {% if detalle.ingredientes_quitados_rel.all %}
                                     <br><span class="text-muted" style="font-size: 11px;">SIN: 
@@ -212,8 +212,8 @@
                                 {% endif %}
                             </td>
                             <td class="text-right fw-bold">
-                                ${{ detalle.subtotal }}
-                                <br><span class="text-muted" style="font-size: 11px; font-weight: normal;">${{ detalle.precio_unitario }} c/u</span>
+                                ${{ detalle.subtotal|floatformat:"0g" }}
+                                <br><span class="text-muted" style="font-size: 11px; font-weight: normal;">${{ detalle.precio_unitario|floatformat:"0g" }} c/u</span>
                             </td>
                         </tr>
                     {% endfor %}
@@ -222,39 +222,67 @@
 
             <div class="divider-dashed"></div>
 
-            <!-- Totales -->
-            <div class="d-flex justify-content-between text-muted">
-                <span>Productos</span>
-                <span>{{ detalles|length }}</span>
-            </div>
-            
-            <!-- Subtotal de productos puros -->
-            <div class="d-flex justify-content-between text-muted">
-                <span>Subtotal productos</span>
-                <span>${{ pedido.total_productos }}</span>
-            </div>
+            <!-- Si ya se pagó una parte, mostramos cuánto falta; si no, el total normal -->
+            {% if es_adicional %}
 
-            <!-- NUEVO: Si se cobró el icopor, lo mostramos aquí -->
-            {% if pedido.cobrar_icopor %}
-            <div class="d-flex justify-content-between text-muted">
-                <span>Caja de icopor</span>
-                <span>$1.000</span>
-            </div>
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Subtotal productos</span>
+                    <span>${{ pedido.total_productos|floatformat:"0g" }}</span>
+                </div>
+                {% if pedido.cajas_icopor %}
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Caja de icopor{% if pedido.cajas_icopor > 1 %} x{{ pedido.cajas_icopor }}{% endif %}</span>
+                    <span>${{ pedido.valor_icopor|floatformat:"0g" }}</span>
+                </div>
+                {% endif %}
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Total del pedido</span>
+                    <span>${{ pedido.total|floatformat:"0g" }}</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Ya pagado</span>
+                    <span>- ${{ total_pagado|floatformat:"0g" }}</span>
+                </div>
+
+                <div class="divider-dashed"></div>
+
+                <div class="total-row">
+                    <span>SALDO A PAGAR</span>
+                    <span>${{ saldo_pendiente|floatformat:"0g" }}</span>
+                </div>
+
+                <div class="alert alert-warning text-center mt-3 mb-3" style="border: 1px solid #FCD34D; background-color: #FFFBEB; color: #92400E; padding: 10px; border-radius: 6px;">
+                    <strong><i class="bi bi-exclamation-triangle-fill"></i> AVISO</strong><br>
+                    <span style="font-size: 11px;">Este pedido tiene productos adicionales (marcados con *). Solo se cobra el saldo mostrado; lo anterior ya fue pagado.</span>
+                </div>
+
+            {% else %}
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Subtotal productos</span>
+                    <span>${{ pedido.total_productos|floatformat:"0g" }}</span>
+                </div>
+
+                {% if pedido.cajas_icopor %}
+                <div class="d-flex justify-content-between text-muted">
+                    <span>Caja de icopor{% if pedido.cajas_icopor > 1 %} x{{ pedido.cajas_icopor }}{% endif %}</span>
+                    <span>${{ pedido.valor_icopor|floatformat:"0g" }}</span>
+                </div>
+                {% endif %}
+
+                <div class="divider-dashed"></div>
+
+                <div class="total-row">
+                    <span>{% if total_pagado > 0 %}TOTAL PAGADO{% else %}TOTAL A PAGAR{% endif %}</span>
+                    <span>${{ pedido.total|floatformat:"0g" }}</span>
+                </div>
             {% endif %}
-
-            <div class="divider-dashed"></div>
-
-            <div class="total-row">
-                <span>TOTAL</span>
-                <span>${{ pedido.total }}</span>
-            </div>
 
             <!-- Método de Pago -->
             <div class="payment-box">
                 <span>MÉTODO DE PAGO</span>
                 <span>
-                    {% if pedido.metodo_pago %}
-                        {{ pedido.get_metodo_pago_display|upper }}
+                    {% if pagos %}
+                        {{ pedido.metodos_pago_texto|upper }}{% if saldo_pendiente > 0 %} (PARCIAL){% endif %}
                     {% else %}
                         PENDIENTE
                     {% endif %}

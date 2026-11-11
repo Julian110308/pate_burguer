@@ -1,8 +1,9 @@
 {% extends 'pedidos/base.html' %}
+{% load l10n %}
 
 {% block content %}
 <style>
-    body { background-color: #FCFAF8; }
+    body { background-color: var(--bg-color); }
 
     /* KPIs Superiores */
     .kpi-box {
@@ -12,7 +13,7 @@
         padding: 1.25rem;
         height: 100%;
     }
-    .kpi-box.dark { background: #2D2A26; color: white; border: none; }
+    .kpi-box.dark { background: #33271F; color: white; border: none; }
     .kpi-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
     .kpi-box.dark .kpi-title { color: #A8A29E; }
     .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 700; margin-top: 5px; line-height: 1; }
@@ -26,6 +27,7 @@
         padding: 8px 16px;
         display: flex;
         align-items: center;
+        width: 100%;
     }
     .search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 10px; font-size: 0.9rem; }
     
@@ -37,6 +39,7 @@
         font-size: 0.85rem;
         font-weight: 500;
         color: var(--text-main);
+        width: 100%;
     }
 
     /* Filtros de categorías */
@@ -50,8 +53,9 @@
         font-weight: 500;
         transition: all 0.2s;
         cursor: pointer;
+        white-space: nowrap;
     }
-    .filter-pill.active { background: #2D2A26; color: white; border-color: #2D2A26; }
+    .filter-pill.active { background: #33271F; color: white; border-color: #33271F; }
     .filter-pill .badge { background: #F3F4F6; color: #1F2937; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-left: 5px; }
     .filter-pill.active .badge { background: rgba(255,255,255,0.2); color: white; }
 
@@ -80,9 +84,8 @@
     .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
     .product-card:hover .product-img { transform: scale(1.05); }
 
-    /* Estado "Sin imagen" (Fondo rayado) */
     .no-image-bg {
-        background: repeating-linear-gradient(45deg, #F9F8F6, #F9F8F6 10px, #F3F1EC 10px, #F3F1EC 20px);
+        background: repeating-linear-gradient(45deg, #F7F3EC, #F7F3EC 10px, #F3F1EC 10px, #F3F1EC 20px);
         width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted);
     }
 
@@ -123,12 +126,13 @@
         border-radius: 6px;
         display: flex; justify-content: center; align-items: center;
         transition: all 0.2s;
+        flex-shrink: 0;
     }
     .btn-action-small:hover { background: #F3F4F6; color: var(--text-main); }
 
     /* Tarjeta de "Agregar Plato" */
     .add-product-card {
-        background: #FCFAF8;
+        background: #FBF8F3;
         border: 2px dashed var(--border-color);
         border-radius: 12px;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -142,18 +146,18 @@
     }
 </style>
 
-<!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-end mb-4 mt-2">
-    <div>
+<!-- Encabezado (Grid Responsivo) -->
+<div class="row align-items-end mb-4 mt-2 g-3">
+    <div class="col-12 col-md-7">
         <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Catálogo</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: 2.8rem;">Gestión de Productos</h1>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Gestión de Productos</h1>
         <p class="text-muted mb-0">Administra los platos y bebidas de tu menú</p>
     </div>
-    <div class="d-flex gap-2">
-        <button class="btn btn-light border fw-bold px-4 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#modalCategoria">
+    <div class="col-12 col-md-5 d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
+        <button class="btn btn-light border fw-bold px-4 py-2 rounded-3 w-100 w-sm-auto" data-bs-toggle="modal" data-bs-target="#modalCategoria">
             <i class="bi bi-tag"></i> Categorías
         </button>
-        <a href="{% url 'crear_producto_completo' %}" class="btn btn-primary-custom px-4 py-2 rounded-3">
+        <a href="{% url 'crear_producto_completo' %}" class="btn btn-primary-custom px-4 py-2 rounded-3 w-100 w-sm-auto">
             <i class="bi bi-plus-lg"></i> Nuevo Plato
         </a>
     </div>
@@ -187,46 +191,57 @@
     </div>
 </div>
 
-<!-- Barra de Búsqueda y Filtros -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="search-bar" style="max-width: 300px; width: 100%;">
-        <i class="bi bi-search text-muted"></i>
-        <input type="text" id="buscadorProductos" placeholder="Buscar producto..." onkeyup="buscarProductos()">
+<!-- Búsqueda y Filtros (Patrón Mágico) -->
+<div class="row g-3 mb-3 align-items-center">
+    <!-- Buscador -->
+    <div class="col-12 col-md-4">
+        <div class="search-bar">
+            <i class="bi bi-search text-muted"></i>
+            <input type="text" id="buscadorProductos" placeholder="Buscar producto..." onkeyup="buscarProductos()">
+        </div>
     </div>
     
-    <div class="d-flex gap-2">
-        <select class="form-select-custom" id="filtroEstado" onchange="filtrarProductos()">
-            <option value="todos">Todos los estados</option>
-            <option value="activos">Activos en el menú</option>
-            <option value="inactivos">Ocultos</option>
-        </select>
-        <select class="form-select-custom" id="filtroOrden" onchange="ordenarProductos()">
-            <option value="az">Nombre A-Z</option>
-            <option value="za">Nombre Z-A</option>
-            <option value="precio_asc">Precio: Menor a Mayor</option>
-            <option value="precio_desc">Precio: Mayor a Menor</option>
-        </select>
+    <!-- Selects (Estado y Orden) -->
+    <div class="col-12 col-md-8 d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
+        <div class="w-100 w-sm-auto">
+            <select class="form-select-custom" id="filtroEstado" onchange="filtrarProductos()">
+                <option value="todos">Todos los estados</option>
+                <option value="activos">Activos en el menú</option>
+                <option value="inactivos">Ocultos</option>
+            </select>
+        </div>
+        <div class="w-100 w-sm-auto">
+            <select class="form-select-custom" id="filtroOrden" onchange="ordenarProductos()">
+                <option value="az">Nombre A-Z</option>
+                <option value="za">Nombre Z-A</option>
+                <option value="precio_asc">Precio: Menor a Mayor</option>
+                <option value="precio_desc">Precio: Mayor a Menor</option>
+            </select>
+        </div>
     </div>
 </div>
 
 <!-- Filtros de Categorías (Pills) -->
-<div class="d-flex gap-2 overflow-auto pb-3 mb-4" style="white-space: nowrap;">
-    <div class="filter-pill active" onclick="filtrarCategoria('all', this)">
-        Todas <span class="badge">{{ total_productos }}</span>
-    </div>
-    {% for cat in categorias %}
-        <div class="filter-pill" onclick="filtrarCategoria('{{ cat.id }}', this)">
-            {{ cat.nombre }} <span class="badge">{{ cat.productos.count }}</span>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex gap-2 overflow-auto pb-3" style="white-space: nowrap;">
+            <div class="filter-pill active" onclick="filtrarCategoria('all', this)">
+                Todas <span class="badge">{{ total_productos }}</span>
+            </div>
+            {% for cat in categorias %}
+                <div class="filter-pill" onclick="filtrarCategoria('{{ cat.id }}', this)">
+                    {{ cat.nombre }} <span class="badge">{{ cat.productos.count }}</span>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
 </div>
 
 <!-- Lista de Tarjetas de Productos -->
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="contenedor-productos">
     {% for p in productos %}
-        <div class="col product-item" data-categoria="{{ p.categoria.id }}" data-nombre="{{ p.nombre|lower }}" data-precio="{{ p.precio }}" data-disponible="{{ p.disponible|yesno:'true,false' }}">
+        <div class="col product-item" data-categoria="{{ p.categoria.id }}" data-nombre="{{ p.nombre|lower }}" data-precio="{{ p.precio|unlocalize }}" data-disponible="{{ p.disponible|yesno:'true,false' }}">
             <div class="product-card">
-                <!-- Imagen o Fondo Rayado -->
                 <div class="img-container">
                     <div class="badge-category">{{ p.categoria.nombre }}</div>
                     
@@ -241,18 +256,15 @@
                     {% endif %}
                 </div>
 
-                <!-- Datos -->
                 <div class="product-body">
                     <h5 class="product-title">{{ p.nombre }}</h5>
                     <p class="product-desc">{{ p.descripcion|default:"Sin descripción." }}</p>
                     
                     <div class="product-price">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'Inter', sans-serif; font-weight: 600;">COP</span> ${{ p.precio }}
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'Inter', sans-serif; font-weight: 600;">COP</span> ${{ p.precio|floatformat:"0g" }}
                     </div>
 
-                    <!-- Footer con Switch y Botón Editar -->
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                        <!-- Switch de Estado (AJAX) -->
                         <div class="form-toggle-ajax m-0 d-flex align-items-center">
                             <div class="form-check form-switch m-0 d-flex align-items-center">
                                 <input class="form-check-input switch-input" type="checkbox" role="switch" id="switch_{{ p.id }}" data-id="{{ p.id }}" {% if p.disponible %}checked{% endif %}>
@@ -260,7 +272,6 @@
                             </div>
                         </div>
 
-                        <!-- Botón Editar -->
                         <div class="d-flex gap-2">
                             <a href="{% url 'editar_producto_completo' p.id %}" class="btn-action-small" title="Editar">
                                 <i class="bi bi-pencil"></i>
@@ -272,7 +283,6 @@
         </div>
     {% endfor %}
 
-    <!-- Tarjeta para Agregar Nuevo Plato -->
     <div class="col" id="btn-agregar-plato">
         <a href="{% url 'crear_producto_completo' %}" class="text-decoration-none">
             <div class="add-product-card">
@@ -326,7 +336,6 @@
 <script>
     let categoriaActiva = 'all';
 
-    // 1. FILTRO POR CATEGORÍA (Pills)
     function filtrarCategoria(categoriaId, btnElement) {
         categoriaActiva = categoriaId;
         const botones = document.querySelectorAll('.filter-pill');
@@ -335,15 +344,12 @@
         aplicarFiltros();
     }
 
-    // 2. FILTRO POR ESTADO Y BÚSQUEDA
     function filtrarProductos() {
         aplicarFiltros();
     }
 
-    // 3. ORDENAMIENTO
     function ordenarProductos() {
         const contenedor = document.getElementById('contenedor-productos');
-        // Seleccionamos solo los productos reales, excluyendo la tarjeta de agregar
         const items = Array.from(contenedor.querySelectorAll('.product-item'));
         const btnAgregar = document.getElementById('btn-agregar-plato');
         const orden = document.getElementById('filtroOrden').value;
@@ -355,11 +361,9 @@
             if (orden === 'precio_desc') return parseFloat(b.getAttribute('data-precio')) - parseFloat(a.getAttribute('data-precio'));
         });
 
-        // Reinsertamos manteniendo el botón de agregar al final
         items.forEach(item => contenedor.insertBefore(item, btnAgregar));
     }
 
-    // 4. FUNCIÓN MAESTRA QUE APLICA TODOS LOS FILTROS
     function aplicarFiltros() {
         const textoBusqueda = document.getElementById('buscadorProductos').value.toLowerCase();
         const estadoFiltro = document.getElementById('filtroEstado').value;
@@ -385,58 +389,48 @@
         aplicarFiltros();
     }
 
-    // ==========================================
-    // 5. CAMBIAR ESTADO CON AJAX (Sin recargar la página)
-    // ==========================================
+    // AJAX para el Switch
     document.querySelectorAll('.switch-input').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const productoId = this.getAttribute('data-id');
             const label = this.parentElement.querySelector('.switch-label');
             const isChecked = this.checked;
 
-            // 1. Actualizamos el texto y color visualmente al instante
             if (isChecked) {
                 label.innerText = "En el menú";
                 label.style.color = "#10B981";
-                // Actualizamos el atributo para el filtro
                 this.closest('.product-item').setAttribute('data-disponible', 'true');
             } else {
                 label.innerText = "Oculto";
-                label.style.color = "#7A7571"; 
-                // Actualizamos el atributo para el filtro
+                label.style.color = "#75685D"; 
                 this.closest('.product-item').setAttribute('data-disponible', 'false');
             }
 
-            // 2. Preparamos los datos para enviar a Django
             const formData = new FormData();
             formData.append('id', productoId);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
-            // 3. Enviamos la petición AJAX a la nueva URL
             fetch("{% url 'toggle_estado_producto_ajax' %}", {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status !== 'ok') {
-                    alert('Hubo un error al guardar. Intenta de nuevo.');
-                    // Revertimos visualmente
+                    mostrarAviso('Hubo un error al guardar. Intenta de nuevo.', 'error');
                     this.checked = !isChecked;
                     label.innerText = this.checked ? "En el menú" : "Oculto";
-                    label.style.color = this.checked ? "#10B981" : "#7A7571";
+                    label.style.color = this.checked ? "#10B981" : "#75685D";
                     this.closest('.product-item').setAttribute('data-disponible', this.checked ? 'true' : 'false');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión.');
+                mostrarAviso('Error de conexión. Intenta de nuevo.', 'error');
                 this.checked = !isChecked;
                 label.innerText = this.checked ? "En el menú" : "Oculto";
-                label.style.color = this.checked ? "#10B981" : "#7A7571";
+                label.style.color = this.checked ? "#10B981" : "#75685D";
                 this.closest('.product-item').setAttribute('data-disponible', this.checked ? 'true' : 'false');
             });
         });

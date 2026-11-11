@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import (
     Usuario, Categoria, Producto, Ingrediente,
     ProductoIngrediente, Pedido, DetallePedido,
-    DetalleIngredienteQuitado,
+    DetalleIngredienteQuitado, Pago,
 )
 
 
@@ -79,13 +79,20 @@ class DetallePedidoInline(admin.TabularInline):
     fields = ('producto', 'cantidad', 'precio_unitario', 'observacion', 'es_adicional', 'fecha_agregado')
 
 
+class PagoInline(admin.TabularInline):
+    model = Pago
+    extra = 0
+    fields = ('monto', 'metodo', 'fecha', 'registrado_por')
+    readonly_fields = ('registrado_por',)
+
+
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
     list_display = ('numero', 'tipo', 'numero_mesa', 'mesero', 'estado', 'metodo_pago', 'fecha_hora', 'total_mostrado')
     list_filter = ('tipo', 'estado', 'metodo_pago', 'fecha_hora')
     search_fields = ('numero', 'numero_mesa', 'mesero__username')
     readonly_fields = ('numero', 'fecha_hora', 'fecha_pago', 'fecha_edicion', 'fecha_reapertura')
-    inlines = [DetallePedidoInline]
+    inlines = [DetallePedidoInline, PagoInline]
     fieldsets = (
         ('Información del pedido', {
             'fields': ('numero', 'tipo', 'numero_mesa', 'mesero', 'estado')

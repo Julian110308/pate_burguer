@@ -1,8 +1,9 @@
 {% extends 'pedidos/base.html' %}
+{% load l10n %}
 
 {% block content %}
 <style>
-    body { background-color: #FCFAF8; }
+    body { background-color: var(--bg-color); }
     
     .edit-header {
         border-bottom: 1px solid var(--border-color);
@@ -11,7 +12,7 @@
     }
     
     .badge-admin {
-        background-color: #2D2A26;
+        background-color: #33271F;
         color: white;
         font-size: 0.65rem;
         padding: 4px 8px;
@@ -69,7 +70,7 @@
     .product-icon {
         width: 45px;
         height: 45px;
-        background: #F9F8F6;
+        background: #F7F3EC;
         border: 1px solid var(--border-color);
         border-radius: 8px;
         display: flex;
@@ -135,7 +136,7 @@
     }
 
     .btn-save {
-        background-color: #A63A25;
+        background-color: #AE452D;
         color: white;
         border: none;
         border-radius: 8px;
@@ -144,7 +145,7 @@
         width: 100%;
         margin-top: 1.5rem;
     }
-    .btn-save:hover { background-color: #8B2E1B; }
+    .btn-save:hover { background-color: #923A26; }
 </style>
 
 <!-- Encabezado -->
@@ -175,16 +176,6 @@
     </div>
 </div>
 
-<!-- Mensajes de alerta -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %}
-
 <!-- Advertencia -->
 <div class="warning-box">
     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
@@ -205,7 +196,7 @@
             </div>
 
             {% for detalle in pedido.detalles.all %}
-                <div class="product-edit-row">
+                <div class="product-edit-row" data-precio="{{ detalle.precio_unitario|unlocalize }}">
                     <!-- Ícono -->
                     <div class="product-icon">
                         <i class="bi bi-cup-hot"></i>
@@ -216,7 +207,7 @@
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 <h6 class="fw-bold mb-1" style="font-size: 1rem;">{{ detalle.producto.nombre }}</h6>
-                                <small class="text-muted">${{ detalle.precio_unitario }} c/u</small>
+                                <small class="text-muted">${{ detalle.precio_unitario|floatformat:"0g" }} c/u</small>
                             </div>
                             <div class="d-flex align-items-center gap-3">
                                 <!-- Control de cantidad (JavaScript actualiza el subtotal) -->
@@ -226,7 +217,7 @@
                                     <button type="button" class="qty-btn" onclick="cambiarCantidad({{ detalle.id }}, 1)">+</button>
                                 </div>
                                 <!-- Subtotal dinámico -->
-                                <h6 class="mb-0 fw-bold" style="min-width: 80px; text-align: right;">$<span id="subtotal_{{ detalle.id }}">{{ detalle.subtotal }}</span></h6>
+                                <h6 class="mb-0 fw-bold" style="min-width: 80px; text-align: right;">$<span id="subtotal_{{ detalle.id }}">{{ detalle.subtotal|floatformat:"0g" }}</span></h6>
                             </div>
                         </div>
                         
@@ -258,9 +249,25 @@
                 <h5 class="fw-bold mb-4" style="font-family: 'DM Serif Display', serif;">Resumen</h5>
                 
                 <div class="summary-row">
-                    <span>Total original</span>
-                    <span>${{ pedido.total }}</span>
+                    <span>Total actual</span>
+                    <span>${{ pedido.total|floatformat:"0g" }}</span>
                 </div>
+                {% if pedido.tipo == 'llevar' or pedido.cajas_icopor %}
+                <div class="summary-row" style="align-items: center;">
+                    <span>Cajas de icopor <small>(${{ valor_icopor|floatformat:"0g" }} c/u)</small></span>
+                    <div class="qty-control" style="width: 100px;">
+                        <button type="button" class="qty-btn" onclick="cambiarIcopor(-1)" aria-label="Quitar una caja">-</button>
+                        <input type="number" name="cantidad_icopor" id="input_icopor" class="qty-input" value="{{ pedido.cajas_icopor }}" min="0" max="20" readonly>
+                        <button type="button" class="qty-btn" onclick="cambiarIcopor(1)" aria-label="Agregar una caja">+</button>
+                    </div>
+                </div>
+                {% endif %}
+                {% if pedido.total_pagado > 0 %}
+                <div class="summary-row">
+                    <span>Ya pagado</span>
+                    <span class="text-success fw-bold">${{ pedido.total_pagado|floatformat:"0g" }}</span>
+                </div>
+                {% endif %}
                 <div class="summary-row">
                     <span>Diferencia</span>
                     <span class="text-muted fw-bold" id="diferenciaTexto">Sin cambios</span>
@@ -268,10 +275,16 @@
                 
                 <div class="summary-row total">
                     <span>Nuevo total</span>
-                    <span>$<span id="nuevoTotal">{{ pedido.total }}</span></span>
+                    <span>$<span id="nuevoTotal">{{ pedido.total|floatformat:"0g" }}</span></span>
                 </div>
+                {% if pedido.total_pagado > 0 %}
+                <div class="summary-row" style="margin-top: 0.75rem;">
+                    <span>Saldo por cobrar</span>
+                    <span class="fw-bold" id="saldoTexto">${{ pedido.saldo_pendiente|floatformat:"0g" }}</span>
+                </div>
+                {% endif %}
                 
-                <div class="alert alert-light border mt-3 text-center small text-muted">
+                <div id="avisoCambios" class="alert alert-light border mt-3 text-center small text-muted">
                     Aún no has hecho cambios
                 </div>
 
@@ -290,47 +303,72 @@
 </form>
 
 <script>
-    // Función para incrementar/decrementar y actualizar subtotales visualmente
+    // Totales reales (números, sin formato) para calcular diferencias
+    const TOTAL_ORIGINAL = {{ pedido.total|unlocalize }};
+    const VALOR_ICOPOR = {{ valor_icopor|unlocalize }};
+    const MAX_CAJAS = 20;
+
+    // Cajas de icopor que hay en pantalla (0 si el pedido no tiene ese control)
+    function cajasActuales() {
+        const campo = document.getElementById('input_icopor');
+        return campo ? (parseInt(campo.value, 10) || 0) : 0;
+    }
+
+    function cambiarIcopor(delta) {
+        const campo = document.getElementById('input_icopor');
+        campo.value = Math.min(Math.max(cajasActuales() + delta, 0), MAX_CAJAS);
+        actualizarTotales();
+    }
+    const YA_PAGADO = {{ pedido.total_pagado|unlocalize }};
+
+    function formatear(n) {
+        return Math.round(n).toLocaleString('es-CO');
+    }
+
+    // Incrementar/decrementar y actualizar subtotales visualmente
     function cambiarCantidad(detalleId, delta) {
         const input = document.getElementById('input_cantidad_' + detalleId);
-        let cantidad = parseInt(input.value) + delta;
-        
+        let cantidad = parseInt(input.value, 10) + delta;
         if (cantidad < 1) cantidad = 1; // No permitimos menos de 1
-        
         input.value = cantidad;
-        
-        // Encontrar el precio unitario buscando en el texto
-        const precioTexto = input.closest('.product-edit-row').querySelector('small').innerText;
-        const precioUnitario = parseFloat(precioTexto.replace('$', '').replace(' c/u', ''));
-        
-        // Calcular nuevo subtotal
-        const nuevoSubtotal = cantidad * precioUnitario;
-        
-        // Actualizar el texto del subtotal de esa fila
-        document.getElementById('subtotal_' + detalleId).innerText = nuevoSubtotal.toFixed(2);
-        
-        // Actualizar los totales generales
+
+        const fila = input.closest('.product-edit-row');
+        const precioUnitario = parseFloat(fila.dataset.precio);
+        document.getElementById('subtotal_' + detalleId).textContent = formatear(cantidad * precioUnitario);
+
         actualizarTotales();
     }
 
     function actualizarTotales() {
-        let total = 0;
-        const subtotales = document.querySelectorAll('[id^="subtotal_"]');
-        
-        subtotales.forEach(span => {
-            total += parseFloat(span.innerText);
+        let total = cajasActuales() * VALOR_ICOPOR;
+        document.querySelectorAll('.product-edit-row').forEach(function (fila) {
+            total += parseInt(fila.querySelector('.qty-input').value, 10) * parseFloat(fila.dataset.precio);
         });
-        
-        document.getElementById('nuevoTotal').innerText = total.toFixed(2);
-        
-        // Lógica para mostrar la diferencia (opcional)
-        const totalOriginal = parseFloat("{{ pedido.total }}");
-        const diferencia = total - totalOriginal;
-        
-        if (diferencia !== 0) {
-            const difTexto = document.getElementById('diferenciaTexto');
-            difTexto.innerText = (diferencia > 0 ? '+$' : '-$') + Math.abs(diferencia).toFixed(2);
-            difTexto.className = diferencia > 0 ? 'text-danger fw-bold' : 'text-success fw-bold';
+
+        document.getElementById('nuevoTotal').textContent = formatear(total);
+
+        const diferencia = total - TOTAL_ORIGINAL;
+        const difTexto = document.getElementById('diferenciaTexto');
+        const aviso = document.getElementById('avisoCambios');
+        const saldoTexto = document.getElementById('saldoTexto');
+
+        if (Math.round(diferencia) === 0) {
+            difTexto.textContent = 'Sin cambios';
+            difTexto.className = 'text-muted fw-bold';
+            aviso.textContent = 'Aún no has hecho cambios';
+        } else {
+            difTexto.textContent = (diferencia > 0 ? '+$' : '-$') + formatear(Math.abs(diferencia));
+            // Más por cobrar = verde; menos = rojo (el rojo solo indica que el pedido bajó)
+            difTexto.className = (diferencia > 0 ? 'text-success' : 'text-danger') + ' fw-bold';
+            aviso.textContent = 'Tienes cambios sin guardar';
+        }
+
+        if (saldoTexto) {
+            const saldo = Math.max(total - YA_PAGADO, 0);
+            saldoTexto.textContent = '$' + formatear(saldo);
+            if (saldo > 0 && YA_PAGADO > 0 && Math.round(diferencia) !== 0) {
+                aviso.textContent = 'Tienes cambios sin guardar. El pedido volverá a "Pendiente de pago" por $' + formatear(saldo) + '.';
+            }
         }
     }
 </script>

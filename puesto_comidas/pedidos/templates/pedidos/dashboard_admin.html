@@ -3,9 +3,7 @@
 {% block content %}
 <style>
     /* Estilos específicos para el Dashboard Ejecutivo */
-    body {
-        background-color: #F9F8F6; /* Fondo crema de la referencia */
-    }
+    body { background-color: var(--bg-color); }
 
     .dashboard-header {
         border-bottom: 1px solid var(--border-color);
@@ -15,31 +13,39 @@
 
     .greeting-title {
         font-family: 'DM Serif Display', serif;
-        font-size: 2.8rem;
+        /* Tipografía fluida para el título principal */
+        font-size: clamp(1.8rem, 6vw, 2.8rem);
         color: var(--text-main);
         margin-bottom: 0.5rem;
+        line-height: 1.1;
     }
 
+    /* === NUEVA CUADRÍCULA DE KPIs (Mobile-First) === */
     .kpi-container {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        display: flex;
-        padding: 1.5rem 1rem;
-        margin-bottom: 3rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en celular */
+        gap: 12px;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .kpi-container {
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas en PC */
+        }
     }
 
     .kpi-box {
-        flex: 1;
-        padding: 0 1.5rem;
-        border-right: 1px solid #F3F4F6;
-    }
-    .kpi-box:last-child {
-        border-right: none;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .kpi-label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -52,7 +58,7 @@
 
     .kpi-value {
         font-family: 'DM Serif Display', serif;
-        font-size: 2.5rem;
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
         font-weight: 700;
         color: var(--text-main);
         line-height: 1;
@@ -60,7 +66,7 @@
     }
 
     .kpi-sub {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: var(--text-muted);
     }
 
@@ -79,9 +85,9 @@
     }
 
     .waiter-cta-card {
-        background: #2D2A26; /* Color oscuro */
+        background: #33271F;
         border-radius: 12px;
-        padding: 2.5rem;
+        padding: 2rem; /* Reducido de 2.5rem para móvil */
         color: white;
         height: 100%;
         display: flex;
@@ -91,9 +97,8 @@
         overflow: hidden;
     }
 
-    /* Un pequeño detalle decorativo de fondo para la tarjeta oscura */
     .waiter-cta-card::before {
-        content: '\F4B7'; /* Icono de Bootstrap (shop) */
+        content: '\F4B7';
         font-family: "bootstrap-icons";
         position: absolute;
         right: -20px;
@@ -119,7 +124,7 @@
         transition: all 0.2s;
     }
     .admin-link-item:hover {
-        padding-left: 10px; /* Efecto de desplazamiento */
+        padding-left: 10px;
         color: var(--accent-color);
     }
 
@@ -135,29 +140,30 @@
         margin-right: 1rem;
         font-size: 1.2rem;
         color: var(--accent-color);
+        flex-shrink: 0; /* Evita que el ícono se aplaste en móvil */
     }
 </style>
 
-<!-- Cabecera -->
-<div class="dashboard-header d-flex justify-content-between align-items-start">
+<!-- Cabecera (Responsiva) -->
+<div class="dashboard-header d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
     <div>
-        <h1 class="greeting-title">Tu esquina, al día.</h1>
+        <h1 class="greeting-title">Pate Burguer, al día.</h1>
         <p class="text-muted mb-0">Hola, <strong>{{ user.username }}</strong>. Este es el resumen de tu negocio hoy.</p>
     </div>
-    <div class="d-flex align-items-center gap-3">
-        <span class="text-muted small"><i class="bi bi-calendar3"></i> {{ fecha_hoy|date:"d M Y" }}</span>
-        <a href="{% url 'menu_mesero' %}" class="btn btn-light border rounded-3 fw-bold">
+    <div class="d-flex align-items-center gap-2 w-100 w-md-auto mt-2 mt-md-0">
+        <span class="text-muted small d-none d-md-inline"><i class="bi bi-calendar3"></i> {{ fecha_hoy|date:"d M Y" }}</span>
+        <a href="{% url 'menu_mesero' %}" class="btn btn-light border rounded-3 fw-bold flex-grow-1 flex-md-grow-0">
             <i class="bi bi-box-arrow-up-right me-1"></i> Vista de Mesero
         </a>
     </div>
 </div>
 
-<!-- Métricas (KPIs) -->
-<div class="kpi-container shadow-sm">
+<!-- Métricas (KPIs Responsivos) -->
+<div class="kpi-container">
     <!-- Recaudado -->
     <div class="kpi-box">
         <div class="kpi-label">Recaudado hoy <i class="bi bi-cash text-muted"></i></div>
-        <div class="kpi-value text-danger">${{ total_recaudado|floatformat:"0" }}</div>
+        <div class="kpi-value text-success">${{ total_recaudado|floatformat:"0g" }}</div>
         <div class="kpi-sub">Ingresos del día</div>
     </div>
     
@@ -171,8 +177,8 @@
     <!-- Pendientes -->
     <div class="kpi-box">
         <div class="kpi-label">Por cobrar <i class="bi bi-wallet2 text-muted"></i></div>
-        <div class="kpi-value">{{ pendientes }}</div>
-        <div class="kpi-sub">Pedidos pendientes</div>
+        <div class="kpi-value">{{ por_cobrar }}</div>
+        <div class="kpi-sub">Pedidos sin pagar</div>
     </div>
     
     <!-- Productos -->
@@ -186,23 +192,23 @@
 <!-- Operación de hoy -->
 <div class="d-flex justify-content-between align-items-end mb-3">
     <h4 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Operación de hoy</h4>
-    <span class="text-muted small">Atención y seguimiento de pedidos</span>
+    <span class="text-muted small d-none d-sm-inline">Atención y seguimiento de pedidos</span>
 </div>
 
 <div class="row g-4 mb-5">
     <!-- Panel de Pedidos Activos -->
     <div class="col-lg-7">
-        <div class="active-orders-panel shadow-sm" style="position: relative; justify-content: flex-start; padding-top: 1.5rem;">
+        <div class="active-orders-panel shadow-sm" style="position: relative; justify-content: flex-start; padding: 1.5rem; padding-top: 1.5rem;">
             <!-- Cabecera interna de la tarjeta -->
             <div class="d-flex justify-content-between w-100 mb-3 pb-3 border-bottom">
-                <span class="fw-bold fs-6">Pedidos Activos <span class="badge bg-light text-dark border ms-1">{{ pendientes }}</span></span>
+                <span class="fw-bold fs-6">Pedidos Activos <span class="badge bg-light text-dark border ms-1">{{ activos }}</span></span>
                 <a href="{% url 'pedidos_activos' %}" class="text-danger text-decoration-none small fw-bold">Ver todos <i class="bi bi-arrow-right"></i></a>
             </div>
             
             <!-- Lista dinámica de pedidos -->
             <div class="w-100 flex-grow-1 overflow-auto" style="max-height: 300px;">
                 {% for p in pedidos_activos %}
-                    <div class="d-flex justify-content-between align-items-center p-2 mb-2 rounded" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center p-2 mb-2 rounded gap-2" style="background: #FBF8F3; border: 1px solid #E2D9CD;">
                         <div>
                             <span class="fw-bold" style="font-family: 'DM Serif Display', serif;">#{{ p.numero }}</span>
                             <span class="text-muted small ms-2">
@@ -210,13 +216,17 @@
                             </span>
                             <span class="text-muted small ms-2">· {{ p.mesero.username }}</span>
                         </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="fw-bold text-dark">${{ p.total }}</span>
+                        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto justify-content-between">
+                            {% if p.estado == 'pendiente_pago' %}
+                                <span class="fw-bold text-dark">${{ p.saldo_pendiente|floatformat:"0g" }}</span>
+                            {% else %}
+                                <span class="fw-bold text-success">${{ p.total|floatformat:"0g" }} <small class="fw-normal">pagado</small></span>
+                            {% endif %}
                             <a href="{% url 'pedidos_activos' %}" class="btn btn-sm btn-outline-dark py-0 px-2" style="font-size: 0.7rem;">Ver</a>
                         </div>
                     </div>
                 {% empty %}
-                    <!-- Estado vacío (solo si no hay pedidos) -->
+                    <!-- Estado vacío -->
                     <div class="d-flex flex-column align-items-center justify-content-center h-100 mt-4">
                         <i class="bi bi-file-earmark-text text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                         <h4 class="fw-bold" style="font-family: 'DM Serif Display', serif;">Aún no hay pedidos en curso</h4>
@@ -231,7 +241,7 @@
     <div class="col-lg-5">
         <div class="waiter-cta-card shadow-sm">
             <span class="text-uppercase small fw-bold mb-2" style="letter-spacing: 2px; color: #A8A29E;">Vista de mesero</span>
-            <h2 class="mb-3" style="font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1.1;">El pedido a la mesa.</h2>
+            <h2 class="mb-3" style="font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 5vw, 2.2rem); line-height: 1.1;">El pedido a la mesa.</h2>
             <p class="small mb-4" style="color: #D6D3D1; max-width: 250px;">Accede a la vista de atención para tomar los pedidos del salón.</p>
             <a href="{% url 'menu_mesero' %}" class="btn btn-light rounded-3 fw-bold align-self-start px-4 py-2 mt-auto">
                 <i class="bi bi-box-arrow-up-right me-1"></i> Abrir Vista de Mesero
@@ -242,12 +252,12 @@
 
 <!-- Administración -->
 <div class="d-flex justify-content-between align-items-end mb-3">
-    <h4 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Administra tu esquina</h4>
-    <span class="text-muted small">Lo que necesitas, a un paso</span>
+    <h4 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Administra tu negocio</h4>
+    <span class="text-muted small d-none d-sm-inline">Lo que necesitas, a un paso</span>
 </div>
 
 <div class="row admin-links">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'reporte_diario' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-bar-chart-line"></i></div>
@@ -256,11 +266,11 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Consulta tus ingresos diarios.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'lista_productos' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-journal-text"></i></div>
@@ -269,11 +279,11 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Crea y edita los platos de tu menú.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'lista_usuarios' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-person-gear"></i></div>
@@ -282,12 +292,11 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Gestiona el personal de tu negocio.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
     
-    <!-- Agregamos Historial y Configuración en una segunda fila -->
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'historial_pedidos' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-clock-history"></i></div>
@@ -296,11 +305,11 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Ver todos los pedidos pasados.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'configuracion_negocio' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-gear"></i></div>
@@ -309,11 +318,11 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Ajustes del sistema y tickets.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4">
         <a href="{% url 'inventario_ventas' %}" class="admin-link-item">
             <div class="d-flex align-items-center">
                 <div class="admin-link-icon"><i class="bi bi-box-seam"></i></div>
@@ -322,14 +331,14 @@
                     <small class="text-muted" style="font-size: 0.75rem;">Ver qué productos se venden más.</small>
                 </div>
             </div>
-            <i class="bi bi-arrow-up-right text-muted"></i>
+            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
         </a>
     </div>
 </div>
 
 <!-- Footer sutil -->
-<div class="d-flex justify-content-between text-muted mt-4 pt-3 border-top" style="font-size: 0.75rem;">
-    <span>LA ESQUINA · ADMINISTRACIÓN</span>
+<div class="d-flex flex-column flex-sm-row justify-content-between text-muted mt-4 pt-3 border-top gap-2" style="font-size: 0.7rem;">
+    <span>PATE BURGUER · ADMINISTRACIÓN</span>
     <span>Resumen correspondiente al {{ fecha_hoy|date:"d M Y" }}</span>
 </div>
 
