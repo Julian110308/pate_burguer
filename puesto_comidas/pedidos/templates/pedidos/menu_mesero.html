@@ -4,10 +4,8 @@
 {% block content %}
 
 <style>
-    /* --- ESTILOS DEL MENÚ --- */
     body { background-color: var(--bg-color); }
 
-    /* Barra de búsqueda y filtros */
     .search-bar {
         background: white;
         border: 1px solid var(--border-color);
@@ -25,7 +23,6 @@
         font-size: 0.9rem;
     }
     
-    /* Botones de filtro de categorías */
     .filter-btn {
         background: white;
         border: 1px solid var(--border-color);
@@ -42,7 +39,6 @@
         border-color: var(--text-main);
     }
 
-    /* Tarjetas de Producto */
     .product-card {
         border: 1px solid var(--border-color);
         border-radius: 12px;
@@ -73,7 +69,6 @@
         transform: scale(1.05);
     }
 
-    /* Etiquetas flotantes sobre la imagen */
     .badge-top-left {
         position: absolute;
         top: 12px;
@@ -162,7 +157,6 @@
         color: white;
     }
 
-    /* Carrito Lateral */
     .cart-card {
         background: white;
         border: 1px solid var(--border-color);
@@ -170,7 +164,6 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.02);
     }
     
-    /* Pestañas del carrito */
     .cart-tabs {
         display: flex;
         background: #F7F3EC;
@@ -209,8 +202,6 @@
         object-fit: cover;
     }
     
-    /* Switch de icopor */
-    /* Contador de cajas de icopor */
     .icopor-stepper { display: flex; align-items: center; gap: 6px; }
     .icopor-btn {
         width: 30px; height: 30px; border-radius: 8px; padding: 0;
@@ -225,14 +216,63 @@
         border-radius: 10px;
         padding: 12px 15px;
     }
+
+    /* Botón de Cancelar (estilo neutro) */
+    .btn-cancel-edit {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .btn-cancel-edit:hover {
+        background: white;
+        color: var(--text-main);
+        border-color: var(--text-main);
+    }
+
+    /* Padding extra en móvil */
+    @media (max-width: 768px) {
+        .cart-card {
+            margin-bottom: 90px;
+        }
+    }
 </style>
 
 <!-- Encabezado Principal -->
 <div class="row mb-4 mt-2">
     <div class="col-12">
-        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">De la plancha a tu mesa</span>
-        <h1 class="fw-bold mt-1" style="font-size: 3.5rem; font-family: 'DM Serif Display', serif; line-height: 1.1;">Un buen combo,<br>un gran día.</h1>
-        <p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; max-width: 600px;">Elige tu antojo. La pasión, la bebida y el postre van por nuestra cuenta.</p>
+        {% if es_adicional %}
+            <!-- Header especial para modo "Agregar a pedido existente" -->
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+                <div>
+                    <a href="{% url 'pedidos_activos' %}" class="text-muted text-decoration-none small d-inline-flex align-items-center gap-1 mb-2">
+                        <i class="bi bi-arrow-left"></i> Volver a pedidos activos
+                    </a>
+                    <span class="text-muted small fw-bold text-uppercase d-block" style="letter-spacing: 2px; color: var(--accent-color) !important;">Agregar productos</span>
+                    <h1 class="fw-bold mt-1 mb-1" style="font-size: 2.5rem; font-family: 'DM Serif Display', serif; line-height: 1.1;">Pedido #{{ pedido.numero }}</h1>
+                    <p class="text-muted mb-0">
+                        {% if pedido.tipo == 'mesa' %}<i class="bi bi-geo-alt-fill"></i> Mesa {{ pedido.numero_mesa }}{% else %}<i class="bi bi-bag-fill"></i> Para Llevar{% endif %}
+                        · Mesero: {{ pedido.mesero.first_name|default:pedido.mesero.username }}
+                    </p>
+                </div>
+                <button type="button" class="btn-cancel-edit" onclick="abrirModalCancelar()">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </button>
+            </div>
+        {% else %}
+            <!-- Header normal para crear pedido nuevo -->
+            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">De la plancha a tu mesa</span>
+            <h1 class="fw-bold mt-1" style="font-size: 3.5rem; font-family: 'DM Serif Display', serif; line-height: 1.1;">Un buen combo,<br>un gran día.</h1>
+            <p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; max-width: 600px;">Elige tu antojo. La pasión, la bebida y el postre van por nuestra cuenta.</p>
+        {% endif %}
     </div>
 </div>
 
@@ -249,8 +289,8 @@
     <div class="col-lg-8">
         
         {% if es_adicional %}
-            <div class="alert alert-warning border-0 rounded-3 mb-4" style="background-color: #FEF3C7; color: #92400E;">
-                <i class="bi bi-info-circle-fill me-2"></i> Agregando al Pedido <strong>#{{ pedido.numero }}</strong> ({% if pedido.tipo == 'mesa' %}Mesa {{ pedido.numero_mesa }}{% else %}Para Llevar{% endif %})
+            <div class="alert alert-warning border-0 rounded-3 mb-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2" style="background-color: #FEF3C7; color: #92400E;">
+                <span><i class="bi bi-info-circle-fill me-2"></i> Estás agregando productos al Pedido <strong>#{{ pedido.numero }}</strong></span>
             </div>
         {% endif %}
 
@@ -298,26 +338,21 @@
             </div>
 
             {% if not es_adicional %}
-                <!-- Pestañas principales: solo al crear un pedido nuevo (un pedido existente ya tiene su tipo) -->
                 <div class="cart-tabs mb-3">
                     <div class="cart-tab active" id="tab-local" onclick="cambiarTipoPedido('local')">En el local</div>
                     <div class="cart-tab" id="tab-llevar" onclick="cambiarTipoPedido('llevar')">Para llevar</div>
                 </div>
 
                 <div class="mb-4">
-                    <!-- Input oculto para Django -->
                     <input type="hidden" id="tipoPedido" value="mesa">
                     
-                    <!-- 1. Contenedor para Mesa (Local) -->
                     <div id="container-mesa">
                         <input type="number" id="numeroMesa" class="form-control bg-light border-0" placeholder="Número de mesa" min="1" style="font-size: 0.9rem;">
-                        <!-- Mensaje de error elegante -->
                         <div id="error-mesa" class="text-danger small mt-1 fw-bold" style="display: none;">
                             <i class="bi bi-exclamation-circle-fill"></i> Por favor, ingresa el número de mesa.
                         </div>
                     </div>
 
-                    <!-- 2. Contenedor para Para Llevar (Recoger o Domicilio) -->
                     <div id="container-llevar" style="display: none;">
                         <div class="d-flex gap-2 mb-3 bg-light p-1 rounded-3">
                             <button type="button" class="btn btn-sm w-50 fw-bold border-0 text-dark" id="btn-recoger" onclick="cambiarSubtipoLlevar('recoger')" style="background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">Recoger en local</button>
@@ -326,13 +361,11 @@
                         
                         <div id="container-direccion" style="display: none;">
                             <input type="text" id="direccionDomicilio" class="form-control bg-light border-0" placeholder="Escribe la dirección de entrega..." style="font-size: 0.9rem;">
-                            <!-- Mensaje de error elegante -->
                             <div id="error-direccion" class="text-danger small mt-1 fw-bold" style="display: none;">
                                 <i class="bi bi-exclamation-circle-fill"></i> La dirección es obligatoria para domicilios.
                             </div>
                         </div>
 
-                        <!-- Cajas de icopor: cada una suma su valor al pedido -->
                         <div class="icopor-switch-container mt-3 d-flex align-items-center justify-content-between">
                             <div class="small fw-bold text-dark">Cajas de icopor <span class="text-success text-nowrap">(+ ${{ valor_icopor|floatformat:"0g" }} c/u)</span></div>
                             <div class="icopor-stepper">
@@ -354,7 +387,6 @@
                     {% endif %}
                 </div>
                 {% if pedido.tipo == 'llevar' %}
-                <!-- Si el plato nuevo necesita otra caja, se agrega aquí (se suma a las que ya tenía) -->
                 <div class="icopor-switch-container mb-4 d-flex align-items-center justify-content-between">
                     <div class="small fw-bold text-dark">Cajas de icopor adicionales <span class="text-success text-nowrap">(+ ${{ valor_icopor|floatformat:"0g" }} c/u)</span></div>
                     <div class="icopor-stepper">
@@ -378,7 +410,6 @@
                 <span class="fw-bold small" id="subtotalTexto">$0</span>
             </div>
 
-            <!-- Fila de icopor (se oculta si no hay cajas) -->
             <div class="d-flex justify-content-between mb-2" id="filaIcopor" style="display: none !important;">
                 <span class="text-muted small" id="textoIcopor">Caja de icopor</span>
                 <span class="fw-bold small text-success" id="valorIcopor">$0</span>
@@ -394,14 +425,27 @@
                 <h3 class="mb-0 fw-bold" id="totalPedido" style="font-family: 'DM Serif Display', serif;">$0</h3>
             </div>
 
-            <!-- Alerta para cuando el carrito está vacío -->
             <div id="error-carrito" class="alert alert-warning border-0 rounded-3 py-2 px-3 fw-bold text-center" style="display: none; background-color: #FEF3C7; color: #92400E; font-size: 0.85rem;">
                 <i class="bi bi-exclamation-triangle-fill me-1"></i> Debes agregar al menos un producto.
             </div>
 
             <button class="btn btn-primary-custom w-100 py-3 d-flex justify-content-center align-items-center gap-2" onclick="enviarPedido()">
-                Confirmar pedido <i class="bi bi-arrow-right"></i>
+                {% if es_adicional %}
+                    Agregar al pedido <i class="bi bi-arrow-right"></i>
+                {% else %}
+                    Confirmar pedido <i class="bi bi-arrow-right"></i>
+                {% endif %}
             </button>
+
+            {% if es_adicional %}
+                <!-- Botón Cancelar en modo edición -->
+                <button type="button" class="btn btn-light border w-100 py-3 mt-2 fw-bold text-muted" 
+                   onclick="abrirModalCancelar()"
+                   style="border-radius: 10px;">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+            {% endif %}
+
             <div class="text-center mt-3">
                 <small class="text-muted"><i class="bi bi-shield-check"></i> Pago 100% seguro</small>
             </div>
@@ -444,11 +488,41 @@
     </div>
 </div>
 
+<!-- MODAL GLOBAL: CANCELAR ADICIÓN DE PRODUCTOS -->
+<div class="modal fade" id="modalCancelarEdicion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; background-color: #FCFBF9;">
+            <div class="modal-body p-4 p-md-5 text-center">
+                
+                <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                     style="width: 72px; height: 72px; background-color: #FEF3C7; color: #D97706;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                </div>
+                
+                <h3 class="mb-2 fw-bold" style="font-family: 'DM Serif Display', serif; color: #33271F;">Cancelar adición</h3>
+                <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                    ¿Deseas descartar los productos que ibas a agregar?<br>
+                    <span class="small text-dark fw-bold">El pedido original no se modificará.</span>
+                </p>
+                
+                <div class="d-flex flex-column flex-sm-row gap-2 w-100 mt-4">
+                    <button type="button" class="btn btn-light border fw-bold py-3 flex-grow-1" data-bs-dismiss="modal" style="border-radius: 12px; color: #6B7280;">
+                        Continuar editando
+                    </button>
+                    <a href="{% url 'pedidos_activos' %}" class="btn fw-bold py-3 flex-grow-1 text-white text-decoration-none" style="border-radius: 12px; background-color: var(--accent-color); border-color: var(--accent-color);">
+                        Sí, cancelar
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Variables globales para la lógica de entrega
     const VALOR_ICOPOR = {{ valor_icopor|unlocalize }};
     const MAX_CAJAS_ICOPOR = 20;
-    let cajasIcopor = 0;   // cajas de icopor elegidas (en un pedido existente: las que se SUMAN)
+    let cajasIcopor = 0;
 
     function cambiarIcopor(delta) {
         cajasIcopor = Math.min(Math.max(cajasIcopor + delta, 0), MAX_CAJAS_ICOPOR);
@@ -460,7 +534,6 @@
     let tipoEntregaReal = 'mesa'; 
     let subtipoLlevar = 'recoger'; 
 
-    // Lógica para filtrar las categorías
     function filtrarCategoria(categoriaId, btnElement) {
         const botones = document.querySelectorAll('.filter-btn');
         botones.forEach(btn => btn.classList.remove('active'));
@@ -476,7 +549,6 @@
         });
     }
 
-    // Lógica para las pestañas principales (Local / Llevar)
     function cambiarTipoPedido(tipo) {
         const tabLocal = document.getElementById('tab-local');
         const tabLlevar = document.getElementById('tab-llevar');
@@ -486,7 +558,6 @@
         const inputMesa = document.getElementById('numeroMesa');
         const inputDireccion = document.getElementById('direccionDomicilio');
 
-        // Limpiar errores al cambiar de pestaña
         if(document.getElementById('error-mesa')) document.getElementById('error-mesa').style.display = 'none';
         if(document.getElementById('error-direccion')) document.getElementById('error-direccion').style.display = 'none';
         if(inputMesa) inputMesa.classList.remove('is-invalid');
@@ -497,41 +568,27 @@
             if(inputTipo) inputTipo.value = 'mesa';
             containerMesa.style.display = 'block';
             containerLlevar.style.display = 'none';
-            
             tabLocal.classList.add('active');
             tabLlevar.classList.remove('active');
-            
             if(inputMesa) inputMesa.required = true;
             if(inputDireccion) inputDireccion.required = false;
-            
-            // En el local no se usan cajas de icopor: se reinicia el contador
             cajasIcopor = 0;
             const marcadorIcopor = document.getElementById('cantidadIcopor');
             if (marcadorIcopor) marcadorIcopor.textContent = '0';
-            
         } else if (tipo === 'llevar') {
             tipoEntregaReal = 'llevar';
             if(inputTipo) inputTipo.value = 'llevar';
             containerMesa.style.display = 'none';
             containerLlevar.style.display = 'block';
-            
             tabLlevar.classList.add('active');
             tabLocal.classList.remove('active');
-            
-            if(inputMesa) {
-                inputMesa.required = false;
-                inputMesa.value = '';
-            }
-            
-            // Por defecto seleccionamos "Recoger"
+            if(inputMesa) { inputMesa.required = false; inputMesa.value = ''; }
             cambiarSubtipoLlevar('recoger');
         }
         
-        // Actualizamos el carrito para reflejar el cambio de icopor
         actualizarCarrito();
     }
 
-    // Lógica para Recoger / Domicilio dentro de "Para llevar"
     function cambiarSubtipoLlevar(subtipo) {
         subtipoLlevar = subtipo;
         const btnRecoger = document.getElementById('btn-recoger');
@@ -540,7 +597,6 @@
         const inputDireccion = document.getElementById('direccionDomicilio');
         const errorDireccion = document.getElementById('error-direccion');
 
-        // Limpiar error al cambiar de subtipo
         if(errorDireccion) errorDireccion.style.display = 'none';
         if(inputDireccion) inputDireccion.classList.remove('is-invalid');
 
@@ -549,34 +605,26 @@
             btnRecoger.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
             btnRecoger.classList.add('text-dark');
             btnRecoger.classList.remove('text-muted');
-
             btnDomicilio.style.background = 'transparent';
             btnDomicilio.style.boxShadow = 'none';
             btnDomicilio.classList.add('text-muted');
             btnDomicilio.classList.remove('text-dark');
-
             containerDireccion.style.display = 'none';
-            if(inputDireccion) {
-                inputDireccion.required = false;
-                inputDireccion.value = '';
-            }
+            if(inputDireccion) { inputDireccion.required = false; inputDireccion.value = ''; }
         } else {
             btnDomicilio.style.background = 'white';
             btnDomicilio.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
             btnDomicilio.classList.add('text-dark');
             btnDomicilio.classList.remove('text-muted');
-
             btnRecoger.style.background = 'transparent';
             btnRecoger.style.boxShadow = 'none';
             btnRecoger.classList.add('text-muted');
             btnRecoger.classList.remove('text-dark');
-
             containerDireccion.style.display = 'block';
             if(inputDireccion) inputDireccion.required = true;
         }
     }
 
-    // Variables para el carrito
     let carrito = [];
     let productos = {};
 
@@ -705,7 +753,6 @@
             `;
         });
 
-        // Cajas de icopor: cantidad x valor de cada una
         const costoIcopor = cajasIcopor * VALOR_ICOPOR;
         if (filaIcopor) {
             if (cajasIcopor > 0) {
@@ -741,23 +788,14 @@
         const errorCarrito = document.getElementById('error-carrito');
 
         if (carrito.length === 0) {
-            // Mostramos el mensaje elegante
             errorCarrito.style.display = 'block';
-            
-            // Hacemos una pequeña animación de "sacudida"
             errorCarrito.style.transform = 'translateX(5px)';
             setTimeout(() => errorCarrito.style.transform = 'translateX(-5px)', 100);
             setTimeout(() => errorCarrito.style.transform = 'translateX(0)', 200);
-
-            // Lo ocultamos después de 3 segundos
-            setTimeout(() => {
-                errorCarrito.style.display = 'none';
-            }, 3000);
-            
+            setTimeout(() => { errorCarrito.style.display = 'none'; }, 3000);
             return;
         }
 
-        // Si hay productos, nos aseguramos de que el mensaje esté oculto
         errorCarrito.style.display = 'none';
 
         let tipo = 'mesa';
@@ -766,7 +804,6 @@
         let formularioValido = true;
 
         {% if not es_adicional %}
-            // Limpiamos errores previos visualmente de mesa y dirección
             document.getElementById('error-mesa').style.display = 'none';
             document.getElementById('error-direccion').style.display = 'none';
             document.getElementById('numeroMesa').classList.remove('is-invalid');
@@ -775,7 +812,6 @@
             tipo = document.getElementById('tipoPedido').value;
             numeroMesa = document.getElementById('numeroMesa').value;
             
-            // Validaciones elegantes
             if (tipo === 'mesa' && !numeroMesa) {
                 document.getElementById('error-mesa').style.display = 'block';
                 document.getElementById('numeroMesa').classList.add('is-invalid');
@@ -794,12 +830,8 @@
             }
         {% endif %}
 
-        // Si falta algo, detenemos el envío
-        if (!formularioValido) {
-            return; 
-        }
+        if (!formularioValido) return; 
 
-        // Cajas de icopor elegidas
         const cobrar_icopor = cajasIcopor > 0;
 
         const data = {
@@ -807,8 +839,8 @@
             numero_mesa: numeroMesa,
             direccion: direccion, 
             observaciones: '', 
-            cobrar_icopor: cobrar_icopor,      // dato antiguo (sí/no), por compatibilidad
-            cantidad_icopor: cajasIcopor,      // cajas: nuevas, o las que se suman si el pedido ya existe
+            cobrar_icopor: cobrar_icopor,
+            cantidad_icopor: cajasIcopor,
             carrito: carrito
         };
 
@@ -832,16 +864,26 @@
                 window.location.href = '/ticket/' + data.pedido_id + '/';
             } else {
                 mostrarAviso('Error: ' + data.message, 'error');
-                btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
+                btn.innerHTML = '{% if es_adicional %}Agregar al pedido{% else %}Confirmar pedido{% endif %} <i class="bi bi-arrow-right"></i>';
                 btn.disabled = false;
             }
         })
         .catch(error => {
             console.error('Error:', error);
             mostrarAviso('Hubo un error al guardar el pedido. Revisa tu conexión e intenta de nuevo.', 'error');
-            btn.innerHTML = 'Confirmar pedido <i class="bi bi-arrow-right"></i>';
+            btn.innerHTML = '{% if es_adicional %}Agregar al pedido{% else %}Confirmar pedido{% endif %} <i class="bi bi-arrow-right"></i>';
             btn.disabled = false;
         });
+    }
+
+    // --- FUNCIÓN PARA ABRIR LA MODAL DE CANCELAR ---
+    let modalCancelarInstancia = null;
+    
+    function abrirModalCancelar() {
+        if (!modalCancelarInstancia) {
+            modalCancelarInstancia = new bootstrap.Modal(document.getElementById('modalCancelarEdicion'));
+        }
+        modalCancelarInstancia.show();
     }
 </script>
 {% endblock %}

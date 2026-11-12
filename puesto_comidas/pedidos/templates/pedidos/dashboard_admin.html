@@ -2,344 +2,411 @@
 
 {% block content %}
 <style>
-    /* Estilos específicos para el Dashboard Ejecutivo */
     body { background-color: var(--bg-color); }
 
-    .dashboard-header {
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .greeting-title {
-        font-family: 'DM Serif Display', serif;
-        /* Tipografía fluida para el título principal */
-        font-size: clamp(1.8rem, 6vw, 2.8rem);
-        color: var(--text-main);
-        margin-bottom: 0.5rem;
-        line-height: 1.1;
-    }
-
-    /* === NUEVA CUADRÍCULA DE KPIs (Mobile-First) === */
-    .kpi-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* 2 columnas en celular */
-        gap: 12px;
-        margin-bottom: 2rem;
-    }
-
-    @media (min-width: 768px) {
-        .kpi-container {
-            grid-template-columns: repeat(4, 1fr); /* 4 columnas en PC */
-        }
-    }
-
-    .kpi-box {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .kpi-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .kpi-value {
-        font-family: 'DM Serif Display', serif;
-        font-size: clamp(1.5rem, 5vw, 2.5rem);
+    /* --- ENCABEZADO --- */
+    .dashboard-header h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 2.6rem);
         font-weight: 700;
         color: var(--text-main);
-        line-height: 1;
-        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
     }
-
-    .kpi-sub {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-    }
-
-    .active-orders-panel {
-        background: white;
+    .date-badge {
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 12px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* --- KPI CARDS --- */
+    .kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
         padding: 1.5rem;
         height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+    }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(0,0,0,0.05); }
+    
+    .kpi-card.dark {
+        background: #33271F;
+        border: none;
+        color: white;
+        box-shadow: 0 10px 30px -10px rgba(51, 39, 31, 0.4);
+    }
+    
+    .kpi-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+    .kpi-card.dark .kpi-label { color: #A8A29E; }
+    
+    .kpi-value {
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--text-main);
+    }
+    .kpi-card.dark .kpi-value { color: white; }
+    
+    .kpi-trend {
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
         align-items: center;
-        text-align: center;
-        min-height: 250px;
+        gap: 4px;
+        margin-top: 10px;
+        color: #6B7280;
+    }
+    .kpi-card.dark .kpi-trend { color: #34D399; }
+    .kpi-trend i { font-size: 0.9rem; }
+
+    /* --- TARJETA DE RENDIMIENTO DEL EQUIPO --- */
+    .team-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        height: 100%;
+    }
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+        font-size: 0.85rem;
+        flex-shrink: 0;
     }
 
-    .waiter-cta-card {
-        background: #33271F;
-        border-radius: 12px;
-        padding: 2rem; /* Reducido de 2.5rem para móvil */
-        color: white;
-        height: 100%;
+    /* --- TABLA DE PEDIDOS RECIENTES --- */
+    .recent-orders-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .order-row {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        transition: background-color 0.2s;
+    }
+    .order-row:last-child { border-bottom: none; }
+    .order-row:hover { background: #FBF8F3; }
+    .order-number {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-main);
+    }
+    .status-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-pendiente { background: #FEF3C7; color: #92400E; }
+    .status-pagado { background: #D1FAE5; color: #065F46; }
+
+    /* --- TARJETAS DE ACCESO RÁPIDO --- */
+    .admin-card {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        align-items: flex-start;
+        padding: 1.5rem;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        text-decoration: none;
+        height: 100%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
     }
-
-    .waiter-cta-card::before {
-        content: '\F4B7';
-        font-family: "bootstrap-icons";
-        position: absolute;
-        right: -20px;
-        top: -20px;
-        font-size: 10rem;
-        opacity: 0.05;
-        color: white;
-    }
-
-    .admin-links {
-        border-top: 1px solid var(--border-color);
-        padding-top: 1.5rem;
-    }
-
-    .admin-link-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 0;
-        text-decoration: none;
+    .admin-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -10px rgba(51, 39, 31, 0.15);
+        border-color: rgba(174, 69, 45, 0.3);
         color: var(--text-main);
-        border-bottom: 1px solid #F3F4F6;
-        transition: all 0.2s;
     }
-    .admin-link-item:hover {
-        padding-left: 10px;
-        color: var(--accent-color);
+    .admin-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 1.25rem;
+        transition: transform 0.3s ease;
+    }
+    .admin-card:hover .admin-icon {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    .admin-title {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+    }
+    .admin-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.3;
     }
 
-    .admin-link-icon {
-        width: 40px;
-        height: 40px;
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 1rem;
-        font-size: 1.2rem;
-        color: var(--accent-color);
-        flex-shrink: 0; /* Evita que el ícono se aplaste en móvil */
-    }
 </style>
 
-<!-- Cabecera (Responsiva) -->
-<div class="dashboard-header d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
-    <div>
-        <h1 class="greeting-title">Pate Burguer, al día.</h1>
-        <p class="text-muted mb-0">Hola, <strong>{{ user.username }}</strong>. Este es el resumen de tu negocio hoy.</p>
-    </div>
-    <div class="d-flex align-items-center gap-2 w-100 w-md-auto mt-2 mt-md-0">
-        <span class="text-muted small d-none d-md-inline"><i class="bi bi-calendar3"></i> {{ fecha_hoy|date:"d M Y" }}</span>
-        <a href="{% url 'menu_mesero' %}" class="btn btn-light border rounded-3 fw-bold flex-grow-1 flex-md-grow-0">
-            <i class="bi bi-box-arrow-up-right me-1"></i> Vista de Mesero
-        </a>
-    </div>
-</div>
-
-<!-- Métricas (KPIs Responsivos) -->
-<div class="kpi-container">
-    <!-- Recaudado -->
-    <div class="kpi-box">
-        <div class="kpi-label">Recaudado hoy <i class="bi bi-cash text-muted"></i></div>
-        <div class="kpi-value text-success">${{ total_recaudado|floatformat:"0g" }}</div>
-        <div class="kpi-sub">Ingresos del día</div>
-    </div>
-    
-    <!-- Pedidos -->
-    <div class="kpi-box">
-        <div class="kpi-label">Pedidos hoy <i class="bi bi-receipt text-muted"></i></div>
-        <div class="kpi-value">{{ pedidos_hoy_count }}</div>
-        <div class="kpi-sub">Pedidos registrados</div>
-    </div>
-    
-    <!-- Pendientes -->
-    <div class="kpi-box">
-        <div class="kpi-label">Por cobrar <i class="bi bi-wallet2 text-muted"></i></div>
-        <div class="kpi-value">{{ por_cobrar }}</div>
-        <div class="kpi-sub">Pedidos sin pagar</div>
-    </div>
-    
-    <!-- Productos -->
-    <div class="kpi-box">
-        <div class="kpi-label">Total menú <i class="bi bi-journal-text text-muted"></i></div>
-        <div class="kpi-value">{{ total_productos }}</div>
-        <div class="kpi-sub">Platos en el menú</div>
-    </div>
-</div>
-
-<!-- Operación de hoy -->
-<div class="d-flex justify-content-between align-items-end mb-3">
-    <h4 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Operación de hoy</h4>
-    <span class="text-muted small d-none d-sm-inline">Atención y seguimiento de pedidos</span>
-</div>
-
-<div class="row g-4 mb-5">
-    <!-- Panel de Pedidos Activos -->
-    <div class="col-lg-7">
-        <div class="active-orders-panel shadow-sm" style="position: relative; justify-content: flex-start; padding: 1.5rem; padding-top: 1.5rem;">
-            <!-- Cabecera interna de la tarjeta -->
-            <div class="d-flex justify-content-between w-100 mb-3 pb-3 border-bottom">
-                <span class="fw-bold fs-6">Pedidos Activos <span class="badge bg-light text-dark border ms-1">{{ activos }}</span></span>
-                <a href="{% url 'pedidos_activos' %}" class="text-danger text-decoration-none small fw-bold">Ver todos <i class="bi bi-arrow-right"></i></a>
+<!-- ENCABEZADO -->
+<div class="dashboard-header mb-4 mt-2">
+    <div class="row align-items-end g-3">
+        <div class="col-12 col-md-8">
+            <span class="small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color);">Panel de Control</span>
+            <h1 class="mt-1 mb-1">Hola, {{ user.first_name|default:user.username }}</h1>
+            <p class="text-muted mb-0">Aquí está el resumen de la operación de Pate Burguer hoy.</p>
+        </div>
+        <div class="col-12 col-md-4 text-md-end">
+            <div class="date-badge">
+                <i class="bi bi-calendar3"></i> {% now "l, d \d\e F" %}
             </div>
-            
-            <!-- Lista dinámica de pedidos -->
-            <div class="w-100 flex-grow-1 overflow-auto" style="max-height: 300px;">
-                {% for p in pedidos_activos %}
-                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center p-2 mb-2 rounded gap-2" style="background: #FBF8F3; border: 1px solid #E2D9CD;">
+        </div>
+    </div>
+</div>
+
+<!-- KPIs PRINCIPALES -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi-card dark">
+            <div>
+                <div class="kpi-label">Recaudado hoy</div>
+                <div class="kpi-value">${{ total_recaudado|floatformat:"0g" }}</div>
+            </div>
+            <div class="kpi-trend"><i class="bi bi-wallet2"></i> Pagos confirmados</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-6 col-lg-3">
+        <div class="kpi-card">
+            <div>
+                <div class="kpi-label">Pedidos hoy</div>
+                <div class="kpi-value">{{ pedidos_hoy_count }}</div>
+            </div>
+            <div class="kpi-trend" style="color: #6B7280;"><i class="bi bi-receipt"></i> En el sistema</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-6 col-lg-3">
+        <div class="kpi-card">
+            <div>
+                <div class="kpi-label">Por cobrar</div>
+                <div class="kpi-value">{{ por_cobrar }}</div>
+            </div>
+            <div class="kpi-trend" style="color: #D97706;"><i class="bi bi-clock-history"></i> Pendientes</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi-card">
+            <div>
+                <div class="kpi-label">Pedidos Activos</div>
+                <div class="kpi-value">{{ activos }}</div>
+            </div>
+            <div class="kpi-trend" style="color: #10B981;"><i class="bi bi-activity"></i> En cocina ahora</div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL: Pedidos Recientes + Rendimiento del Equipo -->
+<div class="row g-4 mb-5">
+    
+    <!-- Columna Izquierda: Pedidos Recientes -->
+    <div class="col-12 col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0" style="font-family: var(--font-display); font-size: 1.3rem;">Pedidos Recientes</h5>
+            <a href="{% url 'pedidos_activos' %}" class="text-decoration-none small fw-bold" style="color: var(--accent-color);">Ver todos <i class="bi bi-arrow-right"></i></a>
+        </div>
+        
+        <div class="recent-orders-card">
+            {% for pedido in pedidos_activos %}
+                <div class="order-row">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: {% if pedido.tipo == 'mesa' %}#FEF3C7{% else %}#DBEAFE{% endif %}; color: {% if pedido.tipo == 'mesa' %}#92400E{% else %}#1E40AF{% endif %};">
+                            {% if pedido.tipo == 'mesa' %}<i class="bi bi-geo-alt-fill"></i>{% else %}<i class="bi bi-bag-fill"></i>{% endif %}
+                        </div>
                         <div>
-                            <span class="fw-bold" style="font-family: 'DM Serif Display', serif;">#{{ p.numero }}</span>
-                            <span class="text-muted small ms-2">
-                                {% if p.tipo == 'mesa' %}Mesa {{ p.numero_mesa }}{% else %}Para Llevar{% endif %}
-                            </span>
-                            <span class="text-muted small ms-2">· {{ p.mesero.username }}</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto justify-content-between">
-                            {% if p.estado == 'pendiente_pago' %}
-                                <span class="fw-bold text-dark">${{ p.saldo_pendiente|floatformat:"0g" }}</span>
-                            {% else %}
-                                <span class="fw-bold text-success">${{ p.total|floatformat:"0g" }} <small class="fw-normal">pagado</small></span>
-                            {% endif %}
-                            <a href="{% url 'pedidos_activos' %}" class="btn btn-sm btn-outline-dark py-0 px-2" style="font-size: 0.7rem;">Ver</a>
+                            <div class="order-number">#{{ pedido.numero }} <span class="text-muted fw-normal ms-1" style="font-size: 0.8rem;">· {{ pedido.get_tipo_display }}{% if pedido.tipo == 'mesa' %} {{ pedido.numero_mesa }}{% endif %}</span></div>
+                            <div class="small text-muted"><i class="bi bi-person"></i> {{ pedido.mesero.username }} · <i class="bi bi-clock"></i> {{ pedido.fecha_hora|time:"H:i" }}</div>
                         </div>
                     </div>
+                    <div class="text-end">
+                        <div class="fw-bold" style="color: var(--text-main);">${{ pedido.total|floatformat:"0g" }}</div>
+                        {% if pedido.estado == 'pendiente_pago' %}
+                            <span class="status-badge status-pendiente">Por cobrar</span>
+                        {% else %}
+                            <span class="status-badge status-pagado">Pagado</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-check-circle text-success fs-2 d-block mb-2"></i>
+                    <p class="mb-0 small">No hay pedidos activos en este momento.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Columna Derecha: Rendimiento del Equipo -->
+    <div class="col-12 col-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0" style="font-family: var(--font-display); font-size: 1.3rem;">Rendimiento del Equipo</h5>
+        </div>
+        
+        <div class="team-card">
+            <!-- Total Meseros -->
+            <div class="d-flex align-items-center justify-content-between mb-4 bg-light p-3 rounded-3" style="border: 1px solid var(--border-color);">
+                <span class="small fw-bold text-muted text-uppercase" style="letter-spacing: 0.5px;">Meseros activos</span>
+                <span class="fw-bold fs-5" style="font-family: var(--font-display); color: var(--text-main);">{{ total_meseros_activos }}</span>
+            </div>
+
+            <!-- Lista de Rendimiento -->
+            <div class="d-flex flex-column gap-3">
+                {% for mesero in rendimiento_personal %}
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle" style="background-color: {% if forloop.counter == 1 %}#AE452D{% else %}#9CA3AF{% endif %};">
+                            {{ mesero.nombre|first|upper }}
+                        </div>
+                        <div>
+                            <div class="fw-bold text-truncate" style="font-size: 0.95rem; max-width: 140px;" title="{{ mesero.nombre }}">
+                                {{ mesero.nombre }}
+                                {% if forloop.counter == 1 and mesero.pedidos_hoy > 0 %}
+                                    <i class="bi bi-trophy-fill text-warning ms-1" title="Mejor del día"></i>
+                                {% endif %}
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem;">@{{ mesero.username }}</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="fw-bold" style="font-size: 1.1rem; color: var(--text-main);">{{ mesero.pedidos_hoy }}</span>
+                        <span class="text-muted small d-block" style="font-size: 0.7rem;">pedidos</span>
+                    </div>
+                </div>
                 {% empty %}
-                    <!-- Estado vacío -->
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 mt-4">
-                        <i class="bi bi-file-earmark-text text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <h4 class="fw-bold" style="font-family: 'DM Serif Display', serif;">Aún no hay pedidos en curso</h4>
-                        <p class="text-muted small mb-0 text-center">Aquí podrás consultar los pedidos activos.<br>Para tomar el primero, abre la Vista de Mesero.</p>
-                    </div>
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-person-x fs-3 d-block mb-2 opacity-50"></i>
+                    <p class="small mb-0">No hay meseros activos</p>
+                </div>
                 {% endfor %}
             </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <a href="{% url 'lista_usuarios' %}" class="btn btn-light border w-100 fw-bold py-2" style="font-size: 0.85rem; border-radius: 10px;">
+                    Gestionar equipo <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Tarjeta de Invitación al Mesero -->
-    <div class="col-lg-5">
-        <div class="waiter-cta-card shadow-sm">
-            <span class="text-uppercase small fw-bold mb-2" style="letter-spacing: 2px; color: #A8A29E;">Vista de mesero</span>
-            <h2 class="mb-3" style="font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 5vw, 2.2rem); line-height: 1.1;">El pedido a la mesa.</h2>
-            <p class="small mb-4" style="color: #D6D3D1; max-width: 250px;">Accede a la vista de atención para tomar los pedidos del salón.</p>
-            <a href="{% url 'menu_mesero' %}" class="btn btn-light rounded-3 fw-bold align-self-start px-4 py-2 mt-auto">
-                <i class="bi bi-box-arrow-up-right me-1"></i> Abrir Vista de Mesero
+<!-- SECCIÓN INFERIOR: ACCESOS RÁPIDOS -->
+<div class="mb-4">
+    <h5 class="fw-bold mb-3" style="font-family: var(--font-display); font-size: 1.3rem;">Administra tu negocio</h5>
+    
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+        
+        <!-- Reportes -->
+        <div class="col">
+            <a href="{% url 'reporte_diario' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #FEF3C7; color: #B45309;">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h6 class="admin-title">Reportes</h6>
+                <p class="admin-desc">Ventas y cierres</p>
             </a>
         </div>
-    </div>
-</div>
 
-<!-- Administración -->
-<div class="d-flex justify-content-between align-items-end mb-3">
-    <h4 class="fw-bold mb-0" style="font-family: 'DM Serif Display', serif;">Administra tu negocio</h4>
-    <span class="text-muted small d-none d-sm-inline">Lo que necesitas, a un paso</span>
-</div>
-
-<div class="row admin-links">
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'reporte_diario' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-bar-chart-line"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Reportes</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Consulta tus ingresos diarios.</small>
+        <!-- Menú y Platos -->
+        <div class="col">
+            <a href="{% url 'lista_productos' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #E0F2FE; color: #0369A1;">
+                    <i class="bi bi-menu-button-wide"></i>
                 </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
+                <h6 class="admin-title">Menú</h6>
+                <p class="admin-desc">Platos y precios</p>
+            </a>
+        </div>
 
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'lista_productos' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-journal-text"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Menú y Platos</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Crea y edita los platos de tu menú.</small>
+        <!-- Personal -->
+        <div class="col">
+            <a href="{% url 'lista_usuarios' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #F3E8FF; color: #6B21A8;">
+                    <i class="bi bi-people"></i>
                 </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
+                <h6 class="admin-title">Personal</h6>
+                <p class="admin-desc">Meseros y roles</p>
+            </a>
+        </div>
 
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'lista_usuarios' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-person-gear"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Personal</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Gestiona el personal de tu negocio.</small>
+        <!-- Historial -->
+        <div class="col">
+            <a href="{% url 'historial_pedidos' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #F1F5F9; color: #475569;">
+                    <i class="bi bi-clock-history"></i>
                 </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
-    
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'historial_pedidos' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-clock-history"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Historial</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Ver todos los pedidos pasados.</small>
-                </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
+                <h6 class="admin-title">Historial</h6>
+                <p class="admin-desc">Pedidos pasados</p>
+            </a>
+        </div>
 
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'configuracion_negocio' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-gear"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Configuración</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Ajustes del sistema y tickets.</small>
+        <!-- Configuración -->
+        <div class="col">
+            <a href="{% url 'configuracion_negocio' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #FFE4E6; color: #BE123C;">
+                    <i class="bi bi-gear"></i>
                 </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
+                <h6 class="admin-title">Ajustes</h6>
+                <p class="admin-desc">Datos del local</p>
+            </a>
+        </div>
 
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'inventario_ventas' %}" class="admin-link-item">
-            <div class="d-flex align-items-center">
-                <div class="admin-link-icon"><i class="bi bi-box-seam"></i></div>
-                <div>
-                    <h6 class="mb-0 fw-bold">Inventario</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">Ver qué productos se venden más.</small>
+        <!-- Inventario -->
+        <div class="col">
+            <a href="{% url 'inventario_ventas' %}" class="admin-card">
+                <div class="admin-icon" style="background-color: #DCFCE7; color: #15803D;">
+                    <i class="bi bi-box-seam"></i>
                 </div>
-            </div>
-            <i class="bi bi-arrow-up-right text-muted d-none d-sm-block"></i>
-        </a>
-    </div>
-</div>
+                <h6 class="admin-title">Inventario</h6>
+                <p class="admin-desc">Stock y ventas</p>
+            </a>
+        </div>
 
-<!-- Footer sutil -->
-<div class="d-flex flex-column flex-sm-row justify-content-between text-muted mt-4 pt-3 border-top gap-2" style="font-size: 0.7rem;">
-    <span>PATE BURGUER · ADMINISTRACIÓN</span>
-    <span>Resumen correspondiente al {{ fecha_hoy|date:"d M Y" }}</span>
+    </div>
 </div>
 
 {% endblock %}

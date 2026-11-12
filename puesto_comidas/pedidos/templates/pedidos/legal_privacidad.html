@@ -1,0 +1,113 @@
+{% extends 'pedidos/base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para la página legal */
+    .legal-container {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+    .legal-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-card);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+    }
+    .legal-title {
+        font-family: var(--font-display);
+        color: var(--text-main);
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        line-height: 1.2;
+    }
+    .legal-content p {
+        line-height: 1.8;
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .legal-content h4 {
+        font-family: var(--font-display);
+        color: var(--text-main);
+        font-weight: 600;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    .legal-content ul {
+        color: var(--text-muted);
+        line-height: 1.8;
+        font-size: 1rem;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .legal-content li {
+        margin-bottom: 0.75rem;
+    }
+</style>
+
+<div class="container py-4 py-md-5">
+    <div class="legal-container">
+        
+        <!-- Botón Volver Superior (Móvil) -->
+        <div class="mb-4 d-flex d-md-none">
+            <a href="{% url 'dashboard_admin' %}" class="btn btn-light border fw-bold px-3 py-2 shadow-sm rounded-3 text-decoration-none">
+                <i class="bi bi-arrow-left me-2"></i> Volver al panel
+            </a>
+        </div>
+
+        <div class="legal-card p-4 p-md-5">
+            
+            <!-- Encabezado -->
+            <div class="border-bottom pb-4 mb-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="bg-light rounded-circle d-flex justify-content-center align-items-center" style="width: 48px; height: 48px; color: var(--accent-color);">
+                        <i class="bi bi-shield-lock-fill fs-4"></i>
+                    </div>
+                    <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px;">Documento Legal</span>
+                </div>
+                <h1 class="legal-title mb-3">Política de Tratamiento de Datos Personales</h1>
+                <p class="text-muted small mb-0"><i class="bi bi-calendar-event me-1"></i> Última actualización: Noviembre de 2026</p>
+            </div>
+            
+            <!-- Contenido -->
+            <div class="legal-content">
+                <p>En cumplimiento de la <strong>Ley Estatutaria 1581 de 2012</strong> y sus decretos reglamentarios, Pate Burguer pone a disposición de sus empleados y usuarios la presente política para el manejo de la información.</p>
+
+                <h4>1. Identificación del Responsable</h4>
+                <p><strong>Pate Burguer</strong> (Persona Natural), con domicilio en Colombia, es el Responsable del Tratamiento de los datos personales recolectados a través de su sistema interno de gestión de pedidos.</p>
+
+                <h4>2. Datos Recolectados y Finalidad</h4>
+                <p>El sistema ha sido diseñado bajo el principio de <em>minimización de datos</em>. Solo se recolecta lo estrictamente necesario:</p>
+                <ul>
+                    <li><strong>Datos de Empleados (Gerente y Meseros):</strong> Nombre completo, nombre de usuario y contraseña (encriptada). <em>Finalidad:</em> Control de acceso al sistema, gestión de roles, asignación de pedidos y seguridad de la operación.</li>
+                    <li><strong>Datos de Clientes (Solo para domicilios):</strong> Dirección de entrega. <em>Finalidad:</em> Garantizar la correcta entrega del pedido. <strong>No se recolectan</strong> teléfonos, correos electrónicos ni datos sensibles de los clientes.</li>
+                </ul>
+
+                <h4>3. Uso y Tratamiento de la Información</h4>
+                <p>La información registrada en este software es de uso estrictamente interno. Los datos <strong>no serán compartidos, vendidos, alquilados ni transferidos</strong> a terceros bajo ninguna circunstancia, salvo requerimiento de autoridad judicial competente.</p>
+
+                <h4>4. Medidas de Seguridad</h4>
+                <p>El sistema cuenta con contraseñas cifradas mediante algoritmos de hash, y un control de accesos estricto basado en roles (Administrador vs. Mesero). El sistema no almacena datos de tarjetas de crédito ni información financiera sensible de los clientes.</p>
+
+                <h4>5. Derechos del Titular (Habeas Data)</h4>
+                <p>De acuerdo con la ley, los empleados y clientes (en el caso de las direcciones) tienen derecho a:</p>
+                <ul>
+                    <li>Conocer, actualizar y rectificar sus datos personales.</li>
+                    <li>Solicitar prueba de la autorización otorgada.</li>
+                    <li>Ser informado sobre el uso que se le ha dado a sus datos.</li>
+                    <li>Revocar la autorización o solicitar la supresión del dato cuando no se cumplan los principios legales.</li>
+                </ul>
+                <p class="mt-4">Para ejercer estos derechos, el titular puede comunicarse directamente con el administrador del sistema en el local o escribir al correo de soporte técnico.</p>
+            </div>
+            
+            <!-- Botón Volver Inferior (Escritorio) -->
+            <div class="mt-5 pt-4 border-top d-none d-md-block">
+                <a href="{% url 'dashboard_admin' %}" class="btn btn-light border fw-bold px-4 py-2 rounded-3 shadow-sm text-decoration-none transition-all">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al panel principal
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

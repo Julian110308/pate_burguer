@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils import timezone
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, Count
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django import forms
@@ -366,11 +366,13 @@ def dashboard_admin(request):
     Pago.migrar_pedidos_antiguos()
     hoy = timezone.localdate()
     
+    # Rangos de fecha para hoy
     inicio_dia = timezone.make_aware(timezone.datetime.combine(hoy, timezone.datetime.min.time()))
     fin_dia = inicio_dia + timedelta(days=1)
     
     pedidos_hoy = Pedido.objects.filter(fecha_hora__gte=inicio_dia, fecha_hora__lt=fin_dia)
 
+    # Recaudado hoy (pagos reales)
     total_recaudado = (
         Pago.objects.filter(fecha__gte=inicio_dia, fecha__lt=fin_dia)
         .exclude(pedido__estado='anulado')
@@ -387,6 +389,33 @@ def dashboard_admin(request):
     por_cobrar_count = pedidos_activos.filter(estado='pendiente_pago').count()
     
     total_productos = Producto.objects.count()
+
+    # --- LÓGICA: Rendimiento del Personal ---
+    # 1. Traemos todos los meseros activos
+    meseros = Usuario.objects.filter(rol='mesero', is_active=True)
+    
+    # 2. Calculamos los pedidos de hoy para cada uno con una sola consulta
+    pedidos_por_mesero_query = Pedido.objects.filter(
+        fecha_hora__gte=inicio_dia, 
+        fecha_hora__lt=fin_dia,
+        mesero__rol='mesero'
+    ).values('mesero__id').annotate(total=Count('id'))
+    
+    pedidos_por_mesero = {item['mesero__id']: item['total'] for item in pedidos_por_mesero_query}
+
+    # 3. Armamos la lista final con nombre y pedidos
+    rendimiento_personal = []
+    for mesero in meseros:
+        rendimiento_personal.append({
+            'nombre': mesero.first_name or mesero.username,
+            'username': mesero.username,
+            'pedidos_hoy': pedidos_por_mesero.get(mesero.id, 0),
+            'en_turno': mesero.last_login and timezone.localtime(mesero.last_login).date() == hoy
+        })
+
+    # Ordenamos de mayor a menor pedidos para destacar al mejor del día
+    rendimiento_personal.sort(key=lambda x: x['pedidos_hoy'], reverse=True)
+    total_meseros_activos = len(rendimiento_personal)
     
     context = {
         'total_recaudado': total_recaudado,
@@ -395,7 +424,10 @@ def dashboard_admin(request):
         'por_cobrar': por_cobrar_count,
         'total_productos': total_productos,
         'fecha_hoy': hoy,
-        'pedidos_activos': pedidos_activos[:5]
+        'pedidos_activos': pedidos_activos[:5],
+        # Nuevos datos para la tarjeta:
+        'rendimiento_personal': rendimiento_personal,
+        'total_meseros_activos': total_meseros_activos,
     }
     return render(request, 'pedidos/dashboard_admin.html', context)
 

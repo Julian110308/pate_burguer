@@ -42,11 +42,11 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,10.55.132.133,*', cast=Csv())
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://small-stingily-refract.ngrok-free.dev',
-]
+#CSRF_TRUSTED_ORIGINS = [
+#    'https://small-stingily-refract.ngrok-free.dev',
+#]
 
 
 # Application definition
@@ -204,19 +204,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # 2. Cookies Seguras (Evita robo de sesión en redes WiFi públicas)
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_HTTPONLY = False
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
 
 # 3. Redirección a HTTPS y HSTS
-SECURE_SSL_REDIRECT = False
-#SECURE_HSTS_SECONDS = 31536000  # 1 año
-#SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-#SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # 4. Proxy Header para ngrok (Muy importante)
 # Le dice a Django que confíe en el header de ngrok para saber que la conexión es HTTPS
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Número de intentos fallidos antes de bloquear (por defecto son 3)
 AXES_FAILURE_LIMIT = 5

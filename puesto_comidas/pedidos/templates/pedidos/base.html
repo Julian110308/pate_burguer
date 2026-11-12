@@ -13,10 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
     <style>
-        /* Tipografía de los títulos: Fraunces (la del diseño de Figma).
-           Los templates piden la fuente por el nombre antiguo 'DM Serif Display'; aquí ese nombre
-           se reasigna a Fraunces para que TODA la app cambie sin tocar cada pantalla.
-           El rango 400-600 hace que cualquier negrita (700) se vea en SemiBold, como en el diseño. */
+        /* Tipografía de los títulos: Fraunces (la del diseño de Figma). */
         @font-face {
             font-family: 'DM Serif Display';
             src: url('https://cdn.jsdelivr.net/npm/@fontsource-variable/fraunces@5.3.0/files/fraunces-latin-opsz-normal.woff2') format('woff2-variations');
@@ -26,7 +23,6 @@
         }
 
         :root {
-            /* Colores y medidas del diseño de Figma */
             --bg-color: #F7F3EC;
             --card-bg: #FFFCF7;
             --text-main: #33271F;
@@ -37,10 +33,10 @@
             --border-color: #E2D9CD;
             --radius-card: 14px;
             --radius-input: 8px;
-            --font-display: 'DM Serif Display', Georgia, serif;   /* = Fraunces (ver arriba) */
+            --font-display: 'DM Serif Display', Georgia, serif;
         }
 
-        /* === BLINDAJE ANTI-DESBORDAMIENTO (Corregido) === */
+        /* === BLINDAJE ANTI-DESBORDAMIENTO === */
         html, body {
             width: 100%;
         }
@@ -52,12 +48,15 @@
             -webkit-font-smoothing: antialiased;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;      /* Evita scroll horizontal (solo en body, así position: sticky sigue funcionando) */
-            font-synthesis: none;    /* Sin negrita falsa: DM Serif Display solo tiene peso normal */
+            overflow-x: hidden;
+            font-synthesis: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         {% if user.is_authenticated %}
-        body { padding-bottom: 90px; }
+        body { padding-bottom: 90px; } /* Espacio para la barra móvil */
         {% endif %}
 
         /* Tipografía fluida */
@@ -169,7 +168,7 @@
             to   { opacity: 1; transform: none; }
         }
 
-        /* Navegación Móvil */
+        /* === NAVEGACIÓN MÓVIL === */
         .mobile-nav {
             display: none;
             position: fixed;
@@ -179,28 +178,55 @@
             background: white;
             border-top: 1px solid var(--border-color);
             z-index: 1000;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)) 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
         }
 
-        .mobile-nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.75rem;
+        /* Cada ítem del menú ocupa exactamente el mismo espacio */
+        .mobile-nav > a,
+        .mobile-nav > form {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-weight: 500;
-            transition: color 0.2s;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: color 0.2s, transform 0.2s;
+            padding: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .mobile-nav > a:active,
+        .mobile-nav > form:active {
+            transform: scale(0.95);
         }
 
-        .mobile-nav a i {
-            font-size: 1.3rem;
+        .mobile-nav a i,
+        .mobile-nav form i {
+            font-size: 1.35rem;
             margin-bottom: 4px;
+            display: block;
         }
 
+        .mobile-nav a span,
+        .mobile-nav form span {
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Estado activo */
         .mobile-nav a.active {
             color: var(--accent-color);
+        }
+        .mobile-nav a.active i {
+            transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {
@@ -210,7 +236,7 @@
     </style>
 </head>
 <body>
-    <!-- Avisos globales (mensajes de Django): se muestran en cualquier pantalla y se cierran solos -->
+    <!-- Avisos globales -->
     {% if messages %}
     <div class="toast-stack" id="toast-stack" role="status" aria-live="polite">
         {% for message in messages %}
@@ -258,37 +284,73 @@
     {% endif %}
 
     <!-- Contenedor Principal -->
-    <!-- Quitamos el estilo en línea y dejamos que Bootstrap maneje los márgenes -->
-    <div class="{% if user.is_authenticated %}container pb-5{% else %}container-fluid p-0{% endif %}">
+    <div class="{% if user.is_authenticated %}container pb-5{% else %}container-fluid p-0{% endif %} flex-grow-1">
         {% block content %}
         {% endblock %}
     </div>
 
+    <!-- Footer Legal (Solo para usuarios logueados) -->
+    {% if user.is_authenticated %}
+    <footer class="text-center py-4 border-top mt-auto" style="font-size: 0.8rem; color: var(--text-muted); background-color: var(--bg-color);">
+        <div class="container">
+            <p class="mb-1">&copy; {% now "Y" %} Pate Burguer. Todos los derechos reservados.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'politica_privacidad' %}" class="text-decoration-none text-muted fw-semibold">Política de Privacidad</a>
+                <span>·</span>
+                <a href="{% url 'terminos_uso' %}" class="text-decoration-none text-muted fw-semibold">Términos de Uso</a>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
     <!-- Navegación Inferior Móvil -->
     {% if user.is_authenticated %}
     <div class="mobile-nav">
+        
+        <!-- PANEL: Solo visible para Admin -->
         {% if user.rol == 'admin' %}
         <a href="{% url 'dashboard_admin' %}" class="{% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
-            <i class="bi bi-speedometer2"></i> Panel
+            <i class="bi bi-speedometer2"></i>
+            <span>Panel</span>
         </a>
         {% endif %}
-        <a href="{% url 'menu_mesero' %}" class="{% if request.resolver_match.url_name == 'menu_mesero' %}active{% endif %}">
-            <i class="bi bi-grid"></i> Menú
-        </a>
+
+        <!-- MENÚ: Lógica condicional por rol -->
+        {% if user.rol == 'admin' %}
+            <a href="{% url 'lista_productos' %}" class="{% if request.resolver_match.url_name == 'lista_productos' %}active{% endif %}">
+                <i class="bi bi-grid"></i>
+                <span>Menú</span>
+            </a>
+        {% else %}
+            <a href="{% url 'menu_mesero' %}" class="{% if request.resolver_match.url_name == 'menu_mesero' %}active{% endif %}">
+                <i class="bi bi-grid"></i>
+                <span>Menú</span>
+            </a>
+        {% endif %}
+
+        <!-- PEDIDOS: Ambos roles -->
         <a href="{% url 'pedidos_activos' %}" class="{% if request.resolver_match.url_name == 'pedidos_activos' %}active{% endif %}">
-            <i class="bi bi-receipt"></i> Pedidos
+            <i class="bi bi-receipt"></i>
+            <span>Pedidos</span>
         </a>
+
+        <!-- REPORTES: Solo visible para Admin -->
         {% if user.rol == 'admin' %}
         <a href="{% url 'reporte_diario' %}" class="{% if request.resolver_match.url_name == 'reporte_diario' %}active{% endif %}">
-            <i class="bi bi-bar-chart"></i> Reportes
+            <i class="bi bi-bar-chart"></i>
+            <span>Reportes</span>
         </a>
         {% endif %}
-        <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+
+        <!-- SALIR -->
+        <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <a href="#" onclick="this.parentNode.submit(); return false;" class="text-muted">
-                <i class="bi bi-box-arrow-right"></i> Salir
-            </a>
+            <button type="submit" style="background:none; border:none; color:inherit; display:flex; flex-direction:column; align-items:center; padding:0; cursor:pointer;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Salir</span>
+            </button>
         </form>
+        
     </div>
     {% endif %}
 
@@ -340,7 +402,6 @@
             }, 300);
         }
     
-        // Al cerrar el ticket se vacía el iframe (no queda cargado en segundo plano)
         document.getElementById('modalTicketGlobal').addEventListener('hidden.bs.modal', function () {
             document.getElementById('contenedor-ticket-modal').innerHTML = '';
         });
@@ -364,8 +425,6 @@
                 setTimeout(cerrar, parseInt(aviso.dataset.ms, 10) || 3500);
             });
 
-            // Parche temporal: algunas pantallas ya pintan estos mismos mensajes dentro de la página.
-            // Si el texto coincide con un aviso, se quita esa copia para que no salgan dos veces.
             document.querySelectorAll('.alert').forEach(function (caja) {
                 if (pila.contains(caja)) return;
                 const texto = normalizar(caja.textContent);
@@ -374,9 +433,7 @@
         })();
     </script>
     <script>
-        // Anti doble clic: al enviar cualquier formulario POST se desactivan sus botones de envío,
-        // así "Guardar", "Cobrar", etc. no se pueden mandar dos veces seguidas.
-        // (Para excluir un formulario concreto: <form data-no-lock>)
+        // Anti doble clic
         (function () {
             const SELECTOR = 'button[type="submit"], button:not([type]), input[type="submit"]';
 
@@ -395,8 +452,6 @@
                 if ((form.method || '').toLowerCase() !== 'post') return;
                 if (form.hasAttribute('data-no-lock')) return;
 
-                // Se espera a que terminen los demás manejadores: si alguno canceló el envío
-                // (confirm(), validaciones o formularios que usan fetch), no se bloquea nada.
                 setTimeout(function () {
                     if (e.defaultPrevented) return;
                     form.querySelectorAll(SELECTOR).forEach(function (b) {
@@ -405,12 +460,10 @@
                             b.dataset.bloqueado = '1';
                         }
                     });
-                    // Respaldo: si el envío no llega a salir, se vuelven a habilitar
                     setTimeout(function () { restaurar(form); }, 10000);
                 }, 0);
             });
 
-            // Al volver con el botón "atrás" del navegador, los botones quedan habilitados
             window.addEventListener('pageshow', function (ev) {
                 if (ev.persisted) document.querySelectorAll('form').forEach(restaurar);
             });
@@ -435,7 +488,7 @@
             aviso.innerHTML = '<i class="bi toast-icon ' + (iconos[tipo] || iconos.info) + '"></i>' +
                               '<div class="flex-grow-1 toast-text"></div>' +
                               '<button type="button" class="toast-close" aria-label="Cerrar">&times;</button>';
-            aviso.querySelector('.toast-text').textContent = texto;   // textContent: sin inyección de HTML
+            aviso.querySelector('.toast-text').textContent = texto;
             pila.appendChild(aviso);
             const cerrar = function () {
                 aviso.classList.add('saliendo');

@@ -4,7 +4,6 @@
 <style>
     body { background-color: #FCFAF8; }
 
-    /* KPIs Superiores */
     .kpi-box {
         background: white;
         border: 1px solid var(--border-color);
@@ -17,7 +16,6 @@
     .kpi-box.dark .kpi-title { color: #A8A29E; }
     .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 700; margin-top: 5px; line-height: 1; }
 
-    /* Barra de búsqueda y filtros */
     .search-bar {
         background: white;
         border: 1px solid var(--border-color);
@@ -45,7 +43,6 @@
     .filter-pill .badge { background: #F3F4F6; color: #1F2937; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-left: 5px; }
     .filter-pill.active .badge { background: rgba(255,255,255,0.2); color: white; }
 
-    /* Tarjetas de Personal */
     .staff-card {
         background: white;
         border: 1px solid var(--border-color);
@@ -76,7 +73,6 @@
     .role-mesero { background: #F3F4F6; color: #4B5563; }
     .role-admin { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
 
-    /* Mini métricas dentro de la tarjeta */
     .mini-stats { display: flex; background: #F9F8F6; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1rem; }
     .mini-stat { flex: 1; padding: 8px; text-align: center; border-right: 1px solid var(--border-color); }
     .mini-stat:last-child { border-right: none; }
@@ -91,7 +87,6 @@
     }
     .btn-action-icon:hover { background: #F3F4F6; color: var(--text-main); }
     
-    /* Empty state de agregar */
     .add-staff-card {
         background: #FCFAF8; border: 2px dashed var(--border-color); border-radius: 12px;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -103,40 +98,22 @@
         display: flex; justify-content: center; align-items: center; margin-bottom: 10px; font-size: 1.2rem;
     }
 
-    /* --- ESTILOS DEL MODAL Y EL INPUT CORREGIDOS --- */
     .premium-modal-content { border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); background-color: #FCFBF9; }
     
-    .premium-input-group { 
-        position: relative; 
-        display: flex;
-        align-items: center;
-        width: 100%;
-        margin-bottom: 0.25rem;
-    }
+    .premium-input-group { position: relative; width: 100%; margin-bottom: 0.25rem; }
 
-    /* Solo afecta al ícono de la izquierda (candado/usuario) */
     .premium-input-group > i { 
-        position: absolute; 
-        left: 16px; 
-        color: #9CA3AF; 
-        font-size: 1.1rem; 
-        pointer-events: none; 
-        z-index: 10;
+        position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+        color: #9CA3AF; font-size: 1.1rem; pointer-events: none; z-index: 10;
     }
 
     .premium-input-group input { 
-        padding-left: 45px !important; 
-        padding-right: 45px !important;
-        height: 48px;
-        width: 100%;
-        background-color: white; 
-        border: 1px solid #E5E1DA; 
-        border-radius: 10px; 
-        color: #212529;
+        padding-left: 45px !important; padding-right: 45px !important;
+        height: 48px; width: 100%;
+        background-color: white; border: 1px solid #E5E1DA; border-radius: 10px; color: #212529;
         transition: all 0.2s;
     }
     
-    /* Elimina el fondo azul de Chrome */
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus, 
@@ -146,38 +123,19 @@
     }
     
     .premium-input-group input:focus { 
-        background-color: white;
-        border-color: var(--accent-color); 
-        box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1); 
-        outline: none;
+        background-color: white; border-color: var(--accent-color); 
+        box-shadow: 0 0 0 3px rgba(166, 58, 37, 0.1); outline: none;
     }
 
-    /* Botón del ojo */
     .btn-ojo {
-        position: absolute;
-        right: 12px;
-        background: transparent;
-        border: none;
-        color: #9CA3AF;
-        cursor: pointer;
-        padding: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-        border-radius: 50%;
-        transition: all 0.2s;
+        position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+        background: transparent; border: none; color: #9CA3AF; cursor: pointer;
+        width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+        z-index: 10; border-radius: 50%; transition: all 0.2s; padding: 0;
     }
     
     .btn-ojo:hover { color: var(--text-main); background-color: #F3F4F6; }
-
-    /* El icono dentro del botón debe ser estático, NO absoluto */
-    .btn-ojo i {
-        position: static !important;
-        font-size: 1.2rem;
-        margin: 0;
-        pointer-events: auto;
-    }
+    .btn-ojo i { font-size: 1.2rem; margin: 0; pointer-events: none; }
 
     .password-strength { display: flex; gap: 6px; margin-top: 6px; }
     .strength-bar { height: 6px; flex: 1; background: #E5E1DA; border-radius: 3px; transition: all 0.3s; }
@@ -204,9 +162,15 @@
     .role-radio:checked + .role-payment-card .check-circle-role { background: #10B981; border-color: #10B981; }
     .role-radio:checked + .role-payment-card .check-circle-role i { display: block; }
 
+    /* Botones de acción móvil */
+    @media (max-width: 768px) {
+        .mobile-safe-bottom {
+            padding-bottom: 90px;
+        }
+    }
 </style>
 
-<!-- Encabezado (Grid Responsivo) -->
+<!-- Encabezado -->
 <div class="row align-items-end mb-4 mt-2 g-3">
     <div class="col-12 col-md-8">
         <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Equipo</span>
@@ -220,7 +184,7 @@
     </div>
 </div>
 
-<!-- KPIs Superiores -->
+<!-- KPIs -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="kpi-box dark">
@@ -285,7 +249,7 @@
 {% endif %}
 
 <!-- Lista de Tarjetas de Personal -->
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="contenedor-personal">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mobile-safe-bottom" id="contenedor-personal">
     
     {% for data in usuarios_data %}
         {% with u=data.usuario %}
@@ -326,14 +290,11 @@
                         <button class="btn-action-icon" data-bs-toggle="modal" data-bs-target="#resetPass{{ u.id }}" title="Restablecer Contraseña">
                             <i class="bi bi-key"></i>
                         </button>
-                        <form method="post" class="m-0" onsubmit="return confirm('¿Desactivar a {{ u.username }}? Ya no podrá iniciar sesión.');">
-                            {% csrf_token %}
-                            <input type="hidden" name="accion" value="eliminar">
-                            <input type="hidden" name="id" value="{{ u.id }}">
-                            <button type="submit" class="btn-action-icon text-danger" title="Desactivar">
-                                <i class="bi bi-person-x"></i>
-                            </button>
-                        </form>
+                        <button type="button" class="btn-action-icon text-danger" title="Desactivar" 
+                                data-id="{{ u.id }}" data-username="{{ u.username }}" 
+                                onclick="abrirModalDesactivar(this)">
+                            <i class="bi bi-person-x"></i>
+                        </button>
                     {% else %}
                         <div class="alert alert-light border-0 text-center w-100 m-0 py-2 rounded-3" style="font-size: 0.75rem; color: #6B7280;">
                             <i class="bi bi-shield-lock-fill me-1"></i> Cuenta protegida
@@ -343,7 +304,6 @@
             </div>
         </div>
 
-        <!-- MODALES (Editar y Reset Password) -->
         {% if u.rol == 'mesero' %}
         <div class="modal fade" id="editUser{{ u.id }}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
@@ -536,6 +496,15 @@
                         </div>
                     </div>
 
+                    <div class="mt-4 p-3 bg-light rounded-3 border d-flex align-items-start gap-2">
+                        <input class="form-check-input mt-1" type="checkbox" id="aceptoPolitica" required style="flex-shrink: 0; cursor: pointer;">
+                        <label class="form-check-label text-muted mb-0" for="aceptoPolitica" style="font-size: 0.85rem; line-height: 1.4; cursor: pointer;">
+                            Confirmo que he informado al nuevo integrante sobre el 
+                            <a href="{% url 'politica_privacidad' %}" target="_blank" class="fw-bold text-decoration-none" style="color: var(--accent-color);">Tratamiento de Datos Personales</a> 
+                            de Pate Burguer.
+                        </label>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer border-top-0 pt-0 pb-4 px-4 d-flex justify-content-end gap-2">
@@ -549,8 +518,44 @@
     </div>
 </div>
 
+<!-- MODAL GLOBAL: CONFIRMAR DESACTIVACIÓN -->
+<div class="modal fade" id="modalDesactivar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; background-color: #FCFBF9;">
+            <div class="modal-body p-4 p-md-5 text-center">
+                
+                <div class="mx-auto mb-4 d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 70px; height: 70px;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                </div>
+                
+                <h3 class="mb-2 fw-bold" style="font-family: 'DM Serif Display', serif; color: #33271F;">Confirmar desactivación</h3>
+                <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                    ¿Estás seguro de desactivar a<br>
+                    <strong id="nombreUsuarioDesactivar" class="text-dark" style="font-size: 1.1rem;"></strong>?<br>
+                    <span class="small">Ya no podrá iniciar sesión en el sistema.</span>
+                </p>
+                
+                <form method="post" class="m-0 w-100">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="eliminar">
+                    <input type="hidden" name="id" id="idUsuarioDesactivar" value="">
+                    
+                    <div class="d-flex gap-2 w-100 mt-4">
+                        <button type="button" class="btn btn-light border fw-bold py-3 flex-grow-1" data-bs-dismiss="modal" style="border-radius: 12px; color: #6B7280;">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-danger fw-bold py-3 flex-grow-1" style="border-radius: 12px; background-color: #DC2626; border-color: #DC2626;">
+                            Sí, desactivar
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // --- FUNCIÓN DEL OJITO ---
     function togglePassword(inputId, btnElement) {
         const input = document.getElementById(inputId);
         const icon = btnElement.querySelector('i');
@@ -564,6 +569,20 @@
             icon.classList.remove('bi-eye-slash');
             icon.classList.add('bi-eye');
         }
+    }
+
+    let modalDesactivarInstancia = null;
+    function abrirModalDesactivar(botonElement) {
+        const idUsuario = botonElement.getAttribute('data-id');
+        const nombreUsuario = botonElement.getAttribute('data-username');
+        
+        document.getElementById('nombreUsuarioDesactivar').textContent = nombreUsuario;
+        document.getElementById('idUsuarioDesactivar').value = idUsuario;
+        
+        if (!modalDesactivarInstancia) {
+            modalDesactivarInstancia = new bootstrap.Modal(document.getElementById('modalDesactivar'));
+        }
+        modalDesactivarInstancia.show();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -624,7 +643,6 @@
             });
         }
 
-        // --- MEDIDOR DE FORTALEZA ---
         const inputPassword = document.getElementById('inputPassword');
         const bar1 = document.getElementById('bar1');
         const bar2 = document.getElementById('bar2');

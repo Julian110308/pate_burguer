@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # ==========================================
@@ -46,4 +47,7 @@ urlpatterns = [
     path('api/crear-ingrediente/', views.crear_ingrediente_ajax, name='crear_ingrediente_ajax'),
     path('api/validar-usuario/', views.validar_usuario_ajax, name='validar_usuario_ajax'),
     path('api/toggle-producto/', views.toggle_estado_producto_ajax, name='toggle_estado_producto_ajax'),
+
+    path('legal/privacidad/', TemplateView.as_view(template_name='pedidos/legal_privacidad.html'), name='politica_privacidad'),
+    path('legal/terminos/', TemplateView.as_view(template_name='pedidos/legal_terminos.html'), name='terminos_uso'),
 ]

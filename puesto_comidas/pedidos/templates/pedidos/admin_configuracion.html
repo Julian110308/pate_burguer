@@ -1,48 +1,151 @@
 {% extends 'pedidos/base.html' %}
 
 {% block content %}
+<style>
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    .form-control {
+        background-color: #FBF8F3;
+        border: 1px solid var(--border-color);
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+    .form-control:focus {
+        background-color: white;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px rgba(174, 69, 45, 0.1);
+        outline: none;
+    }
+
+    .section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px -5px rgba(0,0,0,0.02);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--border-color);
+    }
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column-reverse;
+            padding-bottom: 90px;
+        }
+        .form-actions .btn {
+            width: 100%;
+            padding: 14px;
+        }
+    }
+</style>
+
 <div class="row justify-content-center mt-4">
-    <div class="col-lg-8">
+    <div class="col-lg-7">
+        
+        <!-- Header -->
         <div class="mb-4">
-            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Ajustes</span>
-            <h2 class="fw-bold mt-1" style="font-family: 'DM Serif Display', serif;">Configuración del Negocio</h2>
+            <a href="{% url 'dashboard_admin' %}" class="text-muted text-decoration-none small mb-2 d-inline-block">
+                <i class="bi bi-arrow-left"></i> Volver al panel
+            </a>
+            <span class="d-block text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Ajustes</span>
+            <h1 class="fw-bold mt-1" style="font-family: var(--font-display); font-size: 2.5rem;">Configuración del Negocio</h1>
             <p class="text-muted">Estos datos aparecerán impresos en los tickets de los clientes.</p>
         </div>
 
-        <form method="post" enctype="multipart/form-data" class="card card-custom p-4 shadow-sm">
+        <!-- Formulario -->
+        <form method="post" enctype="multipart/form-data" class="section-card">
             {% csrf_token %}
             
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold text-muted text-uppercase">Nombre del Negocio</label>
-                    <input type="text" name="nombre" class="form-control bg-light border-0" value="{{ config.nombre }}" required>
+                <div class="col-md-7">
+                    <label class="form-label">Nombre del Negocio *</label>
+                    <input type="text" name="nombre" class="form-control" value="{{ config.nombre }}" required>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold text-muted text-uppercase">Teléfono</label>
-                    <input type="text" name="telefono" class="form-control bg-light border-0" value="{{ config.telefono|default:'' }}">
+                <div class="col-md-5">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control" value="{{ config.telefono|default:'' }}" placeholder="Ej: 310 264 8954">
                 </div>
                 <div class="col-12">
-                    <label class="form-label small fw-bold text-muted text-uppercase">Dirección</label>
-                    <input type="text" name="direccion" class="form-control bg-light border-0" value="{{ config.direccion|default:'' }}">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" name="direccion" class="form-control" value="{{ config.direccion|default:'' }}" placeholder="Ej: Calle 4 #3A-25, Bogotá">
                 </div>
             </div>
 
+            <!-- Logo -->
             <div class="mb-4">
-                <label class="form-label small fw-bold text-muted text-uppercase">Logo (Opcional)</label>
+                <label class="form-label">Logo del Negocio</label>
                 {% if config.logo %}
-                    <div class="mb-2">
-                        <img src="{{ config.logo.url }}" alt="Logo actual" style="height: 60px; border-radius: 8px;">
+                    <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3">
+                        <img src="{{ config.logo.url }}" alt="Logo actual" style="height: 60px; border-radius: 8px; object-fit: contain; background: white; padding: 6px;">
+                        <div>
+                            <p class="mb-0 fw-bold small">Logo actual</p>
+                            <p class="text-muted mb-0" style="font-size: 0.75rem;">Sube uno nuevo para reemplazarlo.</p>
+                        </div>
                     </div>
                 {% endif %}
-                <input type="file" name="logo" class="form-control bg-light border-0" accept="image/*">
-                <small class="text-muted">Sube un logo para reemplazar el actual.</small>
+                <input type="file" name="logo" class="form-control" accept="image/*">
             </div>
 
-            <div class="d-flex justify-content-end gap-2 border-top pt-4">
-                <a href="{% url 'dashboard_admin' %}" class="btn btn-light border">Volver al Panel</a>
-                <button type="submit" class="btn btn-primary-custom px-4">Guardar Cambios</button>
+            <!-- Botones de Acción -->
+            <div class="form-actions">
+                <a href="{% url 'dashboard_admin' %}" class="btn btn-light border px-4 py-3 rounded-3 fw-bold">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary-custom px-4 py-3 rounded-3 fw-bold">
+                    <i class="bi bi-check-lg me-1"></i> Guardar Cambios
+                </button>
             </div>
         </form>
+    </div>
+</div>
+<!-- SECCIÓN: Datos Fiscales DIAN -->
+<div class="mt-5 mb-4">
+    <h4 class="fw-bold mb-3" style="font-family: 'DM Serif Display', serif;">Datos Fiscales (DIAN)</h4>
+    <div class="alert alert-light border d-flex gap-2 mb-4" style="font-size: 0.85rem;">
+        <i class="bi bi-info-circle text-muted"></i>
+        <span class="text-muted">Estos datos aparecerán en el encabezado de cada factura POS.</span>
+    </div>
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">NIT</label>
+            <input type="text" name="nit" class="form-control" value="{{ config.nit|default:'' }}" placeholder="Ej: 1.234.567.890-1">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Resolución DIAN No.</label>
+            <input type="text" name="resolucion_dian" class="form-control" value="{{ config.resolucion_dian|default:'' }}" placeholder="Ej: 18764000123456">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Prefijo</label>
+            <input type="text" name="prefijo_factura" class="form-control" value="{{ config.prefijo_factura|default:'' }}" placeholder="Ej: PB">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Rango desde</label>
+            <input type="number" name="rango_inicio" class="form-control" value="{{ config.rango_inicio|default:1 }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Rango hasta</label>
+            <input type="number" name="rango_fin" class="form-control" value="{{ config.rango_fin|default:1000 }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Vigencia</label>
+            <input type="text" name="vigencia_dian" class="form-control" value="{{ config.vigencia_dian|default:'' }}" placeholder="Ej: 2026-12-31">
+        </div>
     </div>
 </div>
 {% endblock %}

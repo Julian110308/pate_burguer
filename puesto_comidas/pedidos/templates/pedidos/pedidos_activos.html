@@ -147,7 +147,6 @@
 <!-- Encabezado (Grid Responsivo) -->
 <div class="row align-items-md-end mb-4 mt-2 g-3">
     <div class="col-12 col-md-8">
-        <span class="text-success small fw-bold text-uppercase" style="letter-spacing: 2px;"><i class="bi bi-circle-fill" style="font-size: 0.5rem; vertical-align: middle;"></i> Cocina · En vivo</span>
         <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Pedidos activos</h1>
         <p class="text-muted mb-0">Sigue cada mesa desde que se pide hasta que se cobra.</p>
     </div>
@@ -297,13 +296,12 @@
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% if item.sin_pagos %}
-                        <form method="post" action="{% url 'cambiar_estado_pedido' pedido.id 'anulado' %}" class="m-0"
-                              onsubmit="return confirm('¿Anular el pedido #{{ pedido.numero }}? Esta acción no se puede deshacer.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-icon-action btn-anular" title="Anular pedido">
-                                <i class="bi bi-x-circle"></i>
-                            </button>
-                        </form>
+                        <!-- BOTÓN ANULAR QUE LLAMA AL MODAL GLOBAL -->
+                        <button type="button" class="btn-icon-action btn-anular" title="Anular pedido"
+                                data-id="{{ pedido.id }}" data-numero="{{ pedido.numero }}"
+                                onclick="abrirModalAnular(this)">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
                         {% endif %}
                         {% endif %}
                     </div>
@@ -321,4 +319,64 @@
         </div>
     {% endfor %}
 </div>
+
+<!-- MODAL GLOBAL: CONFIRMAR ANULACIÓN -->
+<div class="modal fade" id="modalAnular" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; background-color: #FCFBF9;">
+            <div class="modal-body p-4 p-md-5 text-center">
+                
+                <!-- Icono de advertencia -->
+                <div class="mx-auto mb-4 d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 70px; height: 70px;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                </div>
+                
+                <h3 class="mb-2 fw-bold" style="font-family: 'DM Serif Display', serif; color: #33271F;">Anular Pedido</h3>
+                <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                    ¿Estás seguro de que deseas anular el<br>
+                    <strong id="numeroPedidoAnular" class="text-dark" style="font-size: 1.1rem;"></strong>?<br>
+                    <span class="small text-danger fw-bold">Esta acción no se puede deshacer.</span>
+                </p>
+                
+                <!-- Formulario que se envía a Django -->
+                <form method="post" id="formAnular" class="m-0 w-100">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2 w-100 mt-4">
+                        <button type="button" class="btn btn-light border fw-bold py-3 flex-grow-1" data-bs-dismiss="modal" style="border-radius: 12px; color: #6B7280;">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-danger fw-bold py-3 flex-grow-1" style="border-radius: 12px; background-color: #DC2626; border-color: #DC2626;">
+                            Sí, anular
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- FUNCIÓN PARA EL MODAL DE ANULACIÓN ---
+    let modalAnularInstancia = null;
+    
+    function abrirModalAnular(botonElement) {
+        // 1. Obtenemos los datos del botón que se hizo clic
+        const idPedido = botonElement.getAttribute('data-id');
+        const numeroPedido = botonElement.getAttribute('data-numero');
+        
+        // 2. Actualizamos el texto y la acción del formulario
+        document.getElementById('numeroPedidoAnular').textContent = `Pedido #${numeroPedido}`;
+        
+        // Construimos la URL correcta para la vista de Django
+        const urlAnular = `/pedido/${idPedido}/estado/anulado/`;
+        document.getElementById('formAnular').action = urlAnular;
+        
+        // 3. Mostramos la modal
+        if (!modalAnularInstancia) {
+            modalAnularInstancia = new bootstrap.Modal(document.getElementById('modalAnular'));
+        }
+        modalAnularInstancia.show();
+    }
+</script>
 {% endblock %}

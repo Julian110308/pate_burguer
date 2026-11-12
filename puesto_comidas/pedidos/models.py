@@ -217,6 +217,13 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido #{self.numero} - {self.get_tipo_display()}"
 
+    @property
+    def iva_incluido(self):
+        """Calcula el IVA incluido en el total (tarifa 19%)."""
+        if self.total > 0:
+            base = self.total / Decimal('1.19')
+            return self.total - base
+        return Decimal('0.00')
 
 class Pago(models.Model):
     """Cada cobro real que se le hace a un pedido (un pedido puede tener varios)."""
@@ -302,6 +309,12 @@ class ConfiguracionNegocio(models.Model):
     direccion = models.CharField(max_length=200, blank=True, null=True)
     telefono = models.CharField(max_length=50, blank=True, null=True)
     logo = models.ImageField(upload_to='configuracion/', blank=True, null=True)
+    nit = models.CharField(max_length=20, blank=True, null=True, help_text="NIT con dígito de verificación")
+    resolucion_dian = models.CharField(max_length=50, blank=True, null=True, help_text="Número de resolución de facturación")
+    prefijo_factura = models.CharField(max_length=10, blank=True, null=True, help_text="Prefijo de la factura POS (ej. PB)")
+    rango_inicio = models.PositiveIntegerField(default=1, help_text="Número inicial del rango autorizado")
+    rango_fin = models.PositiveIntegerField(default=1000, help_text="Número final del rango autorizado")
+    vigencia_dian = models.CharField(max_length=50, blank=True, null=True, help_text="Fecha de vigencia de la resolución (ej. 2026-12-31)")
 
     class Meta:
         verbose_name = 'Configuración del Negocio'

@@ -5,7 +5,7 @@
 <style>
     body { background-color: var(--bg-color); }
 
-    /* KPIs Superiores */
+    /* === KPIs SUPERIORES (SIN TOCAR) === */
     .kpi-box {
         background: white;
         border: 1px solid var(--border-color);
@@ -19,138 +19,342 @@
     .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 700; margin-top: 5px; line-height: 1; }
     .kpi-value.danger { color: #DC2626; }
 
-    /* Barra de búsqueda y selects */
-    .search-bar {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 8px 16px;
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-    .search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 10px; font-size: 0.9rem; }
-    
-    .form-select-custom {
-        background-color: white;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--text-main);
-        width: 100%;
-    }
-
-    /* Filtros de categorías */
-    .filter-pill {
-        background: white;
+    /* === BARRA DE CONTROL REDISEÑADA === */
+    .control-panel {
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
         border-radius: 20px;
-        padding: 6px 16px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px -5px rgba(0,0,0,0.03);
+        margin-bottom: 2rem;
+    }
+
+    /* Buscador */
+    .search-wrapper { position: relative; flex-grow: 1; min-width: 250px; }
+    .search-wrapper i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+    .search-input {
+        border-radius: 12px;
+        padding-left: 48px;
+        height: 48px;
+        border: 1px solid var(--border-color);
+        background: #FBF8F3;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: all 0.2s;
+        color: var(--text-main);
+    }
+    .search-input:focus {
+        background: white;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px rgba(174, 69, 45, 0.1);
+        outline: none;
+    }
+    .search-wrapper:focus-within i { color: var(--accent-color); }
+
+    /* Selects estilizados */
+    .filter-select {
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #FBF8F3 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2375685D' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") no-repeat right 16px center;
+        background-size: 14px;
+        font-size: 0.9rem;
+        padding: 0 40px 0 16px;
+        min-width: 170px;
+        color: var(--text-main);
+        font-weight: 500;
+        cursor: pointer;
+        appearance: none;
+        transition: all 0.2s;
+    }
+    .filter-select:focus {
+        background-color: white;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px rgba(174, 69, 45, 0.1);
+        outline: none;
+    }
+
+    /* Píldoras de Categorías */
+    .filter-pills-container {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        margin-top: 1rem;
+        scrollbar-width: none;
+    }
+    .filter-pills-container::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 30px;
+        padding: 8px 20px;
         font-size: 0.85rem;
         color: var(--text-muted);
-        font-weight: 500;
-        transition: all 0.2s;
+        font-weight: 600;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
-    .filter-pill.active { background: #33271F; color: white; border-color: #33271F; }
-    .filter-pill .badge { background: #F3F4F6; color: #1F2937; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-left: 5px; }
-    .filter-pill.active .badge { background: rgba(255,255,255,0.2); color: white; }
+    .filter-pill:hover {
+        background: #FBF8F3;
+        border-color: #D1D5DB;
+        color: var(--text-main);
+    }
+    .filter-pill.active {
+        background: var(--text-main);
+        color: white;
+        border-color: var(--text-main);
+        box-shadow: 0 4px 10px -2px rgba(51, 39, 31, 0.3);
+    }
+    .filter-pill .badge {
+        background: #F3F4F6;
+        color: #1F2937;
+        border-radius: 20px;
+        padding: 0 8px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+    .filter-pill.active .badge {
+        background: rgba(255,255,255,0.2);
+        color: white;
+    }
 
-    /* Tarjetas de Producto */
+    /* === TARJETAS DE PRODUCTO PREMIUM === */
     .product-card {
-        background: white;
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 12px;
+        border-radius: 20px;
         overflow: hidden;
         height: 100%;
         display: flex;
         flex-direction: column;
-        transition: all 0.3s ease;
-    }
-    .product-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-color: #D1D5DB; }
-
-    .img-container {
-        height: 180px;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
-        background-color: #F3F4F6;
+    }
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 25px 40px -15px rgba(51, 39, 31, 0.2);
+        border-color: rgba(174, 69, 45, 0.4);
+    }
+
+    /* Contenedor de Imagen con Aspect Ratio */
+    .product-image-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 75%;
+        background-color: #F3ECE2;
         overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
-    .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-    .product-card:hover .product-img { transform: scale(1.05); }
-
-    .no-image-bg {
-        background: repeating-linear-gradient(45deg, #F7F3EC, #F7F3EC 10px, #F3F1EC 10px, #F3F1EC 20px);
-        width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-muted);
-    }
-
-    .badge-category {
+    .product-image-wrapper img {
         position: absolute;
-        top: 12px;
-        left: 12px;
-        background: white;
-        color: var(--text-main);
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .product-card:hover .product-image-wrapper img { transform: scale(1.08); }
+
+    /* Placeholder sin imagen */
+    .image-placeholder {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        color: #A8A29E; gap: 8px;
+        background: repeating-linear-gradient(45deg, #F7F3EC, #F7F3EC 10px, #F3F1EC 10px, #F3F1EC 20px);
+    }
+    .image-placeholder i { font-size: 2.5rem; opacity: 0.4; }
+    .image-placeholder span { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Badge de Categoría */
+    .category-badge {
+        position: absolute;
+        top: 12px; left: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 5px 12px;
+        border-radius: 30px;
         font-size: 0.65rem;
         font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 4px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        color: var(--text-main);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .category-badge::before {
+        content: '';
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--accent-color);
     }
 
-    .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
-    .product-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.2rem; line-height: 1.2; }
-    .product-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    
-    .product-price { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent-color); display: flex; align-items: baseline; gap: 4px; }
-    .product-price small { font-family: 'Inter', sans-serif; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+    /* LED de estado */
+    .status-led {
+        position: absolute;
+        top: 16px; right: 16px;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        border: 3px solid white;
+        z-index: 2;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .status-led.active { background: #10B981; }
+    .status-led.inactive { background: #9CA3AF; }
 
-    /* Interruptor (Switch) */
-    .form-switch .form-check-input { width: 2.5em; height: 1.3em; cursor: pointer; }
-    .form-switch .form-check-input:checked { background-color: #10B981; border-color: #10B981; }
-    .switch-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-left: 8px; cursor: pointer; }
+    /* Cuerpo */
+    .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .product-title {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.25rem;
+        line-height: 1.25;
+    }
+    .product-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
+    }
+
+    /* Precio */
+    .product-price {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 1rem;
+    }
+    .product-price small {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    /* Footer (Switch + Editar) */
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--border-color);
+    }
+
+    /* Switch */
+    .form-switch .form-check-input {
+        width: 2.5em;
+        height: 1.4em;
+        cursor: pointer;
+        background-color: #E5E7EB;
+        border-color: #E5E7EB;
+    }
+    .form-switch .form-check-input:checked {
+        background-color: #10B981;
+        border-color: #10B981;
+    }
+    .switch-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #9CA3AF;
+        margin-left: 10px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
     .form-check-input:checked ~ .switch-label { color: #10B981; }
 
-    /* Botones de acción inferiores */
+    /* Botón de Editar */
     .btn-action-small {
         background: white;
         border: 1px solid var(--border-color);
         color: var(--text-muted);
-        width: 32px; height: 32px;
-        border-radius: 6px;
+        width: 36px; height: 36px;
+        border-radius: 10px;
         display: flex; justify-content: center; align-items: center;
         transition: all 0.2s;
         flex-shrink: 0;
+        text-decoration: none;
     }
-    .btn-action-small:hover { background: #F3F4F6; color: var(--text-main); }
+    .btn-action-small:hover {
+        background: var(--text-main);
+        color: white;
+        border-color: var(--text-main);
+        transform: translateY(-2px);
+    }
 
     /* Tarjeta de "Agregar Plato" */
     .add-product-card {
         background: #FBF8F3;
         border: 2px dashed var(--border-color);
-        border-radius: 12px;
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        height: 100%; min-height: 300px;
-        cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+        border-radius: 20px;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        height: 100%; min-height: 320px;
+        cursor: pointer; transition: all 0.3s;
+        color: var(--text-muted);
+        text-decoration: none;
     }
-    .add-product-card:hover { border-color: var(--text-main); color: var(--text-main); background: white; }
+    .add-product-card:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        background: white;
+        transform: translateY(-4px);
+    }
     .add-icon-circle {
-        width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid var(--border-color);
-        display: flex; justify-content: center; align-items: center; margin-bottom: 10px; font-size: 1.2rem;
+        width: 56px; height: 56px;
+        border-radius: 50%;
+        background: white;
+        border: 1px solid var(--border-color);
+        display: flex; justify-content: center; align-items: center;
+        margin-bottom: 12px;
+        font-size: 1.4rem;
+        transition: all 0.3s;
+    }
+    .add-product-card:hover .add-icon-circle {
+        transform: rotate(90deg) scale(1.1);
+        border-color: var(--accent-color);
     }
 </style>
 
-<!-- Encabezado (Grid Responsivo) -->
+<!-- ENCABEZADO -->
 <div class="row align-items-end mb-4 mt-2 g-3">
     <div class="col-12 col-md-7">
-        <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">Catálogo</span>
-        <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Gestión de Productos</h1>
+        <span class="small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color);">Catálogo</span>
+        <h1 class="fw-bold mb-1 mt-1" style="font-family: var(--font-display); font-size: clamp(2rem, 8vw, 2.8rem);">Gestión de Productos</h1>
         <p class="text-muted mb-0">Administra los platos y bebidas de tu menú</p>
     </div>
     <div class="col-12 col-md-5 d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
@@ -163,7 +367,7 @@
     </div>
 </div>
 
-<!-- KPIs Superiores -->
+<!-- KPIs SUPERIORES (SIN TOCAR) -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="kpi-box dark">
@@ -191,106 +395,100 @@
     </div>
 </div>
 
-<!-- Búsqueda y Filtros (Patrón Mágico) -->
-<div class="row g-3 mb-3 align-items-center">
-    <!-- Buscador -->
-    <div class="col-12 col-md-4">
-        <div class="search-bar">
-            <i class="bi bi-search text-muted"></i>
-            <input type="text" id="buscadorProductos" placeholder="Buscar producto..." onkeyup="buscarProductos()">
+<!-- BARRA DE CONTROL (Buscador, Selects y Píldoras) -->
+<div class="control-panel">
+    <div class="d-flex flex-column flex-md-row gap-3 w-100">
+        <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="buscadorProductos" class="search-input" placeholder="Buscar producto..." onkeyup="buscarProductos()">
         </div>
-    </div>
-    
-    <!-- Selects (Estado y Orden) -->
-    <div class="col-12 col-md-8 d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
-        <div class="w-100 w-sm-auto">
-            <select class="form-select-custom" id="filtroEstado" onchange="filtrarProductos()">
-                <option value="todos">Todos los estados</option>
-                <option value="activos">Activos en el menú</option>
-                <option value="inactivos">Ocultos</option>
-            </select>
-        </div>
-        <div class="w-100 w-sm-auto">
-            <select class="form-select-custom" id="filtroOrden" onchange="ordenarProductos()">
-                <option value="az">Nombre A-Z</option>
-                <option value="za">Nombre Z-A</option>
-                <option value="precio_asc">Precio: Menor a Mayor</option>
-                <option value="precio_desc">Precio: Mayor a Menor</option>
-            </select>
-        </div>
-    </div>
-</div>
+        
+        <select class="filter-select" id="filtroEstado" onchange="filtrarProductos()">
+            <option value="todos">Todos los estados</option>
+            <option value="activos">Activos en el menú</option>
+            <option value="inactivos">Ocultos</option>
+        </select>
 
-<!-- Filtros de Categorías (Pills) -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex gap-2 overflow-auto pb-3" style="white-space: nowrap;">
-            <div class="filter-pill active" onclick="filtrarCategoria('all', this)">
-                Todas <span class="badge">{{ total_productos }}</span>
+        <select class="filter-select" id="filtroOrden" onchange="ordenarProductos()">
+            <option value="az">Nombre A-Z</option>
+            <option value="za">Nombre Z-A</option>
+            <option value="precio_asc">Precio: Menor a Mayor</option>
+            <option value="precio_desc">Precio: Mayor a Menor</option>
+        </select>
+    </div>
+
+    <!-- Píldoras de Categorías -->
+    <div class="filter-pills-container">
+        <div class="filter-pill active" onclick="filtrarCategoria('all', this)">
+            Todas <span class="badge">{{ total_productos }}</span>
+        </div>
+        {% for cat in categorias %}
+            <div class="filter-pill" onclick="filtrarCategoria('{{ cat.id }}', this)">
+                {{ cat.nombre }} <span class="badge">{{ cat.productos.count }}</span>
             </div>
-            {% for cat in categorias %}
-                <div class="filter-pill" onclick="filtrarCategoria('{{ cat.id }}', this)">
-                    {{ cat.nombre }} <span class="badge">{{ cat.productos.count }}</span>
-                </div>
-            {% endfor %}
-        </div>
+        {% endfor %}
     </div>
 </div>
 
-<!-- Lista de Tarjetas de Productos -->
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="contenedor-productos">
+<!-- CUADRÍCULA DE PRODUCTOS -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5" id="contenedor-productos">
     {% for p in productos %}
-        <div class="col product-item" data-categoria="{{ p.categoria.id }}" data-nombre="{{ p.nombre|lower }}" data-precio="{{ p.precio|unlocalize }}" data-disponible="{{ p.disponible|yesno:'true,false' }}">
+        <div class="col product-item" 
+             data-categoria="{{ p.categoria.id }}" 
+             data-nombre="{{ p.nombre|lower }}" 
+             data-precio="{{ p.precio|unlocalize }}" 
+             data-disponible="{{ p.disponible|yesno:'true,false' }}">
             <div class="product-card">
-                <div class="img-container">
-                    <div class="badge-category">{{ p.categoria.nombre }}</div>
+                
+                <!-- Imagen con badge y LED -->
+                <div class="product-image-wrapper">
+                    <span class="category-badge">{{ p.categoria.nombre }}</span>
+                    <div class="status-led {% if p.disponible %}active{% else %}inactive{% endif %}" title="{% if p.disponible %}Activo en el menú{% else %}Oculto{% endif %}"></div>
                     
                     {% if p.imagen %}
-                        <img src="{{ p.imagen.url }}" class="product-img" alt="{{ p.nombre }}">
+                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
                     {% else %}
-                        <div class="no-image-bg">
-                            <i class="bi bi-image mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
-                            <span class="small" style="font-size: 0.75rem;">Sin imagen</span>
-                            <a href="{% url 'editar_producto_completo' p.id %}" class="btn btn-sm btn-outline-secondary mt-2" style="font-size: 0.7rem; padding: 2px 8px;">Subir foto</a>
+                        <div class="image-placeholder">
+                            <i class="bi bi-image"></i>
+                            <span>Sin imagen</span>
                         </div>
                     {% endif %}
                 </div>
 
+                <!-- Cuerpo -->
                 <div class="product-body">
                     <h5 class="product-title">{{ p.nombre }}</h5>
-                    <p class="product-desc">{{ p.descripcion|default:"Sin descripción." }}</p>
+                    <p class="product-desc">{{ p.descripcion|default:"Sin descripción disponible." }}</p>
                     
                     <div class="product-price">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'Inter', sans-serif; font-weight: 600;">COP</span> ${{ p.precio|floatformat:"0g" }}
+                        <small>COP</small> ${{ p.precio|floatformat:"0g" }}
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                        <div class="form-toggle-ajax m-0 d-flex align-items-center">
-                            <div class="form-check form-switch m-0 d-flex align-items-center">
-                                <input class="form-check-input switch-input" type="checkbox" role="switch" id="switch_{{ p.id }}" data-id="{{ p.id }}" {% if p.disponible %}checked{% endif %}>
-                                <label class="switch-label" for="switch_{{ p.id }}">{% if p.disponible %}En el menú{% else %}Oculto{% endif %}</label>
-                            </div>
+                    <!-- Footer: Switch + Editar -->
+                    <div class="product-footer">
+                        <div class="form-check form-switch m-0 d-flex align-items-center">
+                            <input class="form-check-input switch-input" type="checkbox" role="switch" id="switch_{{ p.id }}" data-id="{{ p.id }}" {% if p.disponible %}checked{% endif %}>
+                            <label class="switch-label" for="switch_{{ p.id }}">{% if p.disponible %}En el menú{% else %}Oculto{% endif %}</label>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'editar_producto_completo' p.id %}" class="btn-action-small" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                        </div>
+                        <a href="{% url 'editar_producto_completo' p.id %}" class="btn-action-small" title="Editar plato">
+                            <i class="bi bi-pencil"></i>
+                        </a>
                     </div>
                 </div>
+
             </div>
         </div>
     {% endfor %}
 
+    <!-- Tarjeta de "Agregar Plato" -->
     <div class="col" id="btn-agregar-plato">
-        <a href="{% url 'crear_producto_completo' %}" class="text-decoration-none">
-            <div class="add-product-card">
-                <div class="add-icon-circle">
-                    <i class="bi bi-plus-lg"></i>
-                </div>
-                <h6 class="fw-bold mb-0">Agregar plato</h6>
+        <a href="{% url 'crear_producto_completo' %}" class="add-product-card">
+            <div class="add-icon-circle">
+                <i class="bi bi-plus-lg"></i>
             </div>
+            <h6 class="fw-bold mb-0" style="font-family: var(--font-display);">Agregar plato</h6>
+            <span class="text-muted small mt-1">Añade al menú</span>
         </a>
     </div>
 </div>
@@ -303,7 +501,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="accion" value="crear_categoria">
                 <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title fw-bold" style="font-family: 'DM Serif Display', serif;">Gestionar Categorías</h5>
+                    <h5 class="modal-title fw-bold" style="font-family: var(--font-display);">Gestionar Categorías</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-4">
@@ -338,15 +536,12 @@
 
     function filtrarCategoria(categoriaId, btnElement) {
         categoriaActiva = categoriaId;
-        const botones = document.querySelectorAll('.filter-pill');
-        botones.forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
         aplicarFiltros();
     }
 
-    function filtrarProductos() {
-        aplicarFiltros();
-    }
+    function filtrarProductos() { aplicarFiltros(); }
 
     function ordenarProductos() {
         const contenedor = document.getElementById('contenedor-productos');
@@ -375,7 +570,6 @@
             const disponible = item.getAttribute('data-disponible') === 'true';
 
             let mostrar = true;
-
             if (categoriaActiva !== 'all' && categoria !== categoriaActiva) mostrar = false;
             if (!nombre.includes(textoBusqueda)) mostrar = false;
             if (estadoFiltro === 'activos' && !disponible) mostrar = false;
@@ -385,9 +579,7 @@
         });
     }
 
-    function buscarProductos() {
-        aplicarFiltros();
-    }
+    function buscarProductos() { aplicarFiltros(); }
 
     // AJAX para el Switch
     document.querySelectorAll('.switch-input').forEach(checkbox => {
