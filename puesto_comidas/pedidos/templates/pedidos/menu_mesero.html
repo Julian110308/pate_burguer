@@ -217,7 +217,6 @@
         padding: 12px 15px;
     }
 
-    /* Botón de Cancelar (estilo neutro) */
     .btn-cancel-edit {
         background: transparent;
         border: 1px solid var(--border-color);
@@ -238,7 +237,6 @@
         border-color: var(--text-main);
     }
 
-    /* Padding extra en móvil */
     @media (max-width: 768px) {
         .cart-card {
             margin-bottom: 90px;
@@ -250,7 +248,6 @@
 <div class="row mb-4 mt-2">
     <div class="col-12">
         {% if es_adicional %}
-            <!-- Header especial para modo "Agregar a pedido existente" -->
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
                 <div>
                     <a href="{% url 'pedidos_activos' %}" class="text-muted text-decoration-none small d-inline-flex align-items-center gap-1 mb-2">
@@ -268,7 +265,6 @@
                 </button>
             </div>
         {% else %}
-            <!-- Header normal para crear pedido nuevo -->
             <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px; color: var(--accent-color) !important;">De la plancha a tu mesa</span>
             <h1 class="fw-bold mt-1" style="font-size: 3.5rem; font-family: 'DM Serif Display', serif; line-height: 1.1;">Un buen combo,<br>un gran día.</h1>
             <p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; max-width: 600px;">Elige tu antojo. La pasión, la bebida y el postre van por nuestra cuenta.</p>
@@ -285,7 +281,6 @@
 </div>
 
 <div class="row">
-    <!-- Columna Izquierda: Menú y Tarjetas -->
     <div class="col-lg-8">
         
         {% if es_adicional %}
@@ -329,7 +324,6 @@
         </div>
     </div>
 
-    <!-- Columna Derecha: Carrito Lateral -->
     <div class="col-lg-4 mt-4 mt-lg-0">
         <div class="cart-card sticky-top p-4" style="top: 20px; z-index: 100;" id="carritoContenedor">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -438,7 +432,6 @@
             </button>
 
             {% if es_adicional %}
-                <!-- Botón Cancelar en modo edición -->
                 <button type="button" class="btn btn-light border w-100 py-3 mt-2 fw-bold text-muted" 
                    onclick="abrirModalCancelar()"
                    style="border-radius: 10px;">
@@ -861,7 +854,15 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'ok') {
-                window.location.href = '/ticket/' + data.pedido_id + '/';
+                // === IMPRESIÓN AUTOMÁTICA DE AMBOS TICKETS ===
+                imprimirEnIframe('/ticket/' + data.pedido_id + '/', 'cliente_' + data.pedido_id);
+                imprimirEnIframe('/ticket-cocina/' + data.pedido_id + '/', 'cocina_' + data.pedido_id);
+                
+                mostrarAviso('Pedido #' + data.numero + ' creado. Tickets impresos.');
+                
+                setTimeout(() => {
+                    window.location.href = "{% url 'pedidos_activos' %}";
+                }, 3000);
             } else {
                 mostrarAviso('Error: ' + data.message, 'error');
                 btn.innerHTML = '{% if es_adicional %}Agregar al pedido{% else %}Confirmar pedido{% endif %} <i class="bi bi-arrow-right"></i>';
@@ -876,7 +877,32 @@
         });
     }
 
-    // --- FUNCIÓN PARA ABRIR LA MODAL DE CANCELAR ---
+    // --- FUNCIÓN DE IMPRESIÓN EN IFRAME OCULTO ---
+    function imprimirEnIframe(url, nombreIframe) {
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'absolute';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = 'none';
+        iframe.src = url;
+        iframe.name = nombreIframe;
+        document.body.appendChild(iframe);
+
+        iframe.onload = function() {
+            try {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } catch (e) {
+                console.error("Error al imprimir", e);
+            }
+            setTimeout(() => {
+                if (document.body.contains(iframe)) {
+                    document.body.removeChild(iframe);
+                }
+            }, 10000);
+        };
+    }
+
     let modalCancelarInstancia = null;
     
     function abrirModalCancelar() {

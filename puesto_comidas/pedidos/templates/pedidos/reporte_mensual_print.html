@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Mensual - {{ mes_nombre }} {{ anio_str }}</title>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            background-color: #F3F4F6;
+            color: #33271F;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .report-container {
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .report-header {
+            text-align: center;
+            border-bottom: 3px solid #AE452D;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .report-header h1 {
+            color: #AE452D;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .report-header p {
+            color: #75685D;
+            font-size: 12px;
+            margin: 3px 0;
+        }
+        .report-header h2 {
+            color: #33271F;
+            font-size: 18px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .kpi-box {
+            padding: 15px;
+            border: 1px solid #E2D9CD;
+            border-radius: 6px;
+            text-align: center;
+            background: #FBF8F3;
+        }
+        .kpi-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #AE452D;
+        }
+        .kpi-label {
+            font-size: 10px;
+            color: #75685D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h3 {
+            color: #33271F;
+            border-bottom: 1px solid #E2D9CD;
+            padding-bottom: 8px;
+            font-size: 15px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+        table th {
+            background: #33271F;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table td {
+            padding: 8px;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 11px;
+        }
+        table tr:nth-child(even) {
+            background: #FBF8F3;
+        }
+        
+        .report-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #E2D9CD;
+            font-size: 10px;
+            color: #75685D;
+        }
+        
+        .action-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .btn-action {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-print {
+            background: #AE452D;
+            color: white;
+        }
+        .btn-print:hover {
+            background: #923A26;
+        }
+        
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.5cm;
+            }
+            body {
+                background: white;
+                padding: 0;
+                display: block;
+            }
+            .report-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            .report-header h1 {
+                color: #AE452D !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .kpi-box {
+                background: #FBF8F3 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            table th {
+                background: #33271F !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .report-container { padding: 20px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .action-bar {
+                width: calc(100% - 20px);
+                flex-direction: column;
+            }
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="report-container">
+        
+        <!-- HEADER -->
+        <div class="report-header">
+            <h1>{{ config.nombre|default:"Pate Burguer" }}</h1>
+            {% if config.direccion %}<p>{{ config.direccion }}</p>{% endif %}
+            {% if config.telefono %}<p>Tel: {{ config.telefono }}</p>{% endif %}
+            <!-- AÑO DEL REPORTE CONSULTADO (dinámico) -->
+            <h2>Reporte Mensual - {{ mes_nombre }} {{ anio_str }}</h2>
+        </div>
+        
+        <!-- KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-box">
+                <div class="kpi-value">${{ total_general|floatformat:"0g" }}</div>
+                <div class="kpi-label">Total Recaudado</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">{{ cantidad_pedidos }}</div>
+                <div class="kpi-label">Pedidos Cobrados</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">${{ total_efectivo|floatformat:"0g" }}</div>
+                <div class="kpi-label">Efectivo</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">${{ total_nequi|floatformat:"0g" }}</div>
+                <div class="kpi-label">Nequi</div>
+            </div>
+        </div>
+        
+        <!-- TOP 5 PRODUCTOS -->
+        <div class="section">
+            <h3>Top 5 Productos Más Vendidos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th>Producto</th>
+                        <th style="width: 100px; text-align: center;">Cantidad</th>
+                        <th style="width: 130px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in top_productos %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ prod.producto__nombre }}</td>
+                            <td style="text-align: center;">{{ prod.total_cantidad }}</td>
+                            <td style="text-align: right;">${{ prod.total_dinero|floatformat:"0g" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #75685D;">No hay ventas en este mes.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- LISTADO COMPLETO DE PRODUCTOS -->
+        <div class="section">
+            <h3>Listado Completo de Productos Vendidos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th style="width: 100px; text-align: center;">Cantidad</th>
+                        <th style="width: 130px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in productos_vendidos %}
+                        <tr>
+                            <td>{{ prod.producto__nombre }}</td>
+                            <td style="text-align: center;">{{ prod.total_cantidad }}</td>
+                            <td style="text-align: right;">${{ prod.total_dinero|floatformat:"0g" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #75685D;">No hay ventas en este mes.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- LISTADO DE PEDIDOS -->
+        <div class="section">
+            <h3>Detalle de Pedidos del Mes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;"># Pedido</th>
+                        <th style="width: 80px;">Fecha</th>
+                        <th>Mesero</th>
+                        <th style="width: 120px; text-align: right;">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos_cobrados %}
+                        <tr>
+                            <td>{{ pedido.numero }}</td>
+                            <td>{{ pedido.fecha_hora|date:"d/m/Y" }}</td>
+                            <td>{{ pedido.mesero.first_name|default:pedido.mesero.username }}</td>
+                            <td style="text-align: right;">${{ pedido.total|floatformat:"0g" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #75685D;">No hay pedidos en este mes.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="report-footer">
+            Reporte generado el {{ fecha_generacion|date:"d/m/Y H:i" }}<br>
+            {{ config.nombre|default:"Pate Burguer" }} - Sistema POS
+        </div>
+        
+    </div>
+    
+    <!-- BARRA DE ACCIONES (se oculta al imprimir) -->
+    <div class="action-bar">
+        <button onclick="window.print()" class="btn-action btn-print">
+            🖨️ Imprimir / Guardar PDF
+        </button>
+    </div>
+    
+</body>
+</html>

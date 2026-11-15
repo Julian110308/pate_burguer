@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
     <style>
-        /* Tipografía de los títulos: Fraunces (la del diseño de Figma). */
         @font-face {
             font-family: 'DM Serif Display';
             src: url('https://cdn.jsdelivr.net/npm/@fontsource-variable/fraunces@5.3.0/files/fraunces-latin-opsz-normal.woff2') format('woff2-variations');
@@ -36,10 +35,7 @@
             --font-display: 'DM Serif Display', Georgia, serif;
         }
 
-        /* === BLINDAJE ANTI-DESBORDAMIENTO === */
-        html, body {
-            width: 100%;
-        }
+        html, body { width: 100%; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -56,10 +52,9 @@
         }
 
         {% if user.is_authenticated %}
-        body { padding-bottom: 90px; } /* Espacio para la barra móvil */
+        body { padding-bottom: 90px; }
         {% endif %}
 
-        /* Tipografía fluida */
         h1, h2, h3, h4, h5, h6, .brand-title {
             font-family: var(--font-display);
             color: var(--text-main);
@@ -67,7 +62,6 @@
             letter-spacing: -0.02em;
         }
 
-        /* Navbar */
         .navbar-custom {
             background-color: var(--bg-color);
             border-bottom: 1px solid var(--border-color);
@@ -80,7 +74,6 @@
             letter-spacing: -1px;
         }
 
-        /* Botón Principal */
         .btn-primary-custom {
             background-color: var(--accent-color);
             color: white;
@@ -98,7 +91,6 @@
             box-shadow: 0 4px 12px rgba(166, 58, 37, 0.2);
         }
 
-        /* Tarjetas genéricas */
         .card-custom {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -106,7 +98,6 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         }
 
-        /* Inputs */
         .form-control, .form-select {
             border-radius: var(--radius-input);
             padding: 12px 16px;
@@ -182,7 +173,6 @@
             box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
         }
 
-        /* Cada ítem del menú ocupa exactamente el mismo espacio */
         .mobile-nav > a,
         .mobile-nav > form {
             flex: 1;
@@ -221,7 +211,21 @@
             white-space: nowrap;
         }
 
-        /* Estado activo */
+        /* FIX: Botón dentro del form debe heredar el estilo del enlace */
+        .mobile-nav > form button {
+            background: transparent;
+            border: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            width: 100%;
+        }
+
         .mobile-nav a.active {
             color: var(--accent-color);
         }
@@ -273,6 +277,7 @@
                         <span class="d-block text-dark fw-medium small">{{ user.username }}</span>
                         <span class="text-muted" style="font-size: 0.7rem; text-transform: uppercase;">{{ user.get_rol_display }}</span>
                     </div>
+                    <!-- LOGOUT ESCRITORIO: Formulario POST con CSRF -->
                     <form method="post" action="{% url 'logout' %}" class="d-inline m-0">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-secondary btn-sm rounded-3 px-3">Salir</button>
@@ -307,7 +312,6 @@
     {% if user.is_authenticated %}
     <div class="mobile-nav">
         
-        <!-- PANEL: Solo visible para Admin -->
         {% if user.rol == 'admin' %}
         <a href="{% url 'dashboard_admin' %}" class="{% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
             <i class="bi bi-speedometer2"></i>
@@ -315,7 +319,6 @@
         </a>
         {% endif %}
 
-        <!-- MENÚ: Lógica condicional por rol -->
         {% if user.rol == 'admin' %}
             <a href="{% url 'lista_productos' %}" class="{% if request.resolver_match.url_name == 'lista_productos' %}active{% endif %}">
                 <i class="bi bi-grid"></i>
@@ -328,13 +331,11 @@
             </a>
         {% endif %}
 
-        <!-- PEDIDOS: Ambos roles -->
         <a href="{% url 'pedidos_activos' %}" class="{% if request.resolver_match.url_name == 'pedidos_activos' %}active{% endif %}">
             <i class="bi bi-receipt"></i>
             <span>Pedidos</span>
         </a>
 
-        <!-- REPORTES: Solo visible para Admin -->
         {% if user.rol == 'admin' %}
         <a href="{% url 'reporte_diario' %}" class="{% if request.resolver_match.url_name == 'reporte_diario' %}active{% endif %}">
             <i class="bi bi-bar-chart"></i>
@@ -342,10 +343,10 @@
         </a>
         {% endif %}
 
-        <!-- SALIR -->
-        <form method="post" action="{% url 'logout' %}">
+        <!-- LOGOUT MÓVIL: Formulario POST con CSRF -->
+        <form method="post" action="{% url 'logout' %}" class="m-0">
             {% csrf_token %}
-            <button type="submit" style="background:none; border:none; color:inherit; display:flex; flex-direction:column; align-items:center; padding:0; cursor:pointer;">
+            <button type="submit">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Salir</span>
             </button>
@@ -408,7 +409,6 @@
     </script>
 
     <script>
-        // Avisos: se cierran solos (3,5 s; los errores 6 s) o con la X
         (function () {
             const pila = document.getElementById('toast-stack');
             if (!pila) return;
@@ -433,7 +433,6 @@
         })();
     </script>
     <script>
-        // Anti doble clic
         (function () {
             const SELECTOR = 'button[type="submit"], button:not([type]), input[type="submit"]';
 
@@ -470,7 +469,6 @@
         })();
     </script>
     <script>
-        // Avisos desde JavaScript: mostrarAviso('Texto', 'success' | 'error' | 'warning' | 'info')
         window.mostrarAviso = function (texto, tipo) {
             tipo = tipo || 'success';
             let pila = document.getElementById('toast-stack');

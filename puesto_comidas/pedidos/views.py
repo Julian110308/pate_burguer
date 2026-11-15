@@ -1,18 +1,20 @@
 from decimal import Decimal
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.db.models import Sum, Q, F, Count
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django import forms
 from django.contrib import messages
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 import json
-import logging # <-- IMPORTANTE: Para registrar errores de forma segura
+import logging
+import calendar
 
 # ✅ IMPORTAMOS EL NUEVO DECORADOR
 from .decorators import solo_admin
@@ -43,7 +45,6 @@ def redireccion_por_rol(request):
 
 @login_required
 def menu_mesero(request):
-    # SEGURIDAD: Evitar que el administrador entre a la vista de tomar pedidos
     if request.user.rol == 'admin':
         messages.info(request, "Como administrador, usa el panel para gestionar el sistema.")
         return redirect('dashboard_admin')
@@ -93,7 +94,6 @@ def menu_mesero(request):
             return JsonResponse({'status': 'ok', 'pedido_id': pedido.id, 'numero': pedido.numero})
 
         except Exception as e:
-            # SEGURIDAD: Registrar el error real en el servidor, no enviarlo al cliente
             logger.error(f"Error al crear pedido: {str(e)}", exc_info=True)
             return JsonResponse({'status': 'error', 'message': 'Ocurrió un error interno al crear el pedido.'}, status=500)
 
@@ -176,7 +176,6 @@ def cambiar_estado_pedido(request, pedido_id, nuevo_estado):
         if request.method != 'POST':
             return redirect('pedidos_activos')
 
-    # SEGURIDAD (Anti-CSRF por GET): Si es GET y no es la pantalla de cobro, redirigir
     if request.method == 'GET' and nuevo_estado != 'pagado':
         return redirect('pedidos_activos')
 
@@ -242,7 +241,6 @@ def ver_ticket(request, pedido_id):
     Pago.migrar_pedidos_antiguos()
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
-    # ✅ SEGURIDAD (IDOR): Validar que el mesero dueño o el admin puedan ver el ticket
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para ver este ticket.")
         return redirect('pedidos_activos')
@@ -278,7 +276,6 @@ def ver_ticket(request, pedido_id):
 def ver_ticket_cocina(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
-    # Seguridad: Mismo control que el ticket normal
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para ver esta comanda.")
         return redirect('pedidos_activos')
@@ -300,7 +297,6 @@ def agregar_a_pedido(request, pedido_id):
     Pago.migrar_pedidos_antiguos()
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
-    # ✅ SEGURIDAD (IDOR): Validar que solo el dueño o admin puedan modificar
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para modificar este pedido.")
         return redirect('pedidos_activos')
@@ -340,7 +336,6 @@ def agregar_a_pedido(request, pedido_id):
 
             return JsonResponse({'status': 'ok', 'pedido_id': pedido.id})
         except Exception as e:
-            # SEGURIDAD: Registrar error, no filtrar al cliente
             logger.error(f"Error al agregar productos al pedido #{pedido.id}: {str(e)}", exc_info=True)
             return JsonResponse({'status': 'error', 'message': 'Ocurrió un error interno al agregar productos.'}, status=500)
 
@@ -366,13 +361,11 @@ def dashboard_admin(request):
     Pago.migrar_pedidos_antiguos()
     hoy = timezone.localdate()
     
-    # Rangos de fecha para hoy
     inicio_dia = timezone.make_aware(timezone.datetime.combine(hoy, timezone.datetime.min.time()))
     fin_dia = inicio_dia + timedelta(days=1)
     
     pedidos_hoy = Pedido.objects.filter(fecha_hora__gte=inicio_dia, fecha_hora__lt=fin_dia)
 
-    # Recaudado hoy (pagos reales)
     total_recaudado = (
         Pago.objects.filter(fecha__gte=inicio_dia, fecha__lt=fin_dia)
         .exclude(pedido__estado='anulado')
@@ -390,11 +383,8 @@ def dashboard_admin(request):
     
     total_productos = Producto.objects.count()
 
-    # --- LÓGICA: Rendimiento del Personal ---
-    # 1. Traemos todos los meseros activos
     meseros = Usuario.objects.filter(rol='mesero', is_active=True)
     
-    # 2. Calculamos los pedidos de hoy para cada uno con una sola consulta
     pedidos_por_mesero_query = Pedido.objects.filter(
         fecha_hora__gte=inicio_dia, 
         fecha_hora__lt=fin_dia,
@@ -403,7 +393,6 @@ def dashboard_admin(request):
     
     pedidos_por_mesero = {item['mesero__id']: item['total'] for item in pedidos_por_mesero_query}
 
-    # 3. Armamos la lista final con nombre y pedidos
     rendimiento_personal = []
     for mesero in meseros:
         rendimiento_personal.append({
@@ -413,7 +402,6 @@ def dashboard_admin(request):
             'en_turno': mesero.last_login and timezone.localtime(mesero.last_login).date() == hoy
         })
 
-    # Ordenamos de mayor a menor pedidos para destacar al mejor del día
     rendimiento_personal.sort(key=lambda x: x['pedidos_hoy'], reverse=True)
     total_meseros_activos = len(rendimiento_personal)
     
@@ -425,7 +413,6 @@ def dashboard_admin(request):
         'total_productos': total_productos,
         'fecha_hoy': hoy,
         'pedidos_activos': pedidos_activos[:5],
-        # Nuevos datos para la tarjeta:
         'rendimiento_personal': rendimiento_personal,
         'total_meseros_activos': total_meseros_activos,
     }
@@ -1015,3 +1002,78 @@ def inventario_ventas(request):
         'categorias': categorias,
     }
     return render(request, 'pedidos/admin_inventario.html', context)
+
+
+# ==========================================
+# REPORTE MENSUAL EN PDF (NUEVO)
+# ==========================================
+
+@solo_admin
+@xframe_options_sameorigin
+def reporte_mensual_pdf(request):
+    """
+    Genera un reporte mensual HTML que se abre en una nueva pestaña.
+    El usuario puede imprimirlo o guardarlo como PDF desde el navegador.
+    """
+    mes = int(request.GET.get('mes', timezone.localdate().month))
+    anio = int(request.GET.get('anio', timezone.localdate().year))
+    
+    # Validar mes y año
+    if mes < 1 or mes > 12:
+        mes = timezone.localdate().month
+    if anio < 2000 or anio > 2100:
+        anio = timezone.localdate().year
+    
+    # Rango del mes
+    inicio_mes = timezone.make_aware(datetime(anio, mes, 1))
+    if mes == 12:
+        fin_mes = timezone.make_aware(datetime(anio + 1, 1, 1))
+    else:
+        fin_mes = timezone.make_aware(datetime(anio, mes + 1, 1))
+    
+    # Datos del mes
+    pedidos_mes = Pedido.objects.filter(
+        fecha_hora__gte=inicio_mes, 
+        fecha_hora__lt=fin_mes
+    ).exclude(estado='anulado').order_by('-fecha_hora')
+    
+    pagos_mes = Pago.objects.filter(
+        fecha__gte=inicio_mes, 
+        fecha__lt=fin_mes
+    ).exclude(pedido__estado='anulado')
+    
+    total_efectivo = pagos_mes.filter(metodo='efectivo').aggregate(t=Sum('monto'))['t'] or Decimal('0.00')
+    total_nequi = pagos_mes.filter(metodo='nequi').aggregate(t=Sum('monto'))['t'] or Decimal('0.00')
+    total_general = total_efectivo + total_nequi
+    
+    # Productos vendidos
+    detalles_mes = DetallePedido.objects.filter(
+        pedido__in=pedidos_mes.filter(estado__in=['pagado', 'entregado'])
+    ).select_related('producto')
+    
+    productos_vendidos = detalles_mes.values('producto__nombre').annotate(
+        total_cantidad=Sum('cantidad'),
+        total_dinero=Sum(F('cantidad') * F('precio_unitario'))
+    ).order_by('-total_cantidad')
+    
+    top_productos = productos_vendidos[:5]
+    
+    # Listado de pedidos detallado (para la tabla de transacciones)
+    pedidos_cobrados = pedidos_mes.filter(estado__in=['pagado', 'entregado'])
+    
+    config = ConfiguracionNegocio.objects.first()
+    
+    context = {
+        'config': config,
+        'mes_nombre': calendar.month_name[mes],
+        'anio_str': str(anio),   # <-- año SIN formato (ej: "2026", "2027", "2028"...)
+        'total_general': total_general,
+        'total_efectivo': total_efectivo,
+        'total_nequi': total_nequi,
+        'cantidad_pedidos': pedidos_cobrados.count(),
+        'pedidos_cobrados': pedidos_cobrados,
+        'productos_vendidos': productos_vendidos,
+        'top_productos': top_productos,
+        'fecha_generacion': timezone.now(),
+    }
+    return render(request, 'pedidos/reporte_mensual_print.html', context)

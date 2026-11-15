@@ -5,15 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comanda #{{ pedido.numero }}</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
     <style>
-        /* Misma base que el ticket de cliente */
         body {
             background-color: #F3F4F6; 
             margin: 0;
@@ -26,7 +22,7 @@
         .ticket-wrapper {
             background-color: white;
             width: 100%;
-            max-width: 380px; /* Mismo ancho que el ticket normal */
+            max-width: 380px;
             padding: 2rem 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
@@ -90,13 +86,12 @@
             border-bottom: none;
         }
 
-        /* --- ESTILOS EXCLUSIVOS PARA LA COCINA --- */
         .ingredientes-ocultos {
             display: block;
             font-size: 16px;
             font-weight: 900;
             color: #000;
-            background-color: #FEF3C7; /* Fondo amarillo suave para alertar */
+            background-color: #FEF3C7;
             padding: 6px 10px;
             margin-top: 6px;
             text-transform: uppercase;
@@ -109,16 +104,15 @@
             display: block;
             font-size: 14px;
             font-weight: bold;
-            color: #DC2626; /* Rojo para llamar la atención */
+            color: #DC2626;
             margin-top: 6px;
             text-transform: uppercase;
         }
 
-        /* Estilos para impresión térmica */
         @media print {
             @page { 
                 margin: 0; 
-                size: 80mm auto; /* Ajusta a 58mm si es tu impresora */
+                size: 80mm auto;
             }
             body { 
                 background-color: white; 
@@ -146,7 +140,6 @@
     <div class="ticket-wrapper">
         <div class="ticket-content">
             
-            <!-- Cabecera -->
             <div class="text-center">
                 <div class="ticket-header-logo">
                     <i class="bi bi-fire"></i> COCINA
@@ -156,7 +149,6 @@
                 <div class="ticket-number">#{{ pedido.numero }}</div>
             </div>
 
-            <!-- Metadatos (Sin precios) -->
             <table class="w-100" style="font-size: 13px;">
                 <tr>
                     <td class="fw-bold">SERVICIO</td>
@@ -182,7 +174,6 @@
 
             <div class="divider-dashed"></div>
 
-            <!-- Tabla de Productos -->
             <table class="ticket-items">
                 <thead>
                     <tr>
@@ -199,7 +190,6 @@
                             <td>
                                 <span class="fw-bold" style="font-size: 15px;">{{ detalle.producto.nombre }}</span>
                                 
-                                {# RESALTADO DE INGREDIENTES A RETIRAR #}
                                 {% if detalle.ingredientes_quitados_rel.all %}
                                     <span class="ingredientes-ocultos">
                                         <i class="bi bi-exclamation-triangle-fill"></i> SIN: 
@@ -209,7 +199,6 @@
                                     </span>
                                 {% endif %}
                                 
-                                {# Observaciones de cocina (si las hay) #}
                                 {% if detalle.observacion %}
                                     <span class="nota-cocina">
                                         <i class="bi bi-chat-left-text-fill"></i> NOTA: {{ detalle.observacion }}
@@ -223,7 +212,6 @@
 
             <div class="divider-dashed"></div>
 
-            <!-- Observaciones generales del pedido -->
             {% if pedido.observaciones %}
                 <div class="text-center mt-3">
                     <p class="fw-bold mb-1">OBSERVACIONES GENERALES:</p>
@@ -232,7 +220,6 @@
                 <div class="divider-dashed"></div>
             {% endif %}
 
-            <!-- Footer -->
             <div class="text-center mt-4">
                 <p class="fw-bold mb-1">¡A PREPARAR!</p>
                 <p class="text-muted mb-0" style="font-size: 11px;">Pate Burguer</p>
@@ -252,8 +239,6 @@
     </div>
 
     <script>
-        // Verificamos si la comanda se está viendo dentro de un iframe (el modal)
-        // o si se abrió de forma independiente en una pestaña.
         document.addEventListener('DOMContentLoaded', function() {
             const enIframe = window.self !== window.top;
             const actionBar = document.getElementById('action-bar');
@@ -267,6 +252,11 @@
                 actionBar.style.width = '100%';
                 actionBar.style.maxWidth = '380px';
                 actionBar.style.zIndex = '1000';
+                
+                // === AUTO-IMPRIMIR EN VENTANA INDEPENDIENTE ===
+                setTimeout(() => {
+                    window.print();
+                }, 500);
             }
         });
     </script>

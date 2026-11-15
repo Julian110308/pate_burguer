@@ -24,6 +24,7 @@ urlpatterns = [
     # ==========================================
     path('dashboard/', views.dashboard_admin, name='dashboard_admin'),
     path('reporte/', views.reporte_diario, name='reporte_diario'),
+    path('reporte-mensual/pdf/', views.reporte_mensual_pdf, name='reporte_mensual_pdf'),
     
     # Menú y Productos
     path('admin-productos/', views.lista_productos, name='lista_productos'),
@@ -48,6 +49,7 @@ urlpatterns = [
     path('api/validar-usuario/', views.validar_usuario_ajax, name='validar_usuario_ajax'),
     path('api/toggle-producto/', views.toggle_estado_producto_ajax, name='toggle_estado_producto_ajax'),
 
+    # Legales
     path('legal/privacidad/', TemplateView.as_view(template_name='pedidos/legal_privacidad.html'), name='politica_privacidad'),
     path('legal/terminos/', TemplateView.as_view(template_name='pedidos/legal_terminos.html'), name='terminos_uso'),
 ]
