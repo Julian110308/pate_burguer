@@ -10,6 +10,9 @@ db.sqlite3
 # Archivos subidos por los usuarios (fotos de productos)
 media/
 
+# Archivos estáticos generados por Django/Whitenoise
+staticfiles/
+
 # Archivos de Python
 __pycache__/
 *.py[cod]
@@ -18,3 +21,12 @@ __pycache__/
 # Archivos del sistema
 .DS_Store
 Thumbs.db
+
+# Logs y archivos temporales
+*.log
+*.pot
+*.mo
+
+# Archivos de configuración local (por si acaso)
+local_settings.py
+*.bak

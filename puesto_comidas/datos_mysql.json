@@ -1,0 +1,3168 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "0k89o9yti4x5zj3jwtgpjlaiiygs71p7",
+  "fields": {
+    "session_data": ".eJxVjEEKwjAQAP-Ss4S0Nkm3R---IexmNzYqqTQtKOLfpdCDXmeGeauA6zKGtcocMqtBNerwywjjTcom-IrlMuk4lWXOpLdE77bq88RyP-3t32DEOqpBGTgiGfI2UWwEBNn2nHrPltqu46NDtujYI3hrkiQEEuccOQBwENttWqXWPJUgz0eeX2owny_CQT_w:1xReST:tSV8vX5i2PNSUXpONNpEzXfJ6LChDUaf7KVVwR3r8tg",
+    "expire_date": "2026-11-26T23:43:57.577Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "14v0wo9qytfdpaujwfqwxlbkklsm55b8",
+  "fields": {
+    "session_data": ".eJxVjEEKwjAQAP-Ss4S0Nkm3R---IexmNzYqqTQtKOLfpdCDXmeGeauA6zKGtcocMqtBNerwywjjTcom-IrlMuk4lWXOpLdE77bq88RyP-3t32DEOqpBGTgiGfI2UWwEBNn2nHrPltqu46NDtujYI3hrkiQEEuccOQBwENttWqXWPJUgz0eeX2owny_CQT_w:1xRbwh:MJW_q1gBOOyO-U35bFBWYLpj90p3qkBP0tU4nLolMUM",
+    "expire_date": "2026-11-26T21:02:59.571Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "9rrq31ucp7dzltet7v1fovann7oocn4x",
+  "fields": {
+    "session_data": ".eJxVjEEKwjAQAP-Ss4S0Nkm3R---IexmNzYqqTQtKOLfpdCDXmeGeauA6zKGtcocMqtBNerwywjjTcom-IrlMuk4lWXOpLdE77bq88RyP-3t32DEOqpBGTgiGfI2UWwEBNn2nHrPltqu46NDtujYI3hrkiQEEuccOQBwENttWqXWPJUgz0eeX2owny_CQT_w:1xRFAa:a9bkRd_gFn7c-i_4l4vew7lH2t8CwnS_M-lNGeD4MV4",
+    "expire_date": "2026-11-25T20:43:48.087Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "b0alq0sbm3yw2dlz7bi6qltrsfh9iexg",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RBoXcAevfsGsiyLRQ00pU00xr-bJj3odWYyb-FxXUa_Np59jmIQWhx-WUC6c9lEvGG5Vkm1LHMOckvkbpu81MiP897-DUZsoxgEA3U28YkQdVKoLPQOkgNDHRhi6o0JAE5htDYBaUhOI7mQIHF3dGGbNm4t1-L5OeX5JQb1-QKo-j-u:1xQZi6:3GyLOXbBcUwoDJDWX-6ZWtSrFFB2444AXEQt-ofQFnQ",
+    "expire_date": "2026-11-24T00:27:38.787Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ckqa54bh2a0xtffq57jyy8fk79a9271n",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RCKBbo9evcNZGEXixowpU00xr-bJj3odWYyb-FxXSa_Np59JjGKThx-WcB447IJumK5VBlrWeYc5JbI3TZ5rsT3097-DSZskxiFgiMGFZxJIXYMjGQGSoMjE3Tf09EiGbTkEJxRiRNCYGttsABgIept2ri1XIvn5yPPLzFqA1op9fkCRJRBIg:1xReTi:C9-cxoyKMjmWtBWEfU5nfwENSMg4Pd0geKcVq4XVaI0",
+    "expire_date": "2026-12-12T23:45:14.199Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "gem2zck64vuyulg9bry9cnaqodlz1af7",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RBoXcAevfsGsiyLRQ00pU00xr-bJj3odWYyb-FxXUa_Np59jmIQWhx-WUC6c9lEvGG5Vkm1LHMOckvkbpu81MiP897-DUZsoxgEA3U28YkQdVKoLPQOkgNDHRhi6o0JAE5htDYBaUhOI7mQIHF3dGGbNm4t1-L5OeX5JQb1-QKo-j-u:1xR8hu:Lzh0L30SQTfb879lqvXihciUuAPjHiO65gLpMyEkKjY",
+    "expire_date": "2026-11-25T13:49:46.756Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "gl1tksz8180aurmkwzty6dqae7c86d4i",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RBoXcAevfsGsiyLRQ00pU00xr-bJj3odWYyb-FxXUa_Np59jmIQWhx-WUC6c9lEvGG5Vkm1LHMOckvkbpu81MiP897-DUZsoxgEA3U28YkQdVKoLPQOkgNDHRhi6o0JAE5htDYBaUhOI7mQIHF3dGGbNm4t1-L5OeX5JQb1-QKo-j-u:1xQjdJ:_sp1DAHAViBVhN9lQOaI2IWRg6o5TPofCJMZ5k76lrs",
+    "expire_date": "2026-11-24T11:03:21.602Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ihoz6iiphnmwe08d6qglq8sh13znkmph",
+  "fields": {
+    "session_data": ".eJxVjEEKwjAQAP-Ss4S0Nkm3R---IexmNzYqqTQtKOLfpdCDXmeGeauA6zKGtcocMqtBNerwywjjTcom-IrlMuk4lWXOpLdE77bq88RyP-3t32DEOqpBGTgiGfI2UWwEBNn2nHrPltqu46NDtujYI3hrkiQEEuccOQBwENttWqXWPJUgz0eeX2owny_CQT_w:1xSMZ7:-jWJ4K-p2LQPNOkjBruBt_PKzo7aWvC9E5C1lg-cGrc",
+    "expire_date": "2026-11-28T22:49:45.960Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "iu7ofkio81b7b7xrp9708s64aw1kkttp",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RBoXcAevfsGsiyLRQ00pU00xr-bJj3odWYyb-FxXUa_Np59jmIQWhx-WUC6c9lEvGG5Vkm1LHMOckvkbpu81MiP897-DUZsoxgEA3U28YkQdVKoLPQOkgNDHRhi6o0JAE5htDYBaUhOI7mQIHF3dGGbNm4t1-L5OeX5JQb1-QKo-j-u:1xRDOZ:QcLypz1PrkJFxpyd9wGLEIIDTAPj48fCnzPGSWah6Qg",
+    "expire_date": "2026-11-25T18:50:07.028Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "kve6j8ga4zaa2gp435xn94x7pngmgjn5",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2ZAChUqP3n0D2WVZixowpU00xr-bJj3odWYybxFgXaawtjSHTGIUvTj8MoR4S2UTdIVyqTLWsswZ5ZbI3TZ5rpTup739G0zQJjGKo9aRBttZNJaMU-y5N5qdGtgwGM-ddo4Uo-7JotLOeQscMblBI4Lfpi21lmsJ6fnI80uM3ecLeAU_FA:1xRZBp:TBBCga8LBPY-N8qGYBDBNoxRuZzhZYzneErH-t2CFTs",
+    "expire_date": "2026-11-26T18:06:25.603Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ox54lcauy018fqhwvu8jdc6hm11dexgl",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQAP_C2RBoXcAevfsGsiyLRQ00pU00xr-bJj3odWYyb-FxXUa_Np59jmIQWhx-WUC6c9lEvGG5Vkm1LHMOckvkbpu81MiP897-DUZsoxgEA3U28YkQdVKoLPQOkgNDHRhi6o0JAE5htDYBaUhOI7mQIHF3dGGbNm4t1-L5OeX5JQb1-QKo-j-u:1xQtAE:3GTxLMh-tpweXy5adfvJ_uu1n-ToAVTzUdWwnh4wfyU",
+    "expire_date": "2026-11-24T21:13:58.134Z"
+  }
+},
+{
+  "model": "pedidos.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$xwLtcgdQSO3JSqRssKsDAc$lwEOVOR6Fcqtkj6nwMjBY+8eUCNRZkws2b3czwAoi4o=",
+    "last_login": "2026-11-15T00:12:19.739Z",
+    "is_superuser": true,
+    "username": "julian",
+    "first_name": "",
+    "last_name": "",
+    "email": "julian@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-11-07T17:26:58.871Z",
+    "rol": "admin",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "pedidos.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$e5ryM1HVJhkZNtmChtjWmh$o+Gk92H4frCi1SYdSATdKj07Jw7FXdEbTIbIKmSc5Fw=",
+    "last_login": "2026-11-11T22:38:28.587Z",
+    "is_superuser": false,
+    "username": "julian1",
+    "first_name": "julian",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-11-07T20:13:18.396Z",
+    "rol": "mesero",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "pedidos.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$vIQTTexINMI6QzIWtlxeRt$Owlvy7jZ4hLbWY2HbgI+wjvX7USM6BLFq6zxMwSl/Dc=",
+    "last_login": "2026-11-11T20:07:48.104Z",
+    "is_superuser": false,
+    "username": "julian2",
+    "first_name": "Julian Mogollon",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-11-11T20:05:56.915Z",
+    "rol": "mesero",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "pedidos.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$YeBUn7UYkSiAK8Uq9A5q2z$VYmDt/bzYNcjZNbQytZusUZFFkgdb08nlrwX6hYaFvw=",
+    "last_login": "2026-11-15T00:03:42.704Z",
+    "is_superuser": false,
+    "username": "leidy",
+    "first_name": "Leidy Marsela Carvajal Baez",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-11-12T16:37:05.919Z",
+    "rol": "mesero",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "pedidos.categoria",
+  "pk": 1,
+  "fields": {
+    "nombre": "Gaseosas"
+  }
+},
+{
+  "model": "pedidos.categoria",
+  "pk": 2,
+  "fields": {
+    "nombre": "Hamburguesas"
+  }
+},
+{
+  "model": "pedidos.categoria",
+  "pk": 3,
+  "fields": {
+    "nombre": "Perros caliente"
+  }
+},
+{
+  "model": "pedidos.categoria",
+  "pk": 4,
+  "fields": {
+    "nombre": "Picadas"
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 4,
+  "fields": {
+    "nombre": "Coca-cola",
+    "descripcion": "",
+    "categoria": 1,
+    "precio": "5000.00",
+    "imagen": "media/productos/gaseosa_cmgaep",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 5,
+  "fields": {
+    "nombre": "Hamburguesa doble carne",
+    "descripcion": "",
+    "categoria": 2,
+    "precio": "20000.00",
+    "imagen": "media/productos/doble_carne_nyqozm",
+    "disponible": false
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 6,
+  "fields": {
+    "nombre": "Hamburguesa doble carne",
+    "descripcion": "",
+    "categoria": 2,
+    "precio": "20000.00",
+    "imagen": "media/productos/doble_carne_dfcrez",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 7,
+  "fields": {
+    "nombre": "Perro caliente sencillo",
+    "descripcion": "",
+    "categoria": 3,
+    "precio": "10000.00",
+    "imagen": "media/productos/perro_caliente_rxgarj",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 8,
+  "fields": {
+    "nombre": "Perro caliente sencillo",
+    "descripcion": "",
+    "categoria": 3,
+    "precio": "10000.00",
+    "imagen": "media/productos/perro_caliente_mt9rgi",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 9,
+  "fields": {
+    "nombre": "Fresh cola",
+    "descripcion": "",
+    "categoria": 1,
+    "precio": "4500.00",
+    "imagen": "media/productos/images_ijcdlx",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 10,
+  "fields": {
+    "nombre": "Hamburguesas sencilla",
+    "descripcion": "",
+    "categoria": 2,
+    "precio": "15000.00",
+    "imagen": "media/productos/hamburguesa_g7pypb",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.producto",
+  "pk": 11,
+  "fields": {
+    "nombre": "Picada Boyacense",
+    "descripcion": "",
+    "categoria": 4,
+    "precio": "50000.00",
+    "imagen": "media/productos/picadas_w7lhph",
+    "disponible": true
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 1,
+  "fields": {
+    "nombre": "cebolla"
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 2,
+  "fields": {
+    "nombre": "tomate"
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 3,
+  "fields": {
+    "nombre": "pepinillos"
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 4,
+  "fields": {
+    "nombre": "Papa criolla"
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 5,
+  "fields": {
+    "nombre": "Empanada"
+  }
+},
+{
+  "model": "pedidos.ingrediente",
+  "pk": 6,
+  "fields": {
+    "nombre": "Longaniza"
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 1,
+  "fields": {
+    "producto": 8,
+    "ingrediente": 1,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 2,
+  "fields": {
+    "producto": 7,
+    "ingrediente": 1,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 3,
+  "fields": {
+    "producto": 10,
+    "ingrediente": 1,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 4,
+  "fields": {
+    "producto": 10,
+    "ingrediente": 2,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 5,
+  "fields": {
+    "producto": 11,
+    "ingrediente": 6,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 6,
+  "fields": {
+    "producto": 11,
+    "ingrediente": 4,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.productoingrediente",
+  "pk": 7,
+  "fields": {
+    "producto": 11,
+    "ingrediente": 5,
+    "removible": true,
+    "orden": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 1,
+  "fields": {
+    "numero": 1,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:30:31.045Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:32:13.719Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 2,
+  "fields": {
+    "numero": 2,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:38:52.572Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:39:06.038Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 3,
+  "fields": {
+    "numero": 3,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:42:02.645Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:42:08.781Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 4,
+  "fields": {
+    "numero": 4,
+    "tipo": "mesa",
+    "numero_mesa": 3,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:45:37.668Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:45:47.345Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 5,
+  "fields": {
+    "numero": 5,
+    "tipo": "mesa",
+    "numero_mesa": 4,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:49:13.700Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:51:35.550Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 6,
+  "fields": {
+    "numero": 6,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:51:50.201Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T19:57:56.704Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 7,
+  "fields": {
+    "numero": 7,
+    "tipo": "mesa",
+    "numero_mesa": 8,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T19:58:33.955Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:00:53.176Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 8,
+  "fields": {
+    "numero": 8,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T20:04:20.348Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:04:30.566Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 9,
+  "fields": {
+    "numero": 9,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T20:06:37.402Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:06:43.208Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 10,
+  "fields": {
+    "numero": 10,
+    "tipo": "mesa",
+    "numero_mesa": 5,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T20:09:03.226Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:09:18.744Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 11,
+  "fields": {
+    "numero": 11,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T20:21:48.801Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:21:55.185Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 12,
+  "fields": {
+    "numero": 12,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T20:23:55.504Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T20:25:42.759Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 13,
+  "fields": {
+    "numero": 13,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T21:48:15.565Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-07T21:52:34.998Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 14,
+  "fields": {
+    "numero": 14,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-07T23:31:08.947Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-08T02:33:51.371Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 15,
+  "fields": {
+    "numero": 15,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T02:34:07.020Z",
+    "estado": "entregado",
+    "metodo_pago": "nequi",
+    "fecha_pago": "2026-11-08T02:35:44.309Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 16,
+  "fields": {
+    "numero": 16,
+    "tipo": "mesa",
+    "numero_mesa": 5,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T02:38:14.810Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-08T13:48:33.954Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 17,
+  "fields": {
+    "numero": 17,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T13:50:03.703Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-08T20:37:35.743Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 18,
+  "fields": {
+    "numero": 18,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T20:42:07.813Z",
+    "estado": "entregado",
+    "metodo_pago": "nequi",
+    "fecha_pago": "2026-11-08T20:50:26.378Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 19,
+  "fields": {
+    "numero": 19,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T20:48:01.641Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-08T20:50:21.164Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 20,
+  "fields": {
+    "numero": 20,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T23:37:33.253Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-08T23:38:22.173Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 21,
+  "fields": {
+    "numero": 21,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-08T23:40:57.964Z",
+    "estado": "anulado",
+    "metodo_pago": null,
+    "fecha_pago": null,
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 22,
+  "fields": {
+    "numero": 22,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-10T00:29:31.638Z",
+    "estado": "anulado",
+    "metodo_pago": null,
+    "fecha_pago": null,
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 23,
+  "fields": {
+    "numero": 23,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-10T00:30:39.786Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-10T21:20:05.019Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 2
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 24,
+  "fields": {
+    "numero": 24,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-11T14:56:34.898Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-11T14:56:40.185Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 25,
+  "fields": {
+    "numero": 25,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian"
+    ],
+    "fecha_hora": "2026-11-11T14:56:58.352Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-11T14:57:09.875Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 26,
+  "fields": {
+    "numero": 26,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "julian1"
+    ],
+    "fecha_hora": "2026-11-11T20:06:29.087Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:57.741Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 27,
+  "fields": {
+    "numero": 27,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian1"
+    ],
+    "fecha_hora": "2026-11-11T20:16:55.612Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:54.058Z",
+    "observaciones": "",
+    "direccion_entrega": "<script>alert('XSS_PateBurguer')</script>",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 28,
+  "fields": {
+    "numero": 28,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "julian1"
+    ],
+    "fecha_hora": "2026-11-11T20:18:59.417Z",
+    "estado": "anulado",
+    "metodo_pago": null,
+    "fecha_pago": null,
+    "observaciones": "",
+    "direccion_entrega": "' OR 1=1--",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 29,
+  "fields": {
+    "numero": 29,
+    "tipo": "mesa",
+    "numero_mesa": 9,
+    "mesero": [
+      "julian1"
+    ],
+    "fecha_hora": "2026-11-11T22:38:50.236Z",
+    "estado": "anulado",
+    "metodo_pago": null,
+    "fecha_pago": null,
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 30,
+  "fields": {
+    "numero": 30,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-12T16:38:19.022Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-12T16:54:01.750Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 31,
+  "fields": {
+    "numero": 31,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-12T16:43:35.948Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:50.086Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 32,
+  "fields": {
+    "numero": 32,
+    "tipo": "mesa",
+    "numero_mesa": 0,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-12T16:50:38.989Z",
+    "estado": "entregado",
+    "metodo_pago": "nequi",
+    "fecha_pago": "2026-11-12T21:02:21.606Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 33,
+  "fields": {
+    "numero": 33,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-12T23:41:38.850Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:45.690Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 1
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 34,
+  "fields": {
+    "numero": 34,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-12T23:42:56.555Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:40.325Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 35,
+  "fields": {
+    "numero": 35,
+    "tipo": "mesa",
+    "numero_mesa": 2,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-14T23:14:24.180Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:02:35.442Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 36,
+  "fields": {
+    "numero": 36,
+    "tipo": "llevar",
+    "numero_mesa": null,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-15T00:04:09.061Z",
+    "estado": "entregado",
+    "metodo_pago": "efectivo",
+    "fecha_pago": "2026-11-15T00:12:49.291Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": true,
+    "cantidad_icopor": 12
+  }
+},
+{
+  "model": "pedidos.pedido",
+  "pk": 37,
+  "fields": {
+    "numero": 37,
+    "tipo": "mesa",
+    "numero_mesa": 1,
+    "mesero": [
+      "leidy"
+    ],
+    "fecha_hora": "2026-11-15T00:11:37.319Z",
+    "estado": "entregado",
+    "metodo_pago": "nequi",
+    "fecha_pago": "2026-11-15T00:13:20.121Z",
+    "observaciones": "",
+    "direccion_entrega": "",
+    "editado_por": null,
+    "fecha_edicion": null,
+    "reabierto_por": null,
+    "fecha_reapertura": null,
+    "cobrar_icopor": false,
+    "cantidad_icopor": 0
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 1,
+  "fields": {
+    "pedido": 13,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T21:52:34.998Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 2,
+  "fields": {
+    "pedido": 12,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:25:42.759Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 3,
+  "fields": {
+    "pedido": 11,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:21:55.185Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 4,
+  "fields": {
+    "pedido": 10,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:09:18.744Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 5,
+  "fields": {
+    "pedido": 9,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:06:43.208Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 6,
+  "fields": {
+    "pedido": 8,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:04:30.566Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 7,
+  "fields": {
+    "pedido": 7,
+    "monto": "15000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T20:00:53.176Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 8,
+  "fields": {
+    "pedido": 6,
+    "monto": "15000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:57:56.704Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 9,
+  "fields": {
+    "pedido": 5,
+    "monto": "15000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:51:35.550Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 10,
+  "fields": {
+    "pedido": 4,
+    "monto": "15000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:45:47.345Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 11,
+  "fields": {
+    "pedido": 3,
+    "monto": "10000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:42:08.781Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 12,
+  "fields": {
+    "pedido": 2,
+    "monto": "25000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:39:06.038Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 13,
+  "fields": {
+    "pedido": 1,
+    "monto": "15000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-07T19:32:13.719Z",
+    "registrado_por": null
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 14,
+  "fields": {
+    "pedido": 14,
+    "monto": "86000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T02:33:51.370Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 15,
+  "fields": {
+    "pedido": 15,
+    "monto": "20000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T02:34:24.360Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 16,
+  "fields": {
+    "pedido": 15,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T02:34:56.952Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 17,
+  "fields": {
+    "pedido": 15,
+    "monto": "20000.00",
+    "metodo": "nequi",
+    "fecha": "2026-11-08T02:35:44.308Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 18,
+  "fields": {
+    "pedido": 16,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T13:48:33.953Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 19,
+  "fields": {
+    "pedido": 17,
+    "monto": "20000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T20:37:35.742Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 20,
+  "fields": {
+    "pedido": 18,
+    "monto": "35000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T20:42:30.348Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 21,
+  "fields": {
+    "pedido": 18,
+    "monto": "9000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T20:43:11.048Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 22,
+  "fields": {
+    "pedido": 19,
+    "monto": "26000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T20:50:21.163Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 23,
+  "fields": {
+    "pedido": 18,
+    "monto": "30000.00",
+    "metodo": "nequi",
+    "fecha": "2026-11-08T20:50:26.377Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 24,
+  "fields": {
+    "pedido": 20,
+    "monto": "21000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T23:37:44.750Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 25,
+  "fields": {
+    "pedido": 20,
+    "monto": "5000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-08T23:38:22.171Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 26,
+  "fields": {
+    "pedido": 23,
+    "monto": "26000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-10T11:03:39.951Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 27,
+  "fields": {
+    "pedido": 23,
+    "monto": "6000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-10T21:20:05.017Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 28,
+  "fields": {
+    "pedido": 24,
+    "monto": "4500.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-11T14:56:40.143Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 29,
+  "fields": {
+    "pedido": 25,
+    "monto": "20000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-11T14:57:09.874Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 30,
+  "fields": {
+    "pedido": 30,
+    "monto": "25000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-12T16:54:01.744Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 31,
+  "fields": {
+    "pedido": 32,
+    "monto": "50000.00",
+    "metodo": "nequi",
+    "fecha": "2026-11-12T21:02:21.564Z",
+    "registrado_por": [
+      "leidy"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 32,
+  "fields": {
+    "pedido": 35,
+    "monto": "19500.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:35.402Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 33,
+  "fields": {
+    "pedido": 34,
+    "monto": "50000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:40.324Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 34,
+  "fields": {
+    "pedido": 33,
+    "monto": "16000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:45.689Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 35,
+  "fields": {
+    "pedido": 31,
+    "monto": "50000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:50.085Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 36,
+  "fields": {
+    "pedido": 27,
+    "monto": "20000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:54.057Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 37,
+  "fields": {
+    "pedido": 26,
+    "monto": "20000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:02:57.740Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 38,
+  "fields": {
+    "pedido": 36,
+    "monto": "612000.00",
+    "metodo": "efectivo",
+    "fecha": "2026-11-15T00:12:49.290Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.pago",
+  "pk": 39,
+  "fields": {
+    "pedido": 37,
+    "monto": "4500.00",
+    "metodo": "nequi",
+    "fecha": "2026-11-15T00:13:20.119Z",
+    "registrado_por": [
+      "julian"
+    ]
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 1,
+  "fields": {
+    "pedido": 1,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:30:31.047Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 2,
+  "fields": {
+    "pedido": 1,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:30:31.048Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 3,
+  "fields": {
+    "pedido": 1,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:38:00.956Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 4,
+  "fields": {
+    "pedido": 2,
+    "producto": 4,
+    "cantidad": 3,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:38:52.573Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 5,
+  "fields": {
+    "pedido": 2,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:39:15.542Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 6,
+  "fields": {
+    "pedido": 2,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:41:26.780Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 7,
+  "fields": {
+    "pedido": 3,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:42:02.647Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 8,
+  "fields": {
+    "pedido": 3,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:42:16.129Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 9,
+  "fields": {
+    "pedido": 4,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:45:37.670Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 10,
+  "fields": {
+    "pedido": 4,
+    "producto": 4,
+    "cantidad": 2,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:45:57.497Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 11,
+  "fields": {
+    "pedido": 5,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:49:13.702Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 12,
+  "fields": {
+    "pedido": 5,
+    "producto": 4,
+    "cantidad": 2,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:49:30.414Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 13,
+  "fields": {
+    "pedido": 6,
+    "producto": 4,
+    "cantidad": 2,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:51:50.202Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 14,
+  "fields": {
+    "pedido": 6,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:52:02.818Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 15,
+  "fields": {
+    "pedido": 7,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:58:33.956Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 16,
+  "fields": {
+    "pedido": 7,
+    "producto": 4,
+    "cantidad": 2,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T19:58:50.420Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 17,
+  "fields": {
+    "pedido": 8,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T20:04:20.350Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 18,
+  "fields": {
+    "pedido": 9,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T20:06:37.404Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 19,
+  "fields": {
+    "pedido": 10,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T20:09:03.228Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 20,
+  "fields": {
+    "pedido": 11,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T20:21:48.802Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 21,
+  "fields": {
+    "pedido": 12,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T20:23:55.505Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 22,
+  "fields": {
+    "pedido": 13,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T21:48:15.570Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 23,
+  "fields": {
+    "pedido": 14,
+    "producto": 5,
+    "cantidad": 4,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T23:31:08.950Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 24,
+  "fields": {
+    "pedido": 14,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-07T23:32:19.015Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 25,
+  "fields": {
+    "pedido": 15,
+    "producto": 5,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T02:34:07.063Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 26,
+  "fields": {
+    "pedido": 15,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T02:34:33.421Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 27,
+  "fields": {
+    "pedido": 15,
+    "producto": 7,
+    "cantidad": 2,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T02:35:19.263Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 28,
+  "fields": {
+    "pedido": 16,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T02:38:14.812Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 29,
+  "fields": {
+    "pedido": 17,
+    "producto": 5,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T13:50:03.706Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 30,
+  "fields": {
+    "pedido": 18,
+    "producto": 10,
+    "cantidad": 2,
+    "precio_unitario": "15000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:42:07.815Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 31,
+  "fields": {
+    "pedido": 18,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:42:07.819Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 32,
+  "fields": {
+    "pedido": 18,
+    "producto": 9,
+    "cantidad": 2,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:42:59.910Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 33,
+  "fields": {
+    "pedido": 18,
+    "producto": 7,
+    "cantidad": 1,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:43:24.877Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 34,
+  "fields": {
+    "pedido": 18,
+    "producto": 8,
+    "cantidad": 2,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:47:12.932Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 35,
+  "fields": {
+    "pedido": 19,
+    "producto": 7,
+    "cantidad": 1,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:48:01.644Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 36,
+  "fields": {
+    "pedido": 19,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:48:43.561Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 37,
+  "fields": {
+    "pedido": 19,
+    "producto": 8,
+    "cantidad": 1,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T20:49:30.179Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 38,
+  "fields": {
+    "pedido": 20,
+    "producto": 5,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T23:37:33.256Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 39,
+  "fields": {
+    "pedido": 20,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T23:37:59.190Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 40,
+  "fields": {
+    "pedido": 21,
+    "producto": 9,
+    "cantidad": 1,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-08T23:40:57.968Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 41,
+  "fields": {
+    "pedido": 22,
+    "producto": 9,
+    "cantidad": 1,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-10T00:29:31.646Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 42,
+  "fields": {
+    "pedido": 22,
+    "producto": 6,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-10T00:29:31.648Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 43,
+  "fields": {
+    "pedido": 23,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-10T00:30:39.787Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 44,
+  "fields": {
+    "pedido": 23,
+    "producto": 5,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-10T00:30:39.788Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 45,
+  "fields": {
+    "pedido": 23,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-10T21:19:32.481Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 46,
+  "fields": {
+    "pedido": 24,
+    "producto": 9,
+    "cantidad": 1,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T14:56:34.902Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 47,
+  "fields": {
+    "pedido": 25,
+    "producto": 6,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T14:56:58.355Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 48,
+  "fields": {
+    "pedido": 26,
+    "producto": 6,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T20:06:29.089Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 49,
+  "fields": {
+    "pedido": 27,
+    "producto": 6,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T20:16:55.614Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 50,
+  "fields": {
+    "pedido": 28,
+    "producto": 7,
+    "cantidad": 1,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T20:18:59.425Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 51,
+  "fields": {
+    "pedido": 29,
+    "producto": 5,
+    "cantidad": 1,
+    "precio_unitario": "20000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T22:38:50.239Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 52,
+  "fields": {
+    "pedido": 29,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T22:38:50.242Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 53,
+  "fields": {
+    "pedido": 29,
+    "producto": 7,
+    "cantidad": 1,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-11T22:42:07.851Z",
+    "es_adicional": true
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 54,
+  "fields": {
+    "pedido": 30,
+    "producto": 7,
+    "cantidad": 2,
+    "precio_unitario": "10000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-12T16:38:19.024Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 55,
+  "fields": {
+    "pedido": 30,
+    "producto": 4,
+    "cantidad": 1,
+    "precio_unitario": "5000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-12T16:38:19.026Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 56,
+  "fields": {
+    "pedido": 31,
+    "producto": 11,
+    "cantidad": 1,
+    "precio_unitario": "50000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-12T16:43:35.950Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 57,
+  "fields": {
+    "pedido": 32,
+    "producto": 11,
+    "cantidad": 1,
+    "precio_unitario": "50000.00",
+    "observacion": "pocas salsas",
+    "fecha_agregado": "2026-11-12T16:50:38.997Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 58,
+  "fields": {
+    "pedido": 33,
+    "producto": 10,
+    "cantidad": 1,
+    "precio_unitario": "15000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-12T23:41:38.875Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 59,
+  "fields": {
+    "pedido": 34,
+    "producto": 11,
+    "cantidad": 1,
+    "precio_unitario": "50000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-12T23:42:56.558Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 60,
+  "fields": {
+    "pedido": 35,
+    "producto": 9,
+    "cantidad": 1,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-14T23:14:24.224Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 61,
+  "fields": {
+    "pedido": 35,
+    "producto": 10,
+    "cantidad": 1,
+    "precio_unitario": "15000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-14T23:14:24.228Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 62,
+  "fields": {
+    "pedido": 36,
+    "producto": 11,
+    "cantidad": 12,
+    "precio_unitario": "50000.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-15T00:04:09.065Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detallepedido",
+  "pk": 63,
+  "fields": {
+    "pedido": 37,
+    "producto": 9,
+    "cantidad": 1,
+    "precio_unitario": "4500.00",
+    "observacion": "",
+    "fecha_agregado": "2026-11-15T00:11:37.321Z",
+    "es_adicional": false
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 1,
+  "fields": {
+    "detalle_pedido": 30,
+    "ingrediente": 2
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 2,
+  "fields": {
+    "detalle_pedido": 33,
+    "ingrediente": 1
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 3,
+  "fields": {
+    "detalle_pedido": 37,
+    "ingrediente": 1
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 4,
+  "fields": {
+    "detalle_pedido": 53,
+    "ingrediente": 1
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 5,
+  "fields": {
+    "detalle_pedido": 54,
+    "ingrediente": 1
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 6,
+  "fields": {
+    "detalle_pedido": 56,
+    "ingrediente": 5
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 7,
+  "fields": {
+    "detalle_pedido": 56,
+    "ingrediente": 6
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 8,
+  "fields": {
+    "detalle_pedido": 56,
+    "ingrediente": 4
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 9,
+  "fields": {
+    "detalle_pedido": 57,
+    "ingrediente": 5
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 10,
+  "fields": {
+    "detalle_pedido": 57,
+    "ingrediente": 6
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 11,
+  "fields": {
+    "detalle_pedido": 57,
+    "ingrediente": 4
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 12,
+  "fields": {
+    "detalle_pedido": 61,
+    "ingrediente": 1
+  }
+},
+{
+  "model": "pedidos.detalleingredientequitado",
+  "pk": 13,
+  "fields": {
+    "detalle_pedido": 61,
+    "ingrediente": 2
+  }
+},
+{
+  "model": "pedidos.configuracionnegocio",
+  "pk": 1,
+  "fields": {
+    "nombre": "Pate Burguer",
+    "direccion": "Calle 4 #3A",
+    "telefono": "310264894",
+    "logo": "",
+    "nit": null,
+    "resolucion_dian": null,
+    "prefijo_factura": null,
+    "rango_inicio": 1,
+    "rango_fin": 1000,
+    "vigencia_dian": null
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 1,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T20:43:48.072Z",
+    "logout_time": null,
+    "session_hash": "1781daff2474bb961d53ec97ebbab0622c99267c3b5841939428121251185974"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 2,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T22:27:59.060Z",
+    "logout_time": "2026-11-11T22:38:11.743Z",
+    "session_hash": "7f20fd82f7da3c0aee908fb241ed9daa0516dd6bdb20d172a09868795df93ba5"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 3,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian1",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T22:38:28.579Z",
+    "logout_time": "2026-11-11T22:42:34.093Z",
+    "session_hash": "c27918284645a1c2973ab70fe26d8a623202109b2b70e2c02352f5c8a6f4052f"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 4,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T22:49:23.822Z",
+    "logout_time": "2026-11-11T23:11:37.063Z",
+    "session_hash": "ba01ac8c402db8534122cb223b288e1449d86fd689a12b3fac0890add695bba6"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 5,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T23:15:50.209Z",
+    "logout_time": "2026-11-11T23:24:58.256Z",
+    "session_hash": "318f8b17b95e3e35aa75a037daf5520308fc102dc00b64feb7598e1dc3ffb6dc"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 6,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-11T23:25:30.086Z",
+    "logout_time": "2026-11-11T23:25:50.606Z",
+    "session_hash": "c54b23baa5aaa354fcf9f88a58e876741fe47f75880fd257a21a996545195b98"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 7,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T14:23:46.079Z",
+    "logout_time": "2026-11-12T16:37:13.108Z",
+    "session_hash": "8a4ab35bb686080442070e90d5b03df0c7b28aa2bf7d7b8fa75345b1789efe68"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 8,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:37:21.224Z",
+    "logout_time": "2026-11-12T16:40:40.674Z",
+    "session_hash": "a7441f6a7c491a342d17e462731326ce3af43063aa8882fdb6ac501b3bd43711"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 9,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:40:42.220Z",
+    "logout_time": "2026-11-12T16:43:08.974Z",
+    "session_hash": "8808ea9839378de593ed170d38617869406437623def33f7e2c6e53784e5025f"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 10,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:43:15.862Z",
+    "logout_time": "2026-11-12T16:48:31.261Z",
+    "session_hash": "cd32bea20226114f73d2a23efa6aeb81fe2afc06adfea4d6554139264f62fa0d"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 11,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:48:32.662Z",
+    "logout_time": "2026-11-12T16:49:37.909Z",
+    "session_hash": "2964046b8cb26ff82d41b46aa186396a405e6d3d6c83e8924bd6612e4a7ef8f2"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 12,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:49:45.723Z",
+    "logout_time": "2026-11-12T16:53:21.962Z",
+    "session_hash": "1914b9e70a2894a8c4b99b5c429c82e84da7eb39328838427f5c4e9a5eed9121"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 13,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T16:53:30.306Z",
+    "logout_time": "2026-11-12T16:54:43.169Z",
+    "session_hash": "20ffdfc00bce9bec0f93aedd12a4500d0f24c0c7bbe7744a00e108db3fa8406c"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 14,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T18:05:31.826Z",
+    "logout_time": "2026-11-12T18:06:16.467Z",
+    "session_hash": "c29df8e2858124f47fc4269153b675e61a873e0418a04b9c06da2f3eaccc2740"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 15,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T18:06:25.592Z",
+    "logout_time": null,
+    "session_hash": "2b5a21dbbf741643b1d20eb9c62bbbbf8c6ac8198dce96c2806f7e152de5614f"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 16,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "10.55.132.156",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T21:01:39.630Z",
+    "logout_time": "2026-11-12T21:01:56.262Z",
+    "session_hash": "5b55b0a5cd25459c807f3173b6415a12031ce32dfceacf2ba10f33e9f4ae6d46"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 17,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "10.55.132.156",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T21:02:08.755Z",
+    "logout_time": "2026-11-12T21:02:42.137Z",
+    "session_hash": "e390a26eff84e18062192aa74e1e1b0ecc0b2888c8aafacab3aeb3b68d14f53e"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 18,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "10.55.132.156",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T21:02:59.554Z",
+    "logout_time": null,
+    "session_hash": "32b07ffda51d9ab307fd289accff05ff6b54e44d37db65aecfee9d3faf9b8991"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 19,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "192.168.1.17",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T23:31:36.266Z",
+    "logout_time": "2026-11-12T23:39:44.199Z",
+    "session_hash": "6370350617aedeeee4d3bab8dae70e1f07bb7d76d849fe070f878368851ac328"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 20,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "192.168.1.18",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T23:34:13.581Z",
+    "logout_time": "2026-11-12T23:43:48.565Z",
+    "session_hash": "54be934d62f712ca5d067c8f7e28c0b100519fdd69a778ef4d0fbed06b398f19"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 21,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "192.168.1.17",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T23:39:54.716Z",
+    "logout_time": "2026-11-12T23:58:05.828Z",
+    "session_hash": "1c27f212d6448e06ed205515dd0e67b631f64b61cbd6b444f11f177c3806495e"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 22,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "192.168.1.18",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T23:43:57.559Z",
+    "logout_time": null,
+    "session_hash": "752acda1f7d70001f5b01a2b601f4712ec0ab1e5d31728f44442ea916e32ee94"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 23,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "192.168.1.2",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-12T23:45:14.180Z",
+    "logout_time": null,
+    "session_hash": "e8716e39405a75e0a4df585b54ae54fe4bbf6bbfb7c872408c93598e28776348"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 24,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T22:49:45.951Z",
+    "logout_time": null,
+    "session_hash": "6ea936416979789e5fc3625a5aed6ce09e6a886ebe3de2ed2c0f14c338430764"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 25,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:12:52.546Z",
+    "logout_time": "2026-11-14T23:13:47.985Z",
+    "session_hash": "9f615b565f952125e509fbdeb0019e0b04664f5745f02f17802167de87405647"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 26,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:14:00.511Z",
+    "logout_time": "2026-11-14T23:15:45.994Z",
+    "session_hash": "e7553308f5c8b6024e1fd6f841d337f623f4f61ad604bcad7968a7d3835b0246"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 27,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:15:47.860Z",
+    "logout_time": "2026-11-14T23:25:06.321Z",
+    "session_hash": "851b3ad366d200f2f419cbc8ee321dd4e7ea180e5489edfc3eec5f523dea14ee"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 28,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:25:09.148Z",
+    "logout_time": "2026-11-14T23:30:37.963Z",
+    "session_hash": "cdf7b3725e1d9f0cc762079f665a4affef8a96b7e19ad3f37e293fd1e662fc22"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 29,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:30:43.621Z",
+    "logout_time": "2026-11-14T23:33:12.154Z",
+    "session_hash": "d4c2ce63b7eee91ac2a91a3688dacafe25006ae9cba0583027c1e35d7797e0a9"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 30,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:33:14.432Z",
+    "logout_time": "2026-11-14T23:33:19.914Z",
+    "session_hash": "80d1910c07aeb57c892190ab4fe33fc20933bbcc4fff9ab3da96830648fc95ba"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 31,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-14T23:33:22.051Z",
+    "logout_time": "2026-11-15T00:03:32.933Z",
+    "session_hash": "8014f77a96c763ea92ccd5eaab20059e9baf825d78a2bb5007643896216c7483"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 32,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "leidy",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-15T00:03:42.695Z",
+    "logout_time": "2026-11-15T00:12:18.167Z",
+    "session_hash": "fc280acf7bfc0c180beb78ff8dccb5792c662f8a681ea13846de86f318038d54"
+  }
+},
+{
+  "model": "axes.accesslog",
+  "pk": 33,
+  "fields": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "ip_address": "127.0.0.1",
+    "username": "julian",
+    "http_accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "path_info": "/login/",
+    "attempt_time": "2026-11-15T00:12:19.729Z",
+    "logout_time": "2026-11-15T00:13:51.620Z",
+    "session_hash": "442e3f3eb49f30646bb6e45730c9e9904d40c55f16dfa2981f245c25bd82b917"
+  }
+}
+]

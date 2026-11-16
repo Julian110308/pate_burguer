@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 from decouple import config, Csv
 from datetime import timedelta
+import dj_database_url
 import cloudinary
 
 # Credenciales de Cloudinary
@@ -44,9 +45,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,10.55.132.133,*', cast=Csv())
 
-#CSRF_TRUSTED_ORIGINS = [
-#    'https://small-stingily-refract.ngrok-free.dev',
-#]
+CSRF_TRUSTED_ORIGINS = [
+    'https://small-stingily-refract.ngrok-free.dev',
+]
 
 
 # Application definition
@@ -106,19 +107,28 @@ WSGI_APPLICATION = 'puesto_comidas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME', default='pate_burguer_db'),
-        'USER': config('DB_USER', default='root'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='127.0.0.1'),
-        'PORT': config('DB_PORT', default='3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
+# === BASE DE DATOS ===
+# Si DATABASE_URL existe (Render), usa PostgreSQL.
+# Si no, usa PostgreSQL LOCAL (desarrollo).
+if config('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='pate_burguer_db'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='127.0.0.1'),
+            'PORT': config('DB_PORT', default='5432'),
+            'CONN_MAX_AGE': 600,
         }
     }
-}
 
 
 # Password validation
@@ -159,15 +169,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' # Donde Whitenoise guardará el CSS/JS
 
-
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
 
 AUTH_USER_MODEL = 'pedidos.Usuario'
 
