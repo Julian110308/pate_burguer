@@ -115,8 +115,8 @@ class Pedido(models.Model):
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
     numero_mesa = models.PositiveIntegerField(null=True, blank=True)
     mesero = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name='pedidos')
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente_pago')
+    fecha_hora = models.DateTimeField(auto_now_add=True, db_index=True)  # <-- ÍNDICE
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente_pago', db_index=True)  # <-- ÍNDICE
     metodo_pago = models.CharField(max_length=10, choices=METODO_PAGO_CHOICES, null=True, blank=True)
     fecha_pago = models.DateTimeField(null=True, blank=True)
     observaciones = models.TextField(blank=True, null=True)
@@ -132,6 +132,9 @@ class Pedido(models.Model):
         verbose_name = 'Pedido'
         verbose_name_plural = 'Pedidos'
         ordering = ['-fecha_hora']
+        indexes = [
+            models.Index(fields=['estado', 'fecha_hora']),  # <-- ÍNDICE COMPUESTO
+        ]
 
     def save(self, *args, **kwargs):
         if not self.numero:
@@ -225,18 +228,22 @@ class Pedido(models.Model):
             return self.total - base
         return Decimal('0.00')
 
+
 class Pago(models.Model):
     """Cada cobro real que se le hace a un pedido (un pedido puede tener varios)."""
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='pagos')
     monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     metodo = models.CharField(max_length=10, choices=Pedido.METODO_PAGO_CHOICES)
-    fecha = models.DateTimeField(default=timezone.now)
+    fecha = models.DateTimeField(default=timezone.now, db_index=True)  # <-- ÍNDICE
     registrado_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='pagos_registrados')
 
     class Meta:
         verbose_name = 'Pago'
         verbose_name_plural = 'Pagos'
         ordering = ['fecha', 'id']
+        indexes = [
+            models.Index(fields=['metodo', 'fecha']),  # <-- ÍNDICE COMPUESTO
+        ]
 
     def __str__(self):
         return f"Pago ${self.monto} ({self.get_metodo_display()}) - Pedido #{self.pedido.numero}"
@@ -303,6 +310,7 @@ class DetalleIngredienteQuitado(models.Model):
 
     def __str__(self):
         return f"Sin {self.ingrediente.nombre}"
+
 
 class ConfiguracionNegocio(models.Model):
     nombre = models.CharField(max_length=100, default="Pate Burguer")

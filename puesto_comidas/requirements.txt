@@ -13,7 +13,6 @@ django-filter==26.2
 fonttools==4.68.0
 gunicorn==26.2.0
 idna==3.20
-mysqlclient==2.3.0
 pillow==13.0.0
 psycopg2-binary==2.9.13
 pycparser==3.12

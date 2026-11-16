@@ -3,7 +3,8 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
-from django.db.models import Sum, Q, F, Count
+from django.db.models import Sum, Q, F, Count, Value, DecimalField
+from django.db.models.functions import Coalesce
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django import forms
@@ -114,11 +115,15 @@ def pedidos_activos(request):
     MINUTOS_ALERTA = 15
     MINUTOS_TARDE = 30
 
+    # OPTIMIZACIÓN: Usar annotate para calcular total_pagado en la BD (evita N+1)
     pedidos = (
         Pedido.objects
         .exclude(estado__in=['entregado', 'anulado'])
         .select_related('mesero')
-        .prefetch_related('detalles__producto', 'pagos')
+        .prefetch_related('detalles__producto', 'detalles__ingredientes_quitados_rel__ingrediente')
+        .annotate(
+            _total_pagado_agregado=Coalesce(Sum('pagos__monto'), Value(0), output_field=DecimalField())
+        )
         .order_by('-fecha_hora')
     )
 
@@ -129,7 +134,9 @@ def pedidos_activos(request):
     pagados = 0
 
     for p in pedidos:
-        saldo = p.saldo_pendiente
+        # Usamos el valor anotado (ya viene en la consulta SQL)
+        total_pagado = p._total_pagado_agregado
+        saldo = max(p.total - total_pagado, Decimal('0.00'))
 
         if p.estado == 'pendiente_pago':
             pendientes_pago += 1
@@ -148,8 +155,8 @@ def pedidos_activos(request):
         pedidos_lista.append({
             'pedido': p,
             'saldo_tarjeta': saldo if p.estado == 'pendiente_pago' else p.total,
-            'es_adicional': p.total_pagado > 0 and saldo > 0,
-            'sin_pagos': p.total_pagado <= 0,
+            'es_adicional': total_pagado > 0 and saldo > 0,
+            'sin_pagos': total_pagado <= 0,
             'minutos': minutos,
             'tiempo_clase': tiempo_clase,
             'tiempo_pct': max(min(int(minutos * 100 / MINUTOS_TARDE), 100), 4),
@@ -934,58 +941,82 @@ def inventario_ventas(request):
     inicio_semana = hoy - timedelta(days=hoy.weekday())
     inicio_mes = hoy.replace(day=1)
 
-    productos = Producto.objects.all().prefetch_related(
-        'detallepedido_set__pedido'
-    )
+    # Convertir a datetime aware para el ORM
+    inicio_dia_aware = timezone.make_aware(timezone.datetime.combine(hoy, timezone.datetime.min.time()))
+    fin_dia_aware = inicio_dia_aware + timedelta(days=1)
+    inicio_semana_aware = timezone.make_aware(timezone.datetime.combine(inicio_semana, timezone.datetime.min.time()))
+    inicio_mes_aware = timezone.make_aware(timezone.datetime.combine(inicio_mes, timezone.datetime.min.time()))
 
-    def dia_local(d):
-        return timezone.localtime(d.pedido.fecha_hora).date()
+    # OPTIMIZACIÓN: Calcular todo en la BD con annotate + filter
+    productos = Producto.objects.all().annotate(
+        cant_hoy=Coalesce(Sum(
+            'detallepedido__cantidad',
+            filter=Q(
+                detallepedido__pedido__estado__in=['pagado', 'entregado'],
+                detallepedido__pedido__fecha_hora__gte=inicio_dia_aware,
+                detallepedido__pedido__fecha_hora__lt=fin_dia_aware,
+            )
+        ), Value(0)),
+        cant_semana=Coalesce(Sum(
+            'detallepedido__cantidad',
+            filter=Q(
+                detallepedido__pedido__estado__in=['pagado', 'entregado'],
+                detallepedido__pedido__fecha_hora__gte=inicio_semana_aware,
+            )
+        ), Value(0)),
+        cant_mes=Coalesce(Sum(
+            'detallepedido__cantidad',
+            filter=Q(
+                detallepedido__pedido__estado__in=['pagado', 'entregado'],
+                detallepedido__pedido__fecha_hora__gte=inicio_mes_aware,
+            )
+        ), Value(0)),
+        dinero_hoy=Coalesce(Sum(
+            F('detallepedido__cantidad') * F('detallepedido__precio_unitario'),
+            filter=Q(
+                detallepedido__pedido__estado__in=['pagado', 'entregado'],
+                detallepedido__pedido__fecha_hora__gte=inicio_dia_aware,
+                detallepedido__pedido__fecha_hora__lt=fin_dia_aware,
+            )
+        ), Value(0), output_field=DecimalField()),
+        dinero_mes=Coalesce(Sum(
+            F('detallepedido__cantidad') * F('detallepedido__precio_unitario'),
+            filter=Q(
+                detallepedido__pedido__estado__in=['pagado', 'entregado'],
+                detallepedido__pedido__fecha_hora__gte=inicio_mes_aware,
+            )
+        ), Value(0), output_field=DecimalField()),
+    ).order_by('-cant_mes', 'nombre')
 
+    # Bucle ligero para armar el contexto
     inventario = []
     total_dinero_hoy = 0
     total_unidades_hoy = 0
     ranking_productos = []
 
     for p in productos:
-        detalles_validos = [
-            d for d in p.detallepedido_set.all() 
-            if d.pedido.estado in ['pagado', 'entregado']
-        ]
-        
-        hoy_detalles = [d for d in detalles_validos if dia_local(d) == hoy]
-        cant_hoy = sum(d.cantidad for d in hoy_detalles)
-        dinero_hoy = sum(d.subtotal for d in hoy_detalles)
-        
-        cant_semana = sum(d.cantidad for d in detalles_validos if dia_local(d) >= inicio_semana)
-        
-        mes_detalles = [d for d in detalles_validos if dia_local(d) >= inicio_mes]
-        cant_mes = sum(d.cantidad for d in mes_detalles)
-        dinero_mes = sum(d.subtotal for d in mes_detalles)
-
-        total_dinero_hoy += dinero_hoy
-        total_unidades_hoy += cant_hoy
-
+        total_dinero_hoy += p.dinero_hoy
+        total_unidades_hoy += p.cant_hoy
         inventario.append({
             'producto': p,
-            'cant_hoy': cant_hoy,
-            'cant_semana': cant_semana,
-            'cant_mes': int(cant_mes),
+            'cant_hoy': p.cant_hoy,
+            'cant_semana': p.cant_semana,
+            'cant_mes': int(p.cant_mes),
         })
-        
-        if cant_mes > 0:
+        if p.cant_mes > 0:
             ranking_productos.append({
                 'nombre': p.nombre,
                 'categoria': p.categoria.nombre,
-                'cant_mes': int(cant_mes),
-                'dinero_mes': dinero_mes
+                'cant_mes': int(p.cant_mes),
+                'dinero_mes': p.dinero_mes,
             })
 
     total_pedidos_hoy = Pedido.objects.filter(fecha_hora__date=hoy, estado__in=['pagado', 'entregado']).count()
-    
+
     ranking_productos.sort(key=lambda x: x['cant_mes'], reverse=True)
     for index, prod in enumerate(ranking_productos):
         prod['posicion'] = index + 1
-        
+
     inventario.sort(key=lambda x: (-x['cant_mes'], x['producto'].nombre.lower()))
     sin_ventas_mes = [i['producto'] for i in inventario if i['cant_mes'] == 0 and i['producto'].disponible]
     producto_estrella = ranking_productos[0] if ranking_productos else None
