@@ -225,3 +225,9 @@ AXES_FAILURE_LIMIT = 5
 
 # Tiempo de bloqueo después de superar el límite (ej. 15 minutos)
 AXES_COOLOFF_TIME = timedelta(minutes=15)
+
+# Hacer que Axes no lance excepción, sino que simplemente falle el login
+AXES_LOCKOUT_CALLABLE = None
+
+# Redirigir al login en lugar de mostrar la pantalla en blanco
+AXES_LOCKOUT_URL = '/login-bloqueado/'

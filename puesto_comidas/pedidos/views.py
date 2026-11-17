@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
+from axes.exceptions import AxesBackendPermissionDenied
 import json
 import logging
 import calendar
@@ -1108,3 +1109,7 @@ def reporte_mensual_pdf(request):
         'fecha_generacion': timezone.now(),
     }
     return render(request, 'pedidos/reporte_mensual_print.html', context)
+
+def login_bloqueado(request):
+    messages.error(request, "Cuenta bloqueada: se han realizado demasiados intentos de inicio de sesión. Inténtalo de nuevo en 15 minutos.")
+    return redirect('login')

@@ -19,8 +19,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib.auth import logout
+from axes.utils import reset
+from axes.exceptions import AxesBackendPermissionDenied
+
+from pedidos.views import login_bloqueado
 
 class LoginRecordarme(auth_views.LoginView):
     """
@@ -31,18 +35,18 @@ class LoginRecordarme(auth_views.LoginView):
     template_name = 'pedidos/login.html'
 
     def form_valid(self, form):
-        respuesta = super().form_valid(form)   # inicia la sesión y prepara la redirección
+        respuesta = super().form_valid(form)
         if self.request.POST.get('recordarme'):
             self.request.session.set_expiry(60 * 60 * 24 * 30)   # 30 días
         else:
-            self.request.session.set_expiry(0)                    # hasta cerrar el navegador
+            self.request.session.set_expiry(0)                    # hasta cerrar navegador
         return respuesta
 
-# Vista personalizada para el login que fuerza el cierre de sesión previo
 def login_limpio(request):
     if request.user.is_authenticated:
-        logout(request) # Si ya estaba logueado, lo desloguea automáticamente
+        logout(request)
     return LoginRecordarme.as_view()(request)
+
 
 urlpatterns = [
     path('gestion-interna-pate-2024/', admin.site.urls),
@@ -56,6 +60,8 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     
     path('', include('pedidos.urls')),
+
+    path('login-bloqueado/', login_bloqueado, name='login_bloqueado'),
 ]
 
 if settings.DEBUG:

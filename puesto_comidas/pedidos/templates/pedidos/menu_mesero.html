@@ -237,6 +237,102 @@
         border-color: var(--text-main);
     }
 
+    /* === JERARQUÍA DE Z-INDEX === */
+    .mobile-nav {
+        z-index: 1000 !important;
+    }
+
+    .mobile-cart-bar {
+        display: none;
+        position: fixed;
+        bottom: 70px;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid var(--border-color);
+        padding: 12px 16px;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        z-index: 1100 !important;
+    }
+
+    /* Modales de Bootstrap SIEMPRE por encima de todo */
+    .modal-backdrop {
+        z-index: 1200 !important;
+    }
+    .modal {
+        z-index: 1250 !important;
+    }
+
+    @media (max-width: 991px) {
+        .mobile-cart-bar.visible {
+            display: block;
+        }
+        body { padding-bottom: 160px !important; }
+        
+        /* Modal adaptado a móvil */
+        .modal-dialog {
+            max-height: 90vh;
+            margin: 1.75rem auto;
+        }
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    }
+
+    .mobile-cart-bar .bar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .mobile-cart-bar .bar-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+    .mobile-cart-bar .bar-info .count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    .mobile-cart-bar .bar-info .total {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .mobile-cart-bar .btn-checkout {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .mobile-cart-bar .btn-checkout:active {
+        background: var(--accent-hover);
+        transform: scale(0.98);
+    }
+
+    /* Botones del modal en móvil: ancho completo y cómodos */
+    @media (max-width: 575px) {
+        .modal-footer .btn {
+            flex: 1;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
     @media (max-width: 768px) {
         .cart-card {
             margin-bottom: 90px;
@@ -443,6 +539,20 @@
                 <small class="text-muted"><i class="bi bi-shield-check"></i> Pago 100% seguro</small>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- BARRA FLOTANTE MÓVIL (solo visible cuando hay productos) -->
+<div class="mobile-cart-bar" id="mobileCartBar">
+    <div class="bar-content">
+        <div class="bar-info">
+            <span class="count" id="mobileCartCount">0 productos</span>
+            <span class="total" id="mobileCartTotal">$0</span>
+        </div>
+        <button class="btn-checkout" onclick="mostrarCarrito()">
+            <i class="bi bi-cart-check"></i>
+            Ver pedido
+        </button>
     </div>
 </div>
 
@@ -658,9 +768,29 @@
             });
         }
 
+        // Ocultar la barra flotante mientras el modal está abierto
+        const mobileBar = document.getElementById('mobileCartBar');
+        if (mobileBar) mobileBar.style.display = 'none';
+
         const modal = new bootstrap.Modal(document.getElementById('modalPersonalizar'));
         modal.show();
     }
+
+    // Restaurar la barra flotante al cerrar el modal de personalización
+    document.getElementById('modalPersonalizar').addEventListener('hidden.bs.modal', function () {
+        const mobileBar = document.getElementById('mobileCartBar');
+        if (mobileBar && carrito.length > 0) {
+            mobileBar.style.display = '';
+        }
+    });
+
+    // Restaurar la barra flotante al cerrar el modal de cancelar
+    document.getElementById('modalCancelarEdicion').addEventListener('hidden.bs.modal', function () {
+        const mobileBar = document.getElementById('mobileCartBar');
+        if (mobileBar && carrito.length > 0) {
+            mobileBar.style.display = '';
+        }
+    });
 
     function agregarAlCarrito() {
         const id = document.getElementById('modalProductoId').value;
@@ -706,6 +836,9 @@
             contador.style.display = 'none';
             
             if(filaIcopor) filaIcopor.style.setProperty('display', 'none', 'important');
+            
+            const mobileBar = document.getElementById('mobileCartBar');
+            if (mobileBar) mobileBar.classList.remove('visible');
             return;
         }
 
@@ -762,6 +895,17 @@
         contador.innerText = totalItems;
         subtotalElement.innerText = '$' + total.toLocaleString('es-CO');
         totalElement.innerText = '$' + totalFinal.toLocaleString('es-CO');
+
+        // ACTUALIZAR BARRA FLOTANTE MÓVIL
+        const mobileBar = document.getElementById('mobileCartBar');
+        const mobileCount = document.getElementById('mobileCartCount');
+        const mobileTotal = document.getElementById('mobileCartTotal');
+        
+        if (mobileBar) {
+            mobileBar.classList.add('visible');
+            mobileCount.innerText = totalItems === 1 ? '1 producto' : totalItems + ' productos';
+            mobileTotal.innerText = '$' + totalFinal.toLocaleString('es-CO');
+        }
     }
 
     function cambiarCantidad(index, delta) {
@@ -775,6 +919,22 @@
     function eliminarDelCarrito(index) {
         carrito.splice(index, 1);
         actualizarCarrito();
+    }
+
+    function mostrarCarrito() {
+        const carritoContenedor = document.getElementById('carritoContenedor');
+        if (carritoContenedor) {
+            carritoContenedor.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            carritoContenedor.style.transition = 'box-shadow 0.5s ease';
+            carritoContenedor.style.boxShadow = '0 0 0 4px rgba(174, 69, 45, 0.3)';
+            setTimeout(() => {
+                carritoContenedor.style.boxShadow = '';
+            }, 1500);
+        }
     }
 
     function enviarPedido() {
@@ -854,7 +1014,6 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'ok') {
-                // === IMPRESIÓN AUTOMÁTICA DE AMBOS TICKETS ===
                 imprimirEnIframe('/ticket/' + data.pedido_id + '/', 'cliente_' + data.pedido_id);
                 imprimirEnIframe('/ticket-cocina/' + data.pedido_id + '/', 'cocina_' + data.pedido_id);
                 
@@ -877,7 +1036,6 @@
         });
     }
 
-    // --- FUNCIÓN DE IMPRESIÓN EN IFRAME OCULTO ---
     function imprimirEnIframe(url, nombreIframe) {
         const iframe = document.createElement('iframe');
         iframe.style.position = 'absolute';
