@@ -14,6 +14,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from axes.exceptions import AxesBackendPermissionDenied
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 import logging
 import calendar
@@ -106,6 +107,7 @@ def menu_mesero(request):
         'productos': productos,
         'categorias': categorias,
         'valor_icopor': Pedido.VALOR_ICOPOR,
+        'version_menu': f"{productos.count()}-{productos.order_by('-id').first().id if productos.exists() else 0}",
     }
     return render(request, 'pedidos/menu_mesero.html', context)
 
@@ -169,6 +171,7 @@ def pedidos_activos(request):
         'pendientes_pago': pendientes_pago,
         'pagados': pagados,
         'total_cobrar': total_cobrar,
+        'ultimo_pedido_id': pedidos[0].id if pedidos else 0,
     }
     return render(request, 'pedidos/pedidos_activos.html', context)
 
@@ -423,6 +426,7 @@ def dashboard_admin(request):
         'pedidos_activos': pedidos_activos[:5],
         'rendimiento_personal': rendimiento_personal,
         'total_meseros_activos': total_meseros_activos,
+        'ultimo_pedido_id': Pedido.objects.order_by('-id').first().id if Pedido.objects.exists() else 0,
     }
     return render(request, 'pedidos/dashboard_admin.html', context)
 
@@ -755,6 +759,7 @@ def reporte_diario(request):
         'total_pendientes': total_pendientes,
         'cantidad_pedidos': pedidos_cobrados.count(),
         'productos_vendidos': productos_vendidos,
+        'ultimo_pago_id': Pago.objects.order_by('-id').first().id if Pago.objects.exists() else 0,
     }
     return render(request, 'pedidos/reporte_diario.html', context)
 
@@ -902,6 +907,7 @@ def historial_pedidos(request):
         'total_pedidos': total_pedidos,
         'mas_vendido': mas_vendido['producto__nombre'] if mas_vendido else 'N/A',
         'mas_vendido_cant': mas_vendido['total_vendido'] if mas_vendido else 0,
+        'ultimo_pedido_id': Pedido.objects.order_by('-id').first().id if Pedido.objects.exists() else 0,
     }
     return render(request, 'pedidos/admin_historial.html', context)
 
@@ -1032,6 +1038,7 @@ def inventario_ventas(request):
         'sin_ventas_mes': sin_ventas_mes,
         'producto_estrella': producto_estrella,
         'categorias': categorias,
+        'ultimo_pago_id': Pago.objects.order_by('-id').first().id if Pago.objects.exists() else 0,
     }
     return render(request, 'pedidos/admin_inventario.html', context)
 
@@ -1113,3 +1120,155 @@ def reporte_mensual_pdf(request):
 def login_bloqueado(request):
     messages.error(request, "Cuenta bloqueada: se han realizado demasiados intentos de inicio de sesión. Inténtalo de nuevo en 15 minutos.")
     return redirect('login')
+
+# ==========================================
+# ENDPOINTS DE POLLING (Actualizaciones en tiempo real)
+# ==========================================
+
+@login_required
+def api_pedidos_activos(request):
+    """
+    Endpoint ligero para actualizaciones en tiempo real.
+    Devuelve JSON con los pedidos activos y KPIs.
+    """
+    try:
+        pedidos = (
+            Pedido.objects
+            .exclude(estado__in=['entregado', 'anulado'])
+            .select_related('mesero')
+            .prefetch_related('detalles__producto')
+            .annotate(
+                _total_pagado_agregado=Coalesce(Sum('pagos__monto'), Value(0), output_field=DecimalField())
+            )
+            .order_by('-fecha_hora')
+        )
+
+        data_pedidos = []
+        total_cobrar = Decimal('0.00')
+        pendientes_pago = 0
+        pagados = 0
+        ahora = timezone.now()
+
+        for p in pedidos:
+            total_pagado = p._total_pagado_agregado
+            saldo = max(p.total - total_pagado, Decimal('0.00'))
+            
+            if p.estado == 'pendiente_pago':
+                pendientes_pago += 1
+                total_cobrar += saldo
+            elif p.estado == 'pagado':
+                pagados += 1
+
+            minutos = max(int((ahora - p.fecha_hora).total_seconds() // 60), 0)
+            
+            data_pedidos.append({
+                'id': p.id,
+                'numero': p.numero,
+                'mesa': p.numero_mesa if p.tipo == 'mesa' else 'Llevar',
+                'tipo': p.get_tipo_display(),
+                'estado': p.estado,
+                'mesero': p.mesero.username,
+                'total': float(p.total),
+                'saldo': float(saldo),
+                'minutos': minutos,
+                'detalles': [
+                    {'cantidad': d.cantidad, 'producto': d.producto.nombre}
+                    for d in p.detalles.all()
+                ],
+                'es_adicional': total_pagado > 0 and saldo > 0,
+                'sin_pagos': total_pagado <= 0,
+            })
+
+        return JsonResponse({
+            'status': 'ok',
+            'pedidos': data_pedidos,
+            'kpis': {
+                'total_abiertos': len(data_pedidos),
+                'pendientes_pago': pendientes_pago,
+                'pagados': pagados,
+                'total_cobrar': float(total_cobrar),
+            },
+            'ultimo_id': max([p.id for p in pedidos], default=0),
+        })
+
+    except Exception as e:
+        logger.error(f"Error en api_pedidos_activos: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
+
+
+@login_required
+def api_dashboard(request):
+    """Devuelve el ID del último pedido para detectar cambios en el dashboard."""
+    try:
+        ultimo = Pedido.objects.order_by('-id').first()
+        return JsonResponse({
+            'status': 'ok',
+            'ultimo_id': ultimo.id if ultimo else 0,
+        })
+    except Exception as e:
+        logger.error(f"Error en api_dashboard: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
+
+
+@login_required
+def api_historial(request):
+    """Devuelve el ID del último pedido para detectar cambios en el historial."""
+    if request.user.rol != 'admin':
+        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=403)
+    try:
+        ultimo = Pedido.objects.order_by('-id').first()
+        return JsonResponse({
+            'status': 'ok',
+            'ultimo_id': ultimo.id if ultimo else 0,
+        })
+    except Exception as e:
+        logger.error(f"Error en api_historial: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
+
+
+@login_required
+def api_inventario(request):
+    """Devuelve el ID del último pago para detectar cambios en el inventario."""
+    if request.user.rol != 'admin':
+        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=403)
+    try:
+        ultimo = Pago.objects.order_by('-id').first()
+        return JsonResponse({
+            'status': 'ok',
+            'ultimo_id': ultimo.id if ultimo else 0,
+        })
+    except Exception as e:
+        logger.error(f"Error en api_inventario: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
+
+
+@login_required
+def api_reporte(request):
+    """Devuelve el ID del último pago para detectar cambios en el reporte."""
+    if request.user.rol != 'admin':
+        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=403)
+    try:
+        ultimo = Pago.objects.order_by('-id').first()
+        return JsonResponse({
+            'status': 'ok',
+            'ultimo_id': ultimo.id if ultimo else 0,
+        })
+    except Exception as e:
+        logger.error(f"Error en api_reporte: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
+
+
+@login_required
+def api_menu(request):
+    """Devuelve un hash de los productos disponibles para detectar cambios en el menú."""
+    try:
+        total = Producto.objects.filter(disponible=True).count()
+        ultimo = Producto.objects.order_by('-id').first()
+        version = f"{total}-{ultimo.id if ultimo else 0}"
+        return JsonResponse({
+            'status': 'ok',
+            'version': version,
+        })
+    except Exception as e:
+        logger.error(f"Error en api_menu: {str(e)}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)

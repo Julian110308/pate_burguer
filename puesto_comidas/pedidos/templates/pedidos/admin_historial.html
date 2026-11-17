@@ -1,5 +1,9 @@
 {% extends 'pedidos/base.html' %}
 
+{% block extra_head %}
+<meta name="ultimo-id" content="{{ ultimo_pedido_id|default:0 }}">
+{% endblock %}
+
 {% block content %}
 <style>
     body { background-color: var(--bg-color); }

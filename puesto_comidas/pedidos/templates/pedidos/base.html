@@ -238,6 +238,9 @@
             .mobile-nav { display: flex; justify-content: space-around; }
         }
     </style>
+
+    <!-- BLOQUE PARA QUE LAS PLANTILLAS PUEDAN INYECTAR META TAGS U OTROS ELEMENTOS EN EL HEAD -->
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <!-- Avisos globales -->
@@ -495,6 +498,64 @@
             aviso.querySelector('.toast-close').addEventListener('click', cerrar);
             setTimeout(cerrar, (tipo === 'error' || tipo === 'warning') ? 6000 : 3500);
         };
+    </script>
+
+    <!-- === SISTEMA GLOBAL DE ACTUALIZACIÓN EN TIEMPO REAL (POLLING) === -->
+    <script>
+        (function() {
+            // Configuración por página: [endpoint, intervalo_segundos, clave_del_ultimo_id]
+            const configuracionPaginas = {
+                '/pedidos-activos/': { endpoint: '/api/pedidos-activos/', interval: 3000, key: 'ultimo_id' },
+                '/dashboard/': { endpoint: '/api/dashboard/', interval: 5000, key: 'ultimo_id' },
+                '/admin-historial/': { endpoint: '/api/historial/', interval: 10000, key: 'ultimo_id' },
+                '/admin-inventario/': { endpoint: '/api/inventario/', interval: 10000, key: 'ultimo_id' },
+                '/reporte/': { endpoint: '/api/reporte/', interval: 10000, key: 'ultimo_id' },
+                '/menu/': { endpoint: '/api/menu/', interval: 15000, key: 'version' },
+            };
+
+            const rutaActual = window.location.pathname;
+            const config = configuracionPaginas[rutaActual];
+            
+            if (!config) return;
+
+            // Leer el ultimo_id del meta tag
+            const metaId = document.querySelector('meta[name="ultimo-id"]');
+            if (!metaId) return;
+            
+            let ultimoIdConocido = metaId.content;
+            let intervalId = null;
+
+            function verificarCambios() {
+                if (document.visibilityState !== 'visible') return;
+
+                fetch(config.endpoint)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status !== 'ok') return;
+                        const nuevoId = data[config.key];
+                        
+                        if (nuevoId !== undefined && nuevoId !== ultimoIdConocido) {
+                            console.log(`Cambio detectado en ${rutaActual}. Recargando...`);
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error(`Error en polling de ${rutaActual}:`, error));
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                intervalId = setInterval(verificarCambios, config.interval);
+
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') {
+                        verificarCambios();
+                        clearInterval(intervalId);
+                        intervalId = setInterval(verificarCambios, config.interval);
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                });
+            });
+        })();
     </script>
 </body>
 </html>

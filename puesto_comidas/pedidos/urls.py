@@ -52,4 +52,11 @@ urlpatterns = [
     # Legales
     path('legal/privacidad/', TemplateView.as_view(template_name='pedidos/legal_privacidad.html'), name='politica_privacidad'),
     path('legal/terminos/', TemplateView.as_view(template_name='pedidos/legal_terminos.html'), name='terminos_uso'),
+
+    path('api/pedidos-activos/', views.api_pedidos_activos, name='api_pedidos_activos'),
+    path('api/dashboard/', views.api_dashboard, name='api_dashboard'),
+    path('api/historial/', views.api_historial, name='api_historial'),
+    path('api/inventario/', views.api_inventario, name='api_inventario'),
+    path('api/reporte/', views.api_reporte, name='api_reporte'),
+    path('api/menu/', views.api_menu, name='api_menu'),
 ]

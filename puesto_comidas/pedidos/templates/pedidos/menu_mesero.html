@@ -1,6 +1,10 @@
 {% extends 'pedidos/base.html' %}
 {% load l10n %}
 
+{% block extra_head %}
+<meta name="ultimo-id" content="{{ version_menu|default:'0-0' }}">
+{% endblock %}
+
 {% block content %}
 
 <style>

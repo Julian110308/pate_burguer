@@ -1,5 +1,9 @@
 {% extends 'pedidos/base.html' %}
 
+{% block extra_head %}
+<meta name="ultimo-id" content="{{ ultimo_pedido_id|default:0 }}">
+{% endblock %}
+
 {% block content %}
 <style>
     body { background-color: var(--bg-color); }
@@ -408,5 +412,31 @@
 
     </div>
 </div>
+<script>
+    function actualizarDashboard() {
+        if (document.visibilityState !== 'visible') return;
+
+        fetch("{% url 'api_pedidos_activos' %}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'ok') return;
+
+                // Actualizar KPIs del dashboard
+                const kpiRecaudado = document.querySelector('.kpi-card.dark .kpi-value');
+                const kpiPedidosHoy = document.querySelectorAll('.kpi-card .kpi-value')[0];
+                const kpiPorCobrar = document.querySelectorAll('.kpi-card .kpi-value')[1];
+                const kpiActivos = document.querySelectorAll('.kpi-card .kpi-value')[2];
+
+                if (kpiPedidosHoy) kpiPedidosHoy.innerText = data.kpis.total_abiertos;
+                if (kpiPorCobrar) kpiPorCobrar.innerText = data.kpis.pendientes_pago;
+                if (kpiActivos) kpiActivos.innerText = data.kpis.total_abiertos;
+            })
+            .catch(error => console.error('Error en dashboard:', error));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setInterval(actualizarDashboard, 3000);
+    });
+</script>
 
 {% endblock %}
