@@ -1,47 +1,82 @@
 {% extends 'pedidos/base.html' %}
 
-{% block extra_head %}
-<meta name="ultimo-id" content="{{ pedidos.0.pedido.id|default:0 }}">
-{% endblock %}
-
 {% block content %}
 <style>
     body { background-color: var(--bg-color); }
 
-    .kpi-card-mini { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; height: 100%; }
+    /* Tarjetas de resumen (KPIs) */
+    .kpi-card-mini {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+    }
     .kpi-card-mini .title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
     .kpi-card-mini .value { font-family: 'DM Serif Display', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; line-height: 1; margin-top: 5px; }
     
-    .kpi-card-dark { background: #33271F; border-radius: 12px; padding: 1.25rem; color: white; height: 100%; }
+    /* Tarjeta oscura de total */
+    .kpi-card-dark {
+        background: #33271F;
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: white;
+        height: 100%;
+    }
     .kpi-card-dark .title { font-size: 0.75rem; color: #A8A29E; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
     .kpi-card-dark .value { font-family: 'DM Serif Display', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; line-height: 1; margin-top: 5px; }
 
-    .order-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; height: 100%; position: relative; transition: all 0.5s ease; }
-    .order-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
-    .order-card.pendiente::before { background-color: #D97706; }
-    .order-card.pagado::before { background-color: #10B981; }
+    /* Tarjetas de Pedido */
+    .order-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
     
-    /* Animación de resaltado para pedidos nuevos */
-    @keyframes resaltar-nuevo {
-        0% { box-shadow: 0 0 0 0 rgba(174, 69, 45, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(174, 69, 45, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(174, 69, 45, 0); }
+    /* Barra superior de color según estado */
+    .order-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
     }
-    .order-card.nuevo {
-        animation: resaltar-nuevo 2s ease-out;
-    }
-
+    .order-card.pendiente::before { background-color: #D97706; } /* Naranja */
+    .order-card.pagado::before { background-color: #10B981; } /* Verde */
+    
     .order-header { padding: 1.25rem 1.25rem 0 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .table-badge { background: #F3F4F6; border-radius: 6px; padding: 4px 8px; text-align: center; min-width: 45px; flex-shrink: 0; }
+    
+    /* Badge de mesa */
+    .table-badge {
+        background: #F3F4F6;
+        border-radius: 6px;
+        padding: 4px 8px;
+        text-align: center;
+        min-width: 45px;
+        flex-shrink: 0;
+    }
     .table-badge .label { font-size: 0.55rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
     .table-badge .number { font-size: 1.2rem; font-weight: 700; color: var(--text-main); line-height: 1; }
     .order-card.pendiente .table-badge { background: #FEF3C7; }
     .order-card.pagado .table-badge { background: #D1FAE5; }
 
-    .order-status-badge { font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    .order-status-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
     .status-pendiente { background: #FEF3C7; color: #92400E; }
     .status-pagado { background: #D1FAE5; color: #065F46; }
 
+    /* Barra de tiempo (tiempo real transcurrido) */
     .time-bar-container { padding: 0 1.25rem; margin-top: 1rem; }
     .time-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
     .time-labels span:last-child { font-weight: 700; color: var(--text-main); }
@@ -51,6 +86,7 @@
     .progress-bar.tiempo-alerta { background-color: #D97706; }
     .progress-bar.tiempo-tarde { background-color: #DC2626; }
 
+    /* Lista de productos */
     .order-items { padding: 1.25rem; flex-grow: 1; }
     .order-item-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; gap: 10px; }
     .order-item-row .qty { font-weight: 700; color: var(--text-main); margin-right: 8px; flex-shrink: 0; }
@@ -58,19 +94,52 @@
     .order-item-row .price { color: var(--text-muted); white-space: nowrap; }
     .order-item-row .note { font-size: 0.75rem; color: #DC2626; display: block; margin-left: 24px; margin-top: -2px;}
 
+    /* Footer de la tarjeta */
     .order-footer { padding: 1.25rem; border-top: 1px dashed var(--border-color); margin-top: auto; }
     .order-total { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; }
     .order-total .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
     .order-total .amount { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 700; line-height: 1; }
 
+    /* Acciones */
     .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-main-action { flex-grow: 1; border: none; border-radius: 8px; padding: 10px; font-size: 0.9rem; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 6px; color: white; transition: all 0.2s; min-width: 100%; }
-    @media (min-width: 576px) { .btn-main-action { min-width: auto; } }
+    
+    .btn-main-action {
+        flex-grow: 1;
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        transition: all 0.2s;
+        min-width: 100%;
+    }
+    @media (min-width: 576px) {
+        .btn-main-action { min-width: auto; }
+    }
+
     .btn-cobrar { background-color: #AE452D; }
     .btn-cobrar:hover { background-color: #923A26; }
     .btn-entregar { background-color: #AE452D; }
     .btn-entregar:hover { background-color: #923A26; }
-    .btn-icon-action { width: 38px; height: 38px; border: 1px solid var(--border-color); background: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); transition: all 0.2s; flex-shrink: 0; }
+    
+    .btn-icon-action {
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--border-color);
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-muted);
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
     .btn-icon-action:hover { background: #F3F4F6; color: var(--text-main); }
     .btn-anular:hover { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
 </style>
@@ -78,6 +147,7 @@
 <!-- Encabezado (Grid Responsivo) -->
 <div class="row align-items-md-end mb-4 mt-2 g-3">
     <div class="col-12 col-md-8">
+        <span class="text-success small fw-bold text-uppercase" style="letter-spacing: 2px;"><i class="bi bi-circle-fill" style="font-size: 0.5rem; vertical-align: middle;"></i> Cocina · En vivo</span>
         <h1 class="fw-bold mb-1 mt-1" style="font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.8rem);">Pedidos activos</h1>
         <p class="text-muted mb-0">Sigue cada mesa desde que se pide hasta que se cobra.</p>
     </div>
@@ -89,7 +159,7 @@
 </div>
 
 <!-- Tarjetas Superiores (KPIs) -->
-<div class="row g-3 mb-4" id="kpis-container">
+<div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="kpi-card-mini">
             <div class="title">Pedidos abiertos</div>
@@ -194,6 +264,7 @@
                         <span class="amount">${{ item.saldo_tarjeta|floatformat:"0g" }}</span>
                     </div>
                     
+                    <!-- Los botones se adaptan -->
                     <div class="order-actions">
                         {% if pedido.estado == 'pendiente_pago' %}
                             <a href="{% url 'cambiar_estado_pedido' pedido.id 'pagado' %}" class="btn-main-action btn-cobrar">
@@ -208,6 +279,7 @@
                             </form>
                         {% endif %}
 
+                        <!-- Botones secundarios (Iconos) -->
                         <a href="{% url 'agregar_a_pedido' pedido.id %}" class="btn-icon-action" title="Agregar productos">
                             <i class="bi bi-plus-lg"></i>
                         </a>
@@ -224,13 +296,11 @@
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% if item.sin_pagos %}
-                        <form method="post" action="{% url 'cambiar_estado_pedido' pedido.id 'anulado' %}" class="m-0"
-                              onsubmit="return confirm('¿Anular el pedido #{{ pedido.numero }}? Esta acción no se puede deshacer.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-icon-action btn-anular" title="Anular pedido">
-                                <i class="bi bi-x-circle"></i>
-                            </button>
-                        </form>
+                        <button type="button" class="btn-icon-action btn-anular" title="Anular pedido"
+                                data-id="{{ pedido.id }}" data-numero="{{ pedido.numero }}"
+                                onclick="abrirModalAnular(this)">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
                         {% endif %}
                         {% endif %}
                     </div>
@@ -251,7 +321,248 @@
 
 <!-- MODAL GLOBAL: CONFIRMAR ANULACIÓN -->
 <div class="modal fade" id="modalAnular" tabindex="-1" aria-hidden="true">
-    <!-- ... (tu modal de anulación actual se mantiene igual) ... -->
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; background-color: #FCFBF9;">
+            <div class="modal-body p-4 p-md-5 text-center">
+                
+                <!-- Icono de advertencia -->
+                <div class="mx-auto mb-4 d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 70px; height: 70px;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                </div>
+                
+                <h3 class="mb-2 fw-bold" style="font-family: 'DM Serif Display', serif; color: #33271F;">Anular Pedido</h3>
+                <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                    ¿Estás seguro de que deseas anular el<br>
+                    <strong id="numeroPedidoAnular" class="text-dark" style="font-size: 1.1rem;"></strong>?<br>
+                    <span class="small text-danger fw-bold">Esta acción no se puede deshacer.</span>
+                </p>
+                
+                <!-- Formulario que se envía a Django -->
+                <form method="post" id="formAnular" class="m-0 w-100">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2 w-100 mt-4">
+                        <button type="button" class="btn btn-light border fw-bold py-3 flex-grow-1" data-bs-dismiss="modal" style="border-radius: 12px; color: #6B7280;">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-danger fw-bold py-3 flex-grow-1" style="border-radius: 12px; background-color: #DC2626; border-color: #DC2626;">
+                            Sí, anular
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- MODAL GLOBAL: CANCELAR ADICIÓN DE PRODUCTOS (se mantiene igual, pero por si acaso) -->
+<!-- ... no es necesario si no está en esta vista, pero si lo tienes, déjalo ... -->
+
+<script>
+    // Variables globales
+    let ultimoIdConocido = {{ pedidos.0.pedido.id|default:0 }};
+    let intervalId = null;
+
+    // Función para formatear dinero
+    function formatoCOP(valor) {
+        return '$' + valor.toLocaleString('es-CO', { maximumFractionDigits: 0 });
+    }
+
+    // Función para construir el HTML de una tarjeta de pedido
+    function crearTarjetaPedido(pedido) {
+        const esPagado = pedido.estado === 'pagado';
+        const claseEstado = esPagado ? 'pagado' : 'pendiente';
+        
+        // Construir los detalles
+        let detallesHtml = '';
+        pedido.detalles.forEach(d => {
+            let obs = d.observacion ? `<span class="note">${d.observacion}</span>` : '';
+            let adicional = d.es_adicional ? '<span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">Nuevo</span>' : '';
+            detallesHtml += `
+                <div class="order-item-row">
+                    <div>
+                        <span class="qty">${d.cantidad}x</span>
+                        <span class="name">${d.producto}</span>
+                        ${adicional}
+                        ${obs}
+                    </div>
+                    <span class="price">${formatoCOP(d.subtotal)}</span>
+                </div>
+            `;
+        });
+
+        // Si hay más de 3 detalles, mostrar el resto
+        if (pedido.total_detalles > 3) {
+            detallesHtml += `<div class="order-item-row mt-2"><span class="text-muted" style="font-size: 0.8rem;">+ ${pedido.total_detalles - 3} productos más</span></div>`;
+        }
+
+        // Si tiene icopor
+        if (pedido.cajas_icopor > 0) {
+            detallesHtml += `
+                <div class="order-item-row">
+                    <div>
+                        <span class="qty"><i class="bi bi-box-seam"></i></span>
+                        <span class="name">Caja de icopor${pedido.cajas_icopor > 1 ? ' ×' + pedido.cajas_icopor : ''}</span>
+                    </div>
+                    <span class="price">${formatoCOP(pedido.valor_icopor)}</span>
+                </div>
+            `;
+        }
+
+        // Botones de acción
+        let botonesHtml = '';
+        if (pedido.estado === 'pendiente_pago') {
+            botonesHtml = `<a href="/pedido/${pedido.id}/estado/pagado/" class="btn-main-action btn-cobrar"><i class="bi bi-wallet2"></i> Cobrar pedido</a>`;
+        } else if (pedido.estado === 'pagado') {
+            botonesHtml = `
+                <form method="post" action="/pedido/${pedido.id}/estado/entregado/" class="w-100 m-0">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <button type="submit" class="btn-main-action btn-entregar w-100"><i class="bi bi-check-lg"></i> Marcar como entregado</button>
+                </form>
+            `;
+        }
+
+        // Botones secundarios (iconos)
+        let iconosHtml = `
+            <a href="/pedido/${pedido.id}/agregar/" class="btn-icon-action" title="Agregar productos"><i class="bi bi-plus-lg"></i></a>
+            <button type="button" onclick="abrirTicketModal(${pedido.id}, true)" class="btn-icon-action" title="Reimprimir ticket"><i class="bi bi-printer"></i></button>
+            <a href="/ticket-cocina/${pedido.id}/" target="_blank" class="btn-icon-action" title="Imprimir Comanda"><i class="bi bi-journal-text"></i></a>
+        `;
+        
+        // Solo el admin ve editar y anular
+        {% if user.rol == 'admin' %}
+            iconosHtml += `<a href="/pedido/${pedido.id}/editar/" class="btn-icon-action" title="Editar pedido"><i class="bi bi-pencil"></i></a>`;
+            if (pedido.sin_pagos) {
+                iconosHtml += `
+                    <button type="button" class="btn-icon-action btn-anular" title="Anular pedido"
+                            data-id="${pedido.id}" data-numero="${pedido.numero}"
+                            onclick="abrirModalAnular(this)">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                `;
+            }
+        {% endif %}
+
+        // Retornar el HTML completo de la tarjeta
+        return `
+            <div class="col" id="pedido-${pedido.id}">
+                <div class="order-card ${claseEstado}">
+                    <div class="order-header">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="table-badge">
+                                <div class="label">${pedido.tipo === 'mesa' ? 'Mesa' : 'Llevar'}</div>
+                                <div class="number">${pedido.tipo === 'mesa' ? pedido.mesa : '<i class="bi bi-bag"></i>'}</div>
+                            </div>
+                            <div>
+                                <h4 class="mb-0 fw-bold" style="font-family: 'DM Serif Display', serif; font-size: 1.2rem;">Pedido #${pedido.numero}</h4>
+                                <small class="text-muted"><i class="bi bi-person"></i> ${pedido.mesero} · <i class="bi bi-clock"></i> ${pedido.hora}</small>
+                            </div>
+                        </div>
+                        <div>
+                            ${esPagado ? '<span class="order-status-badge status-pagado"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Pagado</span>' : '<span class="order-status-badge status-pendiente"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Por cobrar</span>'}
+                        </div>
+                    </div>
+
+                    <div class="time-bar-container">
+                        <div class="time-labels">
+                            <span>Tiempo transcurrido</span>
+                            <span>${pedido.minutos} min</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar tiempo-${pedido.tiempo_clase}" style="width: ${pedido.tiempo_pct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="order-items">
+                        ${detallesHtml}
+                    </div>
+
+                    <div class="order-footer">
+                        <div class="order-total">
+                            <span class="label">${pedido.estado === 'pendiente_pago' ? 'Total a cobrar' : 'Total pagado'}</span>
+                            <span class="amount">${formatoCOP(pedido.saldo_tarjeta)}</span>
+                        </div>
+                        <div class="order-actions">
+                            ${botonesHtml}
+                            ${iconosHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Función para actualizar toda la lista de pedidos
+    function actualizarPedidos() {
+        if (document.visibilityState !== 'visible') return;
+
+        fetch("{% url 'api_pedidos_activos' %}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'ok') return;
+
+                // Actualizar KPIs
+                document.getElementById('kpi-abiertos').innerText = data.kpis.total_abiertos;
+                document.getElementById('kpi-pendientes').innerText = data.kpis.pendientes_pago;
+                document.getElementById('kpi-pagados').innerText = data.kpis.pagados;
+                document.getElementById('kpi-total').innerText = formatoCOP(data.kpis.total_cobrar);
+
+                // Actualizar la lista de pedidos
+                const contenedor = document.getElementById('contenedor-pedidos');
+                if (data.pedidos.length > 0) {
+                    let html = '';
+                    data.pedidos.forEach(p => {
+                        html += crearTarjetaPedido(p);
+                    });
+                    contenedor.innerHTML = html;
+                } else {
+                    contenedor.innerHTML = `
+                        <div class="col-12 text-center mt-5" id="empty-state">
+                            <div class="card card-custom p-5 d-inline-block">
+                                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                                <h3 class="fw-bold mt-3" style="font-family: 'DM Serif Display', serif;">¡Todo al día!</h3>
+                                <p class="text-muted mb-0">No hay pedidos pendientes en este momento.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Actualizar el último ID conocido
+                ultimoIdConocido = data.ultimo_id;
+            })
+            .catch(error => console.error('Error al actualizar pedidos:', error));
+    }
+
+    // Iniciar el polling
+    document.addEventListener('DOMContentLoaded', function() {
+        intervalId = setInterval(actualizarPedidos, 3000);
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                actualizarPedidos();
+                intervalId = setInterval(actualizarPedidos, 3000);
+            } else {
+                clearInterval(intervalId);
+            }
+        });
+    });
+
+    // --- FUNCIÓN PARA EL MODAL DE ANULACIÓN ---
+    let modalAnularInstancia = null;
+    
+    function abrirModalAnular(botonElement) {
+        const idPedido = botonElement.getAttribute('data-id');
+        const numeroPedido = botonElement.getAttribute('data-numero');
+        
+        document.getElementById('numeroPedidoAnular').textContent = `Pedido #${numeroPedido}`;
+        
+        const urlAnular = `/pedido/${idPedido}/estado/anulado/`;
+        document.getElementById('formAnular').action = urlAnular;
+        
+        if (!modalAnularInstancia) {
+            modalAnularInstancia = new bootstrap.Modal(document.getElementById('modalAnular'));
+        }
+        modalAnularInstancia.show();
+    }
+</script>
 {% endblock %}

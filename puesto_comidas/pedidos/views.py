@@ -1127,10 +1127,6 @@ def login_bloqueado(request):
 
 @login_required
 def api_pedidos_activos(request):
-    """
-    Endpoint ligero para actualizaciones en tiempo real.
-    Devuelve JSON con los pedidos activos y KPIs.
-    """
     try:
         pedidos = (
             Pedido.objects
@@ -1143,11 +1139,14 @@ def api_pedidos_activos(request):
             .order_by('-fecha_hora')
         )
 
+        MINUTOS_ALERTA = 15
+        MINUTOS_TARDE = 30
+        ahora = timezone.now()
+
         data_pedidos = []
         total_cobrar = Decimal('0.00')
         pendientes_pago = 0
         pagados = 0
-        ahora = timezone.now()
 
         for p in pedidos:
             total_pagado = p._total_pagado_agregado
@@ -1160,23 +1159,45 @@ def api_pedidos_activos(request):
                 pagados += 1
 
             minutos = max(int((ahora - p.fecha_hora).total_seconds() // 60), 0)
-            
+            if minutos >= MINUTOS_TARDE:
+                tiempo_clase = 'tarde'
+            elif minutos >= MINUTOS_ALERTA:
+                tiempo_clase = 'alerta'
+            else:
+                tiempo_clase = 'ok'
+
+            # Detalles (máximo 3 para mostrar en la tarjeta)
+            detalles_list = []
+            for d in p.detalles.all()[:3]:
+                detalles_list.append({
+                    'cantidad': d.cantidad,
+                    'producto': d.producto.nombre,
+                    'subtotal': float(d.subtotal),
+                    'es_adicional': d.es_adicional,
+                    'observacion': d.observacion,
+                })
+
             data_pedidos.append({
                 'id': p.id,
                 'numero': p.numero,
                 'mesa': p.numero_mesa if p.tipo == 'mesa' else 'Llevar',
-                'tipo': p.get_tipo_display(),
+                'tipo': p.tipo,  # 'mesa' o 'llevar'
+                'tipo_display': p.get_tipo_display(),
                 'estado': p.estado,
                 'mesero': p.mesero.username,
                 'total': float(p.total),
                 'saldo': float(saldo),
+                'saldo_tarjeta': float(saldo if p.estado == 'pendiente_pago' else p.total),
                 'minutos': minutos,
-                'detalles': [
-                    {'cantidad': d.cantidad, 'producto': d.producto.nombre}
-                    for d in p.detalles.all()
-                ],
+                'tiempo_clase': tiempo_clase,
+                'tiempo_pct': max(min(int(minutos * 100 / MINUTOS_TARDE), 100), 4),
+                'detalles': detalles_list,
+                'total_detalles': p.detalles.count(),
+                'cajas_icopor': p.cajas_icopor,
+                'valor_icopor': float(p.valor_icopor),
                 'es_adicional': total_pagado > 0 and saldo > 0,
                 'sin_pagos': total_pagado <= 0,
+                'hora': p.fecha_hora.strftime('%H:%M'),
             })
 
         return JsonResponse({
@@ -1195,16 +1216,51 @@ def api_pedidos_activos(request):
         logger.error(f"Error en api_pedidos_activos: {str(e)}", exc_info=True)
         return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
 
-
 @login_required
 def api_dashboard(request):
-    """Devuelve el ID del último pedido para detectar cambios en el dashboard."""
+    """Devuelve KPIs y pedidos recientes para el dashboard."""
     try:
-        ultimo = Pedido.objects.order_by('-id').first()
+        hoy = timezone.localdate()
+        inicio_dia = timezone.make_aware(timezone.datetime.combine(hoy, timezone.datetime.min.time()))
+        fin_dia = inicio_dia + timedelta(days=1)
+
+        pedidos_hoy = Pedido.objects.filter(fecha_hora__gte=inicio_dia, fecha_hora__lt=fin_dia)
+        total_recaudado = (
+            Pago.objects.filter(fecha__gte=inicio_dia, fecha__lt=fin_dia)
+            .exclude(pedido__estado='anulado')
+            .aggregate(total=Sum('monto'))['total'] or Decimal('0.00')
+        )
+        pedidos_activos = Pedido.objects.exclude(estado__in=['entregado', 'anulado'])
+        activos_count = pedidos_activos.count()
+        por_cobrar_count = pedidos_activos.filter(estado='pendiente_pago').count()
+
+        # Pedidos recientes (últimos 5)
+        recientes = pedidos_activos.select_related('mesero').order_by('-fecha_hora')[:5]
+        data_recientes = []
+        for p in recientes:
+            data_recientes.append({
+                'id': p.id,
+                'numero': p.numero,
+                'tipo': p.get_tipo_display(),
+                'mesa': p.numero_mesa if p.tipo == 'mesa' else 'Llevar',
+                'mesero': p.mesero.username,
+                'hora': p.fecha_hora.strftime('%H:%M'),
+                'total': float(p.total),
+                'estado': p.estado,
+            })
+
         return JsonResponse({
             'status': 'ok',
-            'ultimo_id': ultimo.id if ultimo else 0,
+            'kpis': {
+                'total_recaudado': float(total_recaudado),
+                'pedidos_hoy': pedidos_hoy.count(),
+                'por_cobrar': por_cobrar_count,
+                'activos': activos_count,
+            },
+            'recientes': data_recientes,
+            'ultimo_id': pedidos_hoy.order_by('-id').first().id if pedidos_hoy.exists() else 0,
         })
+
     except Exception as e:
         logger.error(f"Error en api_dashboard: {str(e)}", exc_info=True)
         return JsonResponse({'status': 'error', 'message': 'Error interno'}, status=500)
