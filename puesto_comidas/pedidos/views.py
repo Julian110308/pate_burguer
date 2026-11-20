@@ -67,6 +67,10 @@ def menu_mesero(request):
             if tipo == 'llevar':
                 cajas = Pedido.normalizar_cajas(data.get('cantidad_icopor', 1 if data.get('cobrar_icopor') else 0))
 
+            # Precargar productos para evitar N+1 queries
+            productos_ids = [item['id'] for item in carrito]
+            productos_map = {p.id: p for p in Producto.objects.filter(id__in=productos_ids)}
+
             with transaction.atomic():
                 pedido = Pedido.objects.create(
                     tipo=tipo,
@@ -79,7 +83,9 @@ def menu_mesero(request):
                 )
 
                 for item in carrito:
-                    producto = get_object_or_404(Producto, id=item['id'])
+                    producto = productos_map.get(item['id'])
+                    if not producto:
+                        return JsonResponse({'status': 'error', 'message': f'Producto con ID {item["id"]} no encontrado'}, status=400)
                     detalle = DetallePedido.objects.create(
                         pedido=pedido,
                         producto=producto,
@@ -178,7 +184,10 @@ def pedidos_activos(request):
 @login_required
 def cambiar_estado_pedido(request, pedido_id, nuevo_estado):
     Pago.migrar_pedidos_antiguos()
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido = get_object_or_404(
+        Pedido.objects.prefetch_related('pagos'),
+        id=pedido_id
+    )
 
     if nuevo_estado == 'anulado':
         if request.user.rol != 'admin':
@@ -250,7 +259,10 @@ def cambiar_estado_pedido(request, pedido_id, nuevo_estado):
 @xframe_options_sameorigin
 def ver_ticket(request, pedido_id):
     Pago.migrar_pedidos_antiguos()
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido = get_object_or_404(
+        Pedido.objects.prefetch_related('pagos', 'detalles__producto'),
+        id=pedido_id
+    )
 
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para ver este ticket.")
@@ -285,7 +297,10 @@ def ver_ticket(request, pedido_id):
 @login_required
 @xframe_options_sameorigin
 def ver_ticket_cocina(request, pedido_id):
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido = get_object_or_404(
+        Pedido.objects.prefetch_related('detalles__producto'),
+        id=pedido_id
+    )
 
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para ver esta comanda.")
@@ -306,7 +321,10 @@ def ver_ticket_cocina(request, pedido_id):
 @login_required
 def agregar_a_pedido(request, pedido_id):
     Pago.migrar_pedidos_antiguos()
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido = get_object_or_404(
+        Pedido.objects.prefetch_related('pagos', 'detalles__producto'),
+        id=pedido_id
+    )
 
     if request.user.rol != 'admin' and pedido.mesero != request.user:
         messages.error(request, "No tienes permiso para modificar este pedido.")
@@ -321,10 +339,16 @@ def agregar_a_pedido(request, pedido_id):
             data = json.loads(request.body)
             carrito = data.get('carrito', [])
             cajas_extra = Pedido.normalizar_cajas(data.get('cantidad_icopor', 0))
-            
+
+            # Precargar productos para evitar N+1 queries
+            productos_ids = [item['id'] for item in carrito]
+            productos_map = {p.id: p for p in Producto.objects.filter(id__in=productos_ids)}
+
             with transaction.atomic():
                 for item in carrito:
-                    producto = get_object_or_404(Producto, id=item['id'])
+                    producto = productos_map.get(item['id'])
+                    if not producto:
+                        return JsonResponse({'status': 'error', 'message': f'Producto con ID {item["id"]} no encontrado'}, status=400)
                     detalle = DetallePedido.objects.create(
                         pedido=pedido,
                         producto=producto,
@@ -668,14 +692,15 @@ def lista_usuarios(request):
                 
             return redirect('lista_usuarios')
 
-    usuarios_base = Usuario.objects.filter(is_superuser=False, is_active=True).order_by('first_name')
+    usuarios_base = Usuario.objects.filter(is_superuser=False, is_active=True).annotate(
+        pedidos_hoy_count=Count('pedidos', filter=Q(pedidos__fecha_hora__date=timezone.localdate()))
+    ).order_by('first_name')
     ahora = timezone.localtime(timezone.now())
     hoy = ahora.date()
     usuarios_data = []
 
     for u in usuarios_base:
-        pedidos_hoy = Pedido.objects.filter(mesero=u, fecha_hora__date=hoy)
-        total_pedidos_hoy = pedidos_hoy.count()
+        total_pedidos_hoy = u.pedidos_hoy_count or 0
         
         ultimo_acceso_str = "Nunca"
         en_turno = False
@@ -831,11 +856,9 @@ def validar_usuario_ajax(request):
         
     return JsonResponse({'status': 'error'}, status=400)
 
-@login_required
+@solo_admin
 def historial_pedidos(request):
     Pago.migrar_pedidos_antiguos()
-    if request.user.rol != 'admin': 
-        return redirect('menu_mesero')
     
     pedidos_base = Pedido.objects.all().order_by('-fecha_hora')
     

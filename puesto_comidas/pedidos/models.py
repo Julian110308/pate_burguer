@@ -290,6 +290,10 @@ class DetallePedido(models.Model):
     class Meta:
         verbose_name = 'Detalle del pedido'
         verbose_name_plural = 'Detalles del pedido'
+        indexes = [
+            models.Index(fields=['pedido']),
+            models.Index(fields=['producto']),
+        ]
 
     @property
     def subtotal(self):
